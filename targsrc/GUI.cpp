@@ -3,9 +3,6 @@
 
 void	startGUI(SDL_Window *window)
 {
-	std::cout << "From humble beginnings" << std::endl;
-
-
 	// Create VAO
 	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
