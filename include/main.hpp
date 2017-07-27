@@ -15,7 +15,7 @@
 #include <iostream>
 
 //Internal
-
+#include "MenuStateMachine.hpp"
 
 void	startGUI(SDL_Window *win);
 

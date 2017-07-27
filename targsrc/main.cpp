@@ -67,6 +67,7 @@ int	main(int argc, char *argv[])
 	SDL_Window	*window = initWindow();
 	if (window == nullptr || initGlew() == -1)
 		return (-1);
+
 	gameLoop(window);
 
 	//startGUI(window);
