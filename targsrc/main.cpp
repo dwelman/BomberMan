@@ -20,6 +20,9 @@ SDL_Window *initWindow()
 	SDL_Window *window = SDL_CreateWindow(
 		"Bomberman", 100, 100, 640, 480,
 		SDL_WINDOW_OPENGL);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GLContext gContext = SDL_GL_CreateContext(window);
 	if (gContext == NULL) 
 	{ 

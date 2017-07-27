@@ -3,12 +3,16 @@ cmake_minimum_required (VERSION 3.5)
 set(PROJECT_NAME "Bomberman")
 project (${PROJECT_NAME})
 
+set(cmake_build_type debug)
+
 set (PLATFORM ${CMAKE_SYSTEM_NAME})
 
 message("Detected Platform ${PLATFORM}")
 
 set(ARCH x86)
+
 #SDL
+if (WIN32)
 set(SDL_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/libs/${PLATFORM}/SDL2/include)
 set(SDL_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/${PLATFORM}/SDL2/lib/${ARCH})
 set(SDL_LIB ${SDL_LIB_DIR}/SDL2.lib)
@@ -34,8 +38,48 @@ set(GLEW_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/${PLATFORM}/glew/lib/Release/$
 set(GLEW_LIB ${GLEW_LIB_DIR}/glew32.lib)
 
 #OPENGL
-if (WIN32)
 find_package(OpenGL)
+else()
+	set(BREW ~/.brew)
+	set(BREW_INCLUDE ${BREW}/include)
+	set(BREW_LIB ${BREW}/lib)
+
+	#SDL
+	set(SDL_INCLUDE ${BREW_INCLUDE}/SDL2)
+	set(SDL_LIB_DIR ${BREW_LIB})
+	set(SDL_LIB ${SDL_LIB_DIR}/libSDL2.a)
+	message ("Found SDL2 library at ${SDL_LIB}")
+
+	#SDL_ttf
+	set(SDL_TTF_INCLUDE ${BREW_INCLUDE}/SDL2_ttf)
+	set(SDL_TTF_LIB_DIR ${BREW_LIB})
+	set(SDL_TTF_LIB ${SDL_LIB_DIR}/libSDL2_ttf.a)
+	message ("Found SDL2_ttf library at ${SDL_TTF_LIB}")
+
+	#SDL_image
+	set(SDL_IMAGE_INCLUDE ${BREW_INCLUDE}/SDL2_image)
+	set(SDL_IMAGE_LIB_DIR ${BREW_LIB})
+	set(SDL_IMAGE_LIB ${SDL_IMAGE_LIB_DIR}/libSDL2_image.a)
+	message ("Found SDL2_image library at ${SDL_IMAGE_LIB}")
+
+	#SDL_mixer
+	set(SDL_MIXER_INCLUDE ${BREW_INCLUDE}/SDL2_mixer)
+	set(SDL_MIXER_LIB_DIR ${BREW_LIB})
+	set(SDL_MIXER_LIB ${SDL_MIXER_LIB_DIR}/libSDL2_mixer.a)
+	message ("Found SDL2_mixer library at ${SDL_MIXER_LIB}")
+
+	#GLEW
+	set(GLEW_INCLUDE ${BREW_INCLUDE}/)
+	set(GLEW_LIB_DIR ${BREW_LIB})
+	set(GLEW_LIB ${GLEW_LIB_DIR}/libSDL2_mixer.a)
+	message ("Found SDL2_mixer library at ${SDL_MIXER_LIB}")
+
+	#OPENGL
+	find_package(OpenGL)
+	set(OPENGL_INCLUDE ${OPENGL_INCLUDE_DIR}/Headers)
+	message ("Found OpenGL library at ${OPENGL_INCLUDE}")
+	message ("Found OpenGL library at ${OPENGL_gl_LIBRARY}")
+
 endif()
 
 #GLM
@@ -46,24 +90,22 @@ set(TARGSRC "targsrc/")
 set(SOURCE
 	${TARGSRC}main.cpp
 	${TARGSRC}GUI.cpp
-	${TARGSRC}UIElement.cpp
-	${TARGSRC}UIGroup.cpp
 )
 
 set(INCLUDE "include/")
 set(HEADERS
 	${INCLUDE}main.hpp
-	${INCLUDE}UIElement.hpp
-	${INCLUDE}UIGroup.hpp
 )
 
 set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-include_directories(${INCLUDE} ${SDL_INCLUDE} ${SDL_IMAGE_INCLUDE} ${SDL_TTF_INCLUDE} ${SDL_MIXER_INCLUDE} ${GLEW_INCLUDE} ${GLM_INCLUDE})
+include_directories(${INCLUDE} ${SDL_INCLUDE} ${SDL_IMAGE_INCLUDE} ${SDL_TTF_INCLUDE} ${SDL_MIXER_INCLUDE} ${GLEW_INCLUDE} ${GLM_INCLUDE} ${OPENGL_INCLUDE})
+
+link_directories(${SDL_LIB_DIR} ${SDL_TTF_LIB_DIR} ${SDL_IMAGE_LIB_DIR}  ${SDL_MIXER_LIB_DIR})
 
 add_executable(${PROJECT_NAME} ${SOURCE} ${HEADERS})
 
-target_link_libraries(${PROJECT_NAME} ${SDL_LIB} ${SDL_TTF_LIB} ${SDL_IMAGE_LIB} ${GLEW_LIB} ${SDL_MIXER_LIB} ${OPENGL_gl_LIBRARY})
+target_link_libraries(${PROJECT_NAME} SDL2 SDL2_ttf SDL2_image GLEW  SDL2_mixer ${OPENGL_gl_LIBRARY})
 
 if (WIN32)
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD				# Adds a post-build event to copy SDL dll to bin dir

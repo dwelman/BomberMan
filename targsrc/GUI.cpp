@@ -36,6 +36,7 @@ void	startGUI(SDL_Window *window)
 	SDL_Event e;
 
 	do {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//draw
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -55,7 +56,6 @@ void	startGUI(SDL_Window *window)
 		//TwDraw();
 		// Swap buffers
 		SDL_GL_SwapWindow(window);
-		SDL_Delay(200);
 		SDL_PollEvent(&e);
 
 	} // Check if the ESC key was pressed or the window was closed
