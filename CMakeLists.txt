@@ -90,7 +90,7 @@ set(TARGSRC "targsrc/")
 set(SOURCE
 	${TARGSRC}main.cpp
 	${TARGSRC}GUI.cpp
-)
+	${TARGSRC}RenderEngine.cpp)
 
 set(INCLUDE "include/")
 set(HEADERS

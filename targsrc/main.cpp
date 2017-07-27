@@ -9,7 +9,6 @@
 
 #include "main.hpp"
 
-// Initialize SDL and GLEW
 SDL_Window *initWindow()
 {
 	if (SDL_Init(0) == -1)
@@ -50,12 +49,27 @@ int initGlew()
 	}
 }
 
+void gameLoop(SDL_Window *window)
+{
+    SDL_Event e;
+    do
+    {
+        SDL_PollEvent(&e);
+
+        draw(window);
+        SDL_GL_SwapWindow(window);
+    }
+	while (e.type != SDL_QUIT);
+}
+
 int	main(int argc, char *argv[])
 {
 	SDL_Window	*window = initWindow();
 	if (window == nullptr || initGlew() == -1)
 		return (-1);
-	startGUI(window);
+	gameLoop(window);
+
+	//startGUI(window);
 	SDL_Quit();
 	return (0);
 }

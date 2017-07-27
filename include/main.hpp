@@ -18,4 +18,7 @@
 
 //Internal
 
+
 void	startGUI(SDL_Window *win);
+
+int     draw(SDL_Window *window);
