@@ -36,7 +36,8 @@ set(SDL_MIXER_LIB ${SDL_MIXER_LIB_DIR}/SDL2_Mixer.lib)
 set(GLEW_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/libs/${PLATFORM}/glew/include)
 set(GLEW_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/${PLATFORM}/glew/lib/Release/${ARCH})
 set(GLEW_LIB ${GLEW_LIB_DIR}/glew32.lib)
-
+	message ("Found glew library at ${GLEW_LIB}")
+	
 #OPENGL
 find_package(OpenGL)
 else()
@@ -71,8 +72,8 @@ else()
 	#GLEW
 	set(GLEW_INCLUDE ${BREW_INCLUDE}/)
 	set(GLEW_LIB_DIR ${BREW_LIB})
-	set(GLEW_LIB ${GLEW_LIB_DIR}/libSDL2_mixer.a)
-	message ("Found SDL2_mixer library at ${SDL_MIXER_LIB}")
+	set(GLEW_LIB ${GLEW_LIB_DIR}/libGLEW.a)
+	message ("Found glew library at ${GLEW_LIB}")
 
 	#OPENGL
 	find_package(OpenGL)
@@ -102,11 +103,11 @@ set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 include_directories(${INCLUDE} ${SDL_INCLUDE} ${SDL_IMAGE_INCLUDE} ${SDL_TTF_INCLUDE} ${SDL_MIXER_INCLUDE} ${GLEW_INCLUDE} ${GLM_INCLUDE} ${OPENGL_INCLUDE})
 
-link_directories(${SDL_LIB_DIR} ${SDL_TTF_LIB_DIR} ${SDL_IMAGE_LIB_DIR}  ${SDL_MIXER_LIB_DIR})
+link_directories(${SDL_LIB_DIR} ${SDL_TTF_LIB_DIR} ${SDL_IMAGE_LIB_DIR}  ${SDL_MIXER_LIB_DIR} ${GLEW_LIB_DIR})
 
 add_executable(${PROJECT_NAME} ${SOURCE} ${HEADERS})
 
-target_link_libraries(${PROJECT_NAME} SDL2 SDL2_ttf SDL2_image GLEW  SDL2_mixer ${OPENGL_gl_LIBRARY})
+target_link_libraries(${PROJECT_NAME} SDL2 SDL2_ttf SDL2_image glew32 SDL2_mixer ${OPENGL_gl_LIBRARY})
 
 if (WIN32)
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD				# Adds a post-build event to copy SDL dll to bin dir
