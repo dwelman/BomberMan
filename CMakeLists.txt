@@ -90,12 +90,13 @@ set(TARGSRC "targsrc/")
 set(SOURCE
 	${TARGSRC}main.cpp
 	${TARGSRC}GUI.cpp
-	${TARGSRC}RenderEngine.cpp)
+	${TARGSRC}RenderEngine.cpp
+	${TARGSRC}StateMachine.cpp)
 
 set(INCLUDE "include/")
 set(HEADERS
 	${INCLUDE}main.hpp
-)
+	${INCLUDE}StateMachine.hpp)
 
 set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
