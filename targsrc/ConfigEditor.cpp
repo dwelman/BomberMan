@@ -77,11 +77,13 @@ keyref::keyref(std::string &_ref) : ref(_ref)
 keyref const   &keyref::operator=( int const &_val)
 {
     ref = std::to_string(_val);
+	return (*this);
 }
 
 keyref const   &keyref::operator=( std::string const &_val)
 {
     ref = _val;
+	return (*this);
 }
 
 int                   keyref::to_int()

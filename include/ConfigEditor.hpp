@@ -8,6 +8,7 @@
 #include <fstream>
 #include <strstream>
 #include <iostream>
+#include <cctype>
 
 struct keyref
 {
