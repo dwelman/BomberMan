@@ -97,7 +97,8 @@ set(SOURCE
 set(INCLUDE "include/")
 set(HEADERS
 	${INCLUDE}main.hpp
-	${INCLUDE}MenuStateMachine.hpp)
+	${INCLUDE}MenuStateMachine.hpp
+	${INCLUDE}RenderEngine.hpp)
 
 set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 

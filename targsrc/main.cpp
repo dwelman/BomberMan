@@ -8,6 +8,7 @@
 */
 
 #include "main.hpp"
+#include "RenderEngine.hpp"
 
 SDL_Window *initWindow()
 {
@@ -38,25 +39,15 @@ SDL_Window *initWindow()
 	return (window);
 }
 
-int initGlew()
-{
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-	if (err != GLEW_OK)
-	{
-		std::cerr << "Error : " << "Failed to initialize GLEW" << std::endl;
-		return -1;
-	}
-}
-
-void gameLoop(SDL_Window *window)
+void gameLoop(SDL_Window *window, renderData rdata)
 {
     SDL_Event e;
     do
     {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         SDL_PollEvent(&e);
 
-        draw(window);
+        draw(window, rdata);
         SDL_GL_SwapWindow(window);
     }
 	while (e.type != SDL_QUIT);
@@ -64,11 +55,13 @@ void gameLoop(SDL_Window *window)
 
 int	main(int argc, char *argv[])
 {
+	renderData rdata;
 	SDL_Window	*window = initWindow();
-	if (window == nullptr || initGlew() == -1)
+	rdata = initGlew();
+	if (window == nullptr || rdata.res == -1)
 		return (-1);
 
-	gameLoop(window);
+	gameLoop(window, rdata);
 
 	//startGUI(window);
 	SDL_Quit();
