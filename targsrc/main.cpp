@@ -20,6 +20,9 @@ SDL_Window *initWindow(ConfigEditor &cfg)
 	SDL_Window *window = SDL_CreateWindow(
 		"Bomberman", 100, 100, cfg["xres"].to_int(), cfg["yres"].to_int(),
 		SDL_WINDOW_OPENGL);
+    if (cfg["Fullscreen"].to_str() == "true")
+        SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -59,6 +62,7 @@ int	main(int argc, char *argv[])
 {
 	renderData rdata;
     ConfigEditor cfg("../resources/settings.cfg");
+
 	SDL_Window	*window = initWindow(cfg);
 
 	rdata = initGlew();
