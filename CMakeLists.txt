@@ -92,13 +92,15 @@ set(SOURCE
 	${TARGSRC}main.cpp
 	${TARGSRC}GUI.cpp
 	${TARGSRC}RenderEngine.cpp
-	${TARGSRC}MenuStateMachine.cpp)
+	${TARGSRC}MenuStateMachine.cpp
+	${TARGSRC}StateObject.cpp)
 
 set(INCLUDE "include/")
 set(HEADERS
 	${INCLUDE}main.hpp
 	${INCLUDE}MenuStateMachine.hpp
-	${INCLUDE}RenderEngine.hpp)
+	${INCLUDE}RenderEngine.hpp
+	${INCLUDE}StateObject.hpp)
 
 set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 

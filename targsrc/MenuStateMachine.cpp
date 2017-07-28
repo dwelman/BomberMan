@@ -65,29 +65,7 @@ void MenuStateMachine::AddState(void(*activateFunc)(void))
 	}
 }
 
-MenuStateMachine::StateObject::StateObject() : activate(nullptr)
+std::size_t MenuStateMachine::GetActiveState() const
 {
-}
-
-MenuStateMachine::StateObject::StateObject(void(*activateFunc)(void)) : activate(activateFunc)
-{
-}
-
-MenuStateMachine::StateObject::StateObject(StateObject const & s)
-{
-	*this = s;
-}
-
-void MenuStateMachine::StateObject::Activate() const
-{
-	if (activate != nullptr)
-	{
-		activate();
-	}
-}
-
-MenuStateMachine::StateObject & MenuStateMachine::StateObject::operator=(StateObject const & s)
-{
-	this->activate = s.activate;
-	return (*this);
+    return (currentState);
 }
