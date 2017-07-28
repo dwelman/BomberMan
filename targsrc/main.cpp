@@ -10,7 +10,7 @@
 #include "main.hpp"
 #include "RenderEngine.hpp"
 
-SDL_Window *initWindow()
+SDL_Window *initWindow(ConfigEditor &cfg)
 {
 	if (SDL_Init(0) == -1)
 	{
@@ -18,7 +18,7 @@ SDL_Window *initWindow()
 		return (nullptr);
 	}
 	SDL_Window *window = SDL_CreateWindow(
-		"Bomberman", 100, 100, 640, 480,
+		"Bomberman", 100, 100, cfg["xres"].to_int(), cfg["yres"].to_int(),
 		SDL_WINDOW_OPENGL);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
@@ -58,7 +58,9 @@ void gameLoop(SDL_Window *window, renderData rdata)
 int	main(int argc, char *argv[])
 {
 	renderData rdata;
-	SDL_Window	*window = initWindow();
+    ConfigEditor cfg("../resources/settings.cfg");
+	SDL_Window	*window = initWindow(cfg);
+
 	rdata = initGlew();
 	if (window == nullptr || rdata.res == -1)
 		return (-1);

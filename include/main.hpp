@@ -16,6 +16,7 @@
 
 //Internal
 #include "MenuStateMachine.hpp"
+#include <ConfigEditor.hpp>
 
 void	startGUI(SDL_Window *win);
 
