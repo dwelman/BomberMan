@@ -108,7 +108,7 @@ link_directories(${SDL_LIB_DIR} ${SDL_TTF_LIB_DIR} ${SDL_IMAGE_LIB_DIR}  ${SDL_M
 
 add_executable(${PROJECT_NAME} ${SOURCE} ${HEADERS})
 
-target_link_libraries(${PROJECT_NAME} SDL2 SDL2_ttf SDL2_image glew32 SDL2_mixer ${OPENGL_gl_LIBRARY})
+target_link_libraries(${PROJECT_NAME} SDL2 SDL2_ttf SDL2_image GLEW SDL2_mixer ${OPENGL_gl_LIBRARY})
 
 if (WIN32)
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD				# Adds a post-build event to copy SDL dll to bin dir

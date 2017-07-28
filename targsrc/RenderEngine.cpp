@@ -334,13 +334,13 @@ renderData initGlew()
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
     glClearColor(0.0f, 0.0f, 0.2f, 0.0f);
-    rdata.shaders = LoadShaders("shaders/vertex.glsl", "shaders/fragment.glsl");
+    rdata.shaders = LoadShaders("../shaders/vertex.glsl", "../shaders/fragment.glsl");
     rdata.MatrixID = glGetUniformLocation(rdata.shaders, "MVP");
-    rdata.Texture = loadBMP("textures/ore2.bmp");
+    rdata.Texture = loadBMP("../textures/Cobblestone.bmp");
     std::vector<glm::vec3>vertices;
     std::vector<glm::vec2>uvs;
     std::vector<glm::vec3>normals;
-    rdata.objRes = loadOBJ("obj/cube.obj", vertices, uvs, normals);
+    rdata.objRes = loadOBJ("../obj/cube.obj", vertices, uvs, normals);
 
     glGenBuffers(1, &rdata.VertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, rdata.VertexBuffer);
@@ -360,6 +360,7 @@ int     draw(SDL_Window *window, renderData rdata)
     glm::mat4 ViewMatrix = getViewMatrix();
     glm::mat4 ModelMatrix = glm::mat4(1.0);
     glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+    glEnable(GL_MULTISAMPLE);
 
     glUseProgram(rdata.shaders);
     glUniformMatrix4fv(rdata.MatrixID, 1, GL_FALSE, &MVP[0][0]);
@@ -386,6 +387,7 @@ int     draw(SDL_Window *window, renderData rdata)
     );
 
     glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
+    glDisable(GL_MULTISAMPLE);
     glDisableVertexAttribArray(0);
     return (0);
 }
