@@ -89,21 +89,35 @@ endif()
 set(GLM_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/libs/glm)
 
 set(TARGSRC "targsrc/")
-
 set(SOURCE
 		${TARGSRC}main.cpp
 		${TARGSRC}GUI.cpp
 		${TARGSRC}RenderEngine.cpp
 		${TARGSRC}MenuStateMachine.cpp
 		${TARGSRC}ConfigEditor.cpp
-		${TARGSRC}StateObject.cpp)
+		${TARGSRC}StateObject.cpp
+		${TARGSRC}GameManager.cpp
+		${TARGSRC}Entity.cpp
+		${TARGSRC}Vec3.cpp)
+
+set(COMPSRC "targsrc/components/")
+set(SOURCE_COMP
+		${COMPSRC}Position.cpp)
 
 set(INCLUDE "include/")
+set(COMP_INCL "include/components/")
 set(HEADERS
 		${INCLUDE}main.hpp
 		${INCLUDE}MenuStateMachine.hpp
 		${INCLUDE}RenderEngine.hpp
-		${INCLUDE}ConfigEditor.hpp)
+		${INCLUDE}ConfigEditor.hpp
+		${INCLUDE}GameManager.hpp
+		${INCLUDE}Entity.hpp
+		${INCLUDE}Vec3.hpp)
+
+set(COMP_INCL "include/components/")
+set(HEADERS_COMP
+		${COMP_INCL}Position.hpp)
 
 set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -111,7 +125,7 @@ include_directories(${INCLUDE} ${SDL_INCLUDE} ${SDL_IMAGE_INCLUDE} ${SDL_TTF_INC
 
 link_directories(${SDL_LIB_DIR} ${SDL_TTF_LIB_DIR} ${SDL_IMAGE_LIB_DIR}  ${SDL_MIXER_LIB_DIR} ${GLEW_LIB_DIR})
 
-add_executable(${PROJECT_NAME} ${SOURCE} ${HEADERS})
+add_executable(${PROJECT_NAME} ${SOURCE} ${HEADERS} ${SOURCE_COMP} ${HEADERS_COMP})
 
 target_link_libraries(${PROJECT_NAME} SDL2 SDL2_ttf SDL2_image ${GLEW_NAME} SDL2_mixer ${OPENGL_gl_LIBRARY})
 
