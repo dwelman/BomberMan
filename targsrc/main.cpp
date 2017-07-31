@@ -4,12 +4,13 @@
 		*Dean du Toit
 		*Reyno van der Westhuizen
 		*Michael Eckhardt
+		*Luke Hamlyn
 	Copyright (c) 2017
 */
 
 #include "main.hpp"
 #include "RenderEngine.hpp"
-#include "Entity.hpp"
+#include "GameManager.hpp"
 
 SDL_Window *initWindow(ConfigEditor &cfg)
 {
@@ -59,41 +60,6 @@ void gameLoop(SDL_Window *window, renderData rdata)
 	while (e.type != SDL_QUIT);
 }
 
-void	EntityTest()
-{
-	Position one(0,0,0);
-	Collision oneC(0.25, 0.25, 0.25);
-	Position two(1,1,1);
-	Collision twoC(0.25, 0.25, 0.25);
-	if (oneC.CheckCollision(one, two, twoC))
-	{
-		std::cout << "HIT" << std::endl;
-	}
-	else
-	{
-		std::cout << "No HIT" << std::endl;
-	}
-
-	one.SetPosition(Vec3(one.GetPosition().GetX() + 0.75, 0, 0));
-	if (oneC.CheckCollision(one, two, twoC))
-	{
-		std::cout << "HIT" << std::endl;
-	}
-	else
-	{
-		std::cout << "No HIT" << std::endl;
-	}
-
-	if (twoC.CheckCollision(two, one, oneC))
-	{
-		std::cout << "HIT" << std::endl;
-	}
-	else
-	{
-		std::cout << "No HIT" << std::endl;
-	}
-}
-
 int	main(int argc, char *argv[])
 {
 	renderData rdata;
@@ -102,7 +68,6 @@ int	main(int argc, char *argv[])
 	SDL_Window	*window = initWindow(cfg);
 
 	rdata = initGlew();
-	EntityTest();
 	if (window == nullptr || rdata.res == -1)
 		return (-1);
 
