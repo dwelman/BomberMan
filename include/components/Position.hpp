@@ -14,4 +14,16 @@ public:
 
     Position    &operator=(Position const &p);
     bool        operator==(Position const &p);
+    Position    &operator+=(Position const &p);
+    Position    &operator-=(Position const &p);
+    Position    &operator/=(Position const &p);
+    Position    &operator*=(Position const &p);
+
+    Vec3        GetPosition() const;
+    void        SetPosition(Vec3 const &p);
 };
+
+Position        operator+(Position lhs, Position const &rhs);
+Position        operator-(Position lhs, Position const &rhs);
+Position        operator/(Position lhs, Position const &rhs);
+Position        operator*(Position lhs, Position const &rhs);
