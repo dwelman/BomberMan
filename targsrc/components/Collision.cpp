@@ -1,4 +1,5 @@
 #include "components/Collision.hpp"
+#include <iostream>
 
 Collision::Collision(Vec3 const &colliderSize) : m_colliderSize(colliderSize)
 {
@@ -57,9 +58,21 @@ bool        Collision::CheckCollision(Position const &thisPos, Position const &o
     //The corner of the y axis for the other object
     float   otherPosZ = otherPos.GetPosition().GetZ() - otherCollide.GetColliderSize().GetZ();
 
+    std::cout << "This x: " << thisPosX << std::endl;
+    std::cout << "Other x: " << otherPosX << std::endl;
+    std::cout << "This y: " << thisPosY << std::endl;
+    std::cout << "Other y: " << otherPosY << std::endl;
+    std::cout << "This z: " << thisPosZ << std::endl;
+    std::cout << "Other z: " << otherPosZ << std::endl;
+
     //The collider size is doubled to get from the one corner to the other
     collisionX = thisPosX + (m_colliderSize.GetX() * 2) >= otherPosX && otherPosX + (otherCollide.GetColliderSize().GetX() * 2) >= thisPosX;
     collisionY = thisPosY + (m_colliderSize.GetY() * 2) >= otherPosY && otherPosY + (otherCollide.GetColliderSize().GetY() * 2) >= thisPosY;
     collisionX = thisPosZ + (m_colliderSize.GetZ() * 2) >= otherPosX && otherPosZ + (otherCollide.GetColliderSize().GetZ() * 2) >= thisPosZ;
+
+    std::cout << "X collision: " << collisionX << std::endl;
+    std::cout << "Y collision: " << collisionY << std::endl;
+    std::cout << "Z collision: " << collisionZ << std::endl;
+
     return (collisionX && collisionY && collisionZ);
 }
