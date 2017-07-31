@@ -2,7 +2,6 @@
 
 class Entity
 {
-public:
-
 private:
+public:
 };

@@ -4,8 +4,8 @@
 
 class GameManager
 {
-public:
-    void        Update();
 private:
 
+public:
+    void        Update();
 };
