@@ -18,7 +18,7 @@ SDL_Window *initWindow(ConfigEditor &cfg)
 		return (nullptr);
 	}
 	SDL_Window *window = SDL_CreateWindow(
-		"Bomberman", 100, 100, cfg["xres"].to_int(), cfg["yres"].to_int(),
+		"Bomberman", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, cfg["xres"].to_int(), cfg["yres"].to_int(),
 		SDL_WINDOW_OPENGL);
     if (cfg["Fullscreen"].to_str() == "true")
         SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
@@ -61,7 +61,7 @@ void gameLoop(SDL_Window *window, renderData rdata)
 int	main(int argc, char *argv[])
 {
 	renderData rdata;
-    ConfigEditor cfg("../resources/settings.cfg");
+    ConfigEditor cfg("resources/settings.cfg");
 
 	SDL_Window	*window = initWindow(cfg);
 

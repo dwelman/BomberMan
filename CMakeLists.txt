@@ -96,14 +96,16 @@ set(SOURCE
 		${TARGSRC}RenderEngine.cpp
 		${TARGSRC}MenuStateMachine.cpp
 		${TARGSRC}ConfigEditor.cpp
-		${TARGSRC}StateObject.cpp)
+		${TARGSRC}StateObject.cpp
+		${TARGSRC}VBOIndexer.cpp)
 
 set(INCLUDE "include/")
 set(HEADERS
 		${INCLUDE}main.hpp
 		${INCLUDE}MenuStateMachine.hpp
 		${INCLUDE}RenderEngine.hpp
-		${INCLUDE}ConfigEditor.hpp)
+		${INCLUDE}ConfigEditor.hpp
+		${INCLUDE}VBOIndexer.hpp)
 
 set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 

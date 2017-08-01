@@ -1,3 +1,7 @@
+#ifndef _WIN32
+#include <unistd.h>
+#endif
+
 #include <main.hpp>
 #include <fstream>
 #include <string>
@@ -32,9 +36,9 @@ void computeMatricesFromInputs(SDL_Window *window) {
 
     int xpos, ypos;
 	SDL_GetMouseState(&xpos, &ypos);
-    SDL_WarpMouseInWindow(window, 640 / 2, 480 / 2);
-    horizontalAngle += mouseSpeed * float(640 / 2 - xpos);
-    verticalAngle += mouseSpeed * float(480 / 2 - ypos);
+    SDL_WarpMouseInWindow(window, 1280 / 2, 720 / 2);
+    horizontalAngle += mouseSpeed * float(1280 / 2 - xpos);
+    verticalAngle += mouseSpeed * float(720 / 2 - ypos);
 
     // Direction : Spherical coordinates to Cartesian coordinates conversion
     glm::vec3 direction(
@@ -184,7 +188,7 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
     return ProgramID;
 }
 
-GLuint loadBMP(const char * imagepath)
+GLuint loadBMP(const char * imagepath, GLuint texture)
 {
     unsigned char header[54];
     unsigned int dataPos;
@@ -222,13 +226,12 @@ GLuint loadBMP(const char * imagepath)
 
     fclose(file);
 
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+    glBindTexture(GL_TEXTURE_2D, texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
+    free(data);
 }
 
 bool loadOBJ(
@@ -319,6 +322,8 @@ bool loadOBJ(
 renderData initGlew()
 {
     renderData rdata;
+    rdata.Textures = new GLuint[3];
+    glGenTextures(3, rdata.Textures);
 
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();
@@ -333,61 +338,184 @@ renderData initGlew()
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
-    glClearColor(0.0f, 0.0f, 0.2f, 0.0f);
-    rdata.shaders = LoadShaders("../shaders/vertex.glsl", "../shaders/fragment.glsl");
-    rdata.MatrixID = glGetUniformLocation(rdata.shaders, "MVP");
-    rdata.Texture = loadBMP("../textures/Cobblestone.bmp");
-    std::vector<glm::vec3>vertices;
-    std::vector<glm::vec2>uvs;
-    std::vector<glm::vec3>normals;
-    rdata.objRes = loadOBJ("../obj/cube.obj", vertices, uvs, normals);
+    glClearColor(0.1f, 0.0f, 0.0f, 0.0f);
+    rdata.shaders = LoadShaders("shaders/vertex.glsl", "shaders/fragment.glsl");
+	GLuint tx = loadBMP("textures/ore2.bmp", rdata.Textures[0]);
+    tx = loadBMP("textures/Cobblestone.bmp", rdata.Textures[1]);
+    tx = loadBMP("textures/ore.bmp", rdata.Textures[2]);
+    rdata.objRes = loadOBJ("obj/cube.obj", rdata.objVertices, rdata.objUVS, rdata.objNormals);
+	rdata.MatrixID = glGetUniformLocation(rdata.shaders, "MVP");
+	rdata.ViewMatrixID = glGetUniformLocation(rdata.shaders, "V");
+	rdata.ModelMatrixID = glGetUniformLocation(rdata.shaders, "M");
+	rdata.LightID = glGetUniformLocation(rdata.shaders, "LightPosition_worldspace");
+
+	indexVBO(rdata.objVertices, rdata.objUVS, rdata.objNormals, rdata.Indices, rdata.indexed_vertices, rdata.indexed_uvs, rdata.indexed_normals);
 
     glGenBuffers(1, &rdata.VertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, rdata.VertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, rdata.indexed_vertices.size() * sizeof(glm::vec3), &rdata.indexed_vertices[0], GL_STATIC_DRAW);
 
     glGenBuffers(1, &rdata.UVBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, rdata.UVBuffer);
-    glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, rdata.indexed_uvs.size() * sizeof(glm::vec2), &rdata.indexed_uvs[0], GL_STATIC_DRAW);
+
+	glGenBuffers(1, &rdata.NormalBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, rdata.NormalBuffer);
+	glBufferData(GL_ARRAY_BUFFER, rdata.indexed_normals.size() * sizeof(glm::vec3), &rdata.indexed_normals[0], GL_STATIC_DRAW);
+
+	glGenBuffers(1, &rdata.ElementBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata.ElementBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, rdata.Indices.size() * sizeof(unsigned short), &rdata.Indices[0], GL_STATIC_DRAW);
 
     return rdata;
 }
+
+//void drawCubes(std::vector<std::vector<int>> *blocks)
+//{
+//	for (int i = 0; i < blocks->size(); i++)
+//	{
+//
+//	}
+//}
 
 int     draw(SDL_Window *window, renderData rdata)
 {
     computeMatricesFromInputs(window);
     glm::mat4 ProjectionMatrix = getProjectionMatrix();
     glm::mat4 ViewMatrix = getViewMatrix();
-    glm::mat4 ModelMatrix = glm::mat4(1.0);
+    glm::mat4 ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
     glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-    glEnable(GL_MULTISAMPLE);
+
+    glUniformMatrix4fv(rdata.MatrixID, 1, GL_FALSE, &MVP[0][0]);
+	glUniformMatrix4fv(rdata.ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+	glUniformMatrix4fv(rdata.ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
+
+	static int v = 1;
+	static int i = 0;
+	if (i == 100)
+		v = -1;
+	if (i == 2)
+		v = 1;
+	i += v;
+	glm::vec3 lightPos = glm::vec3((i / 2), 6, 5 * 2);
+
+    #ifdef _WIN32
+	    Sleep(15);
+    #else
+        usleep(15000);
+    #endif
 
     glUseProgram(rdata.shaders);
-    glUniformMatrix4fv(rdata.MatrixID, 1, GL_FALSE, &MVP[0][0]);
+	glUniform3f(rdata.LightID, lightPos.x, lightPos.y, lightPos.z);
+
+	glBindTexture(GL_TEXTURE_2D, rdata.Textures[0]);
+
+    glEnable(GL_MULTISAMPLE);
+
+	for (float x = 2; x < 25; x++)
+	{
+		for (int z = 2; z < 45; z++)
+		{
+			glm::mat4 ModelMatrix = glm::mat4(1.0);
+			ModelMatrix = glm::translate(ModelMatrix, glm::vec3(((x * 2) - 4), 0.0f, ((z * 2) - 4)));
+			glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+
+			// Send our transformation to the currently bound shader, 
+			// in the "MVP" uniform
+			glUniformMatrix4fv(rdata.MatrixID, 1, GL_FALSE, &MVP[0][0]);
+			glUniformMatrix4fv(rdata.ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+
+			// 1rst attribute buffer : vertices
+			glEnableVertexAttribArray(0);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata.VertexBuffer);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+			// 2nd attribute buffer : UVs
+			glEnableVertexAttribArray(1);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata.UVBuffer);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+			// 3rd attribute buffer : normals
+			glEnableVertexAttribArray(2);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata.NormalBuffer);
+			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+			// Index buffer
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata.ElementBuffer);
+			glDrawElements(GL_TRIANGLES, rdata.Indices.size(), GL_UNSIGNED_SHORT, (void*)0);
+		}
+	}
+	/*std::vector<std::vector<int>> blocks[3];
+	blocks[0].push_back(std::vector<int>());
+	blocks[0][0].push_back(1);
+	blocks[0][1].push_back(1);
+	blocks[1].push_back(std::vector<int>());
+	blocks[1][0].push_back(1);
+	blocks[1][1].push_back(2);
+    glBindTexture(GL_TEXTURE_2D, rdata.Textures[1]);
+	drawCubes(blocks);*/
+
+	for (float x = 2; x < 14; x++)
+	{
+		for (int z = 2; z < 24; z++)
+		{
+			glm::mat4 ModelMatrix2 = glm::mat4(1.0);
+			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3((((x * 2) * 2)- 8), 2.0f, (((z * 2) * 2) - 8)));
+			glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
+
+			glUniformMatrix4fv(rdata.MatrixID, 1, GL_FALSE, &MVP2[0][0]);
+			glUniformMatrix4fv(rdata.ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
+
+			glEnableVertexAttribArray(0);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata.VertexBuffer);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+			glEnableVertexAttribArray(1);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata.UVBuffer);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+			glEnableVertexAttribArray(2);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata.NormalBuffer);
+			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata.ElementBuffer);
+			glDrawElements(GL_TRIANGLES, rdata.Indices.size(), GL_UNSIGNED_SHORT, (void*)0);
+		}
+	}
+
+    glBindTexture(GL_TEXTURE_2D, rdata.Textures[2]);
+
+    int x, z;
+
+    x = 1;
+    z = 3;
+
+    glm::mat4 ModelMatrix2 = glm::mat4(1.0);
+    ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(x * 2, 2.0f, z * 2));
+    glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
+
+    glUniformMatrix4fv(rdata.MatrixID, 1, GL_FALSE, &MVP2[0][0]);
+    glUniformMatrix4fv(rdata.ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
+
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, rdata.VertexBuffer);
-    glVertexAttribPointer(
-            0,
-            3,
-            GL_FLOAT,
-            GL_FALSE,
-            0,
-            (void *)0
-    );
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, rdata.UVBuffer);
-    glVertexAttribPointer(
-            1,
-            2,
-            GL_FLOAT,
-            GL_FALSE,
-            0,
-            (void *)0
-    );
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-    glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
+    glEnableVertexAttribArray(2);
+    glBindBuffer(GL_ARRAY_BUFFER, rdata.NormalBuffer);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata.ElementBuffer);
+    glDrawElements(GL_TRIANGLES, rdata.Indices.size(), GL_UNSIGNED_SHORT, (void*)0);
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+    glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_MULTISAMPLE);
-    glDisableVertexAttribArray(0);
     return (0);
 }
