@@ -23,7 +23,7 @@ UIElement::UIElement(int _x, int _y, int _w, int _h)
 	rect.w = _w;
 	rect.h = _h;
 
-	memset(vertices, 0, 18);
+	memset(vertices, 0, 18 * sizeof(float));
 
 	//Top Left -- T1
 	vertices[0] = _x;
@@ -37,17 +37,18 @@ UIElement::UIElement(int _x, int _y, int _w, int _h)
 	vertices[6] = static_cast<float> (_x + _w);
 	vertices[7] = static_cast<float> (_y + _h);
 
-	//Top Right -- T2
-	vertices[9] = static_cast<float> (_x + _w);
-	vertices[10] = static_cast<float> (_y);
 
-	//Top Left -- T2
-	vertices[12] = _x;
-	vertices[13] = _y;
+	//Bottom Right -- T2
+	vertices[9] = static_cast<float> (_x + _w);
+	vertices[10] = static_cast<float> (_y + _h);
+
+	//Top Right -- T2
+	vertices[12] = static_cast<float> (_x + _w);
+	vertices[13] = static_cast<float> (_y);
 
 	//Bottom Right --T2
-	vertices[15] = static_cast<float> (_x + _w);
-	vertices[16] = static_cast<float> (_y + _h);
+	vertices[15] = _x;
+	vertices[16] = _y;
 
 	memcpy (&text , &rect, sizeof(SDL_Rect));
 	memset(&mouseDown, 0, sizeof(MouseEvent));
@@ -261,6 +262,11 @@ void				UIElement::setText(SDL_Renderer * ren, const char *text, TTF_Font *font,
 	SDL_Surface *text_surface = TTF_RenderText_Solid(font ,text, col);
 	textTexture = SDL_CreateTextureFromSurface(ren, text_surface);
 	SDL_FreeSurface(text_surface);
+}
+
+float * UIElement::getVertices()
+{
+	return (this->vertices);
 }
 
 void UIElement::onMouseDown()

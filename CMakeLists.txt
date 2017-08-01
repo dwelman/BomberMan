@@ -125,6 +125,7 @@ set(HEADERS
 		${INCLUDE}Entity.hpp
 		${INCLUDE}Vec3.hpp
 		${INCLUDE}UIElement.hpp
+		${INCLUDE}GUI.hpp
 		)
 
 set(COMP_INCL "include/components/")

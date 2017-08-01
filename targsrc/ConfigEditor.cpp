@@ -13,26 +13,28 @@ ConfigEditor::ConfigEditor(std::string const _filename) : filename(_filename)
     std::string key;
     std::string val;
 
-    if (stream.is_open())
-    {
-        while (getline (stream, line))
-        {
-            if (line.find("#") != std::string::npos)
-                line = line.substr(0, line.find("#"));
-            find = line.find("=");
-            if (find != std::string::npos)
-            {
-                key = line.substr(0, find);
-                val =  line.substr(find + 1, line.size() - find);
-                if (key.size() && val.size())
-                {
-                    for (auto it = key.begin(); it < key.end(); it++)
-                        *it = std::toupper(*it);
-                    keys[key] = val;
-                }
-            }
-        }
-    }
+	if (stream.is_open())
+	{
+		while (getline(stream, line))
+		{
+			if (line.find("#") != std::string::npos)
+				line = line.substr(0, line.find("#"));
+			find = line.find("=");
+			if (find != std::string::npos)
+			{
+				key = line.substr(0, find);
+				val = line.substr(find + 1, line.size() - find);
+				if (key.size() && val.size())
+				{
+					for (auto it = key.begin(); it < key.end(); it++)
+						*it = std::toupper(*it);
+					keys[key] = val;
+				}
+			}
+		}
+	}
+	else
+		std::cerr << "Error : " << filename << "not found" << std::endl;
 }
 
 ConfigEditor::ConfigEditor(ConfigEditor const &src)
@@ -88,7 +90,16 @@ keyref const   &keyref::operator=( std::string const &_val)
 
 int                   keyref::to_int()
 {
-    return (std::stoi(ref));
+	int ret = 0;
+	try
+	{
+		ret = std::stoi(ref);
+	}
+	catch (...)
+	{
+		std::cerr << "Warning : " << ref << "could not convert to int, defaulted to 0" << std::endl;
+	}
+	return ret;
 }
 
 std::string           keyref::to_str()

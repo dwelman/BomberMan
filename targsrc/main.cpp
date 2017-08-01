@@ -11,6 +11,7 @@
 #include "main.hpp"
 #include "RenderEngine.hpp"
 #include "GameManager.hpp"
+#include <GUI.hpp>
 
 SDL_Window *initWindow(ConfigEditor &cfg)
 {
@@ -48,14 +49,18 @@ SDL_Window *initWindow(ConfigEditor &cfg)
 
 void gameLoop(SDL_Window *window, renderData rdata)
 {
+	GUIData	guiData;
     SDL_Event e;
+
+	initGui(guiData);
     do
     {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         SDL_PollEvent(&e);
 
-        draw(window, rdata);
-        SDL_GL_SwapWindow(window);
+      draw(window, rdata);
+	  //drawGUI(window, rdata, guiData);
+      SDL_GL_SwapWindow(window);
     }
 	while (e.type != SDL_QUIT);
 }
@@ -63,9 +68,8 @@ void gameLoop(SDL_Window *window, renderData rdata)
 int	main(int argc, char *argv[])
 {
 	renderData rdata;
-    ConfigEditor cfg("resources/settings.cfg");
 
-	SDL_Window	*window = initWindow(cfg);
+	SDL_Window	*window = initWindow(g_cfg);
 
 	rdata = initGlew();
 	if (window == nullptr || rdata.res == -1)
