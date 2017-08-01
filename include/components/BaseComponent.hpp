@@ -9,6 +9,8 @@ enum ComponentMask
     MOVEMENT = 8
 };
 
+#define COMPONENT_MASK_TYPE char
+
 class BaseComponent
 {
 private:

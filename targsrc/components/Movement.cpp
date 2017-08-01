@@ -2,7 +2,7 @@
 
 Movement::Movement() : BaseComponent(MOVEMENT)
 {
-
+    m_velocity = Vec3(0.f, 0.f, 0.f);
 }
 
 Movement::Movement(Movement const &src) : Movement()
@@ -27,21 +27,21 @@ Movement::~Movement()
 
 Movement &Movement::operator=(Movement const &cp)
 {
-    m_velocity = cp.getVelocity();
+    m_velocity = cp.m_velocity;
     return(*this);
 }
 
-Vec3 Movement::getVelocity()const
+Vec3 Movement::GetVelocity()const
 {
     return(m_velocity);
 }
 
-void Movement::setVelocity(Vec3 vel)
+void Movement::SetVelocity(Vec3 vel)
 {
     m_velocity = vel;
 }
 
-void Movement::setVelocity(float x, float y, float z)
+void Movement::SetVelocity(float x, float y, float z)
 {
-    m_velocity = Vec3(x,y,z);
+    m_velocity = Vec3(x, y, z);
 }

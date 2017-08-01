@@ -5,22 +5,23 @@ Render::Render() : BaseComponent(RENDER)
 
 }
 
-Render::Render(Render const &src) : Render()
+Render::Render(std::size_t meshID, std::size_t textureID, bool active) : Render()
 {
-    *this = src;
-}
-
-Render::Render(std::size_t mesh, std::size_t text, bool act) : Render()
-{
-    m_meshID = mesh;
-    m_textureID = text;
-    active = act;
+    m_meshID = meshID;
+    m_textureID = textureID;
+    m_active = active;
 }
 
 Render::Render(std::size_t mesh, std::size_t text) : Render()
 {
     m_meshID = mesh;
     m_textureID = text;
+    m_active = true;
+}
+
+Render::Render(Render const &src) : Render()
+{
+    *this = src;
 }
 
 Render::~Render()

@@ -6,21 +6,19 @@
 
 class Movement : public BaseComponent
 {
-    private:
-        Movement();
+private:
+    Vec3 m_velocity;
 
-        Vec3 m_velocity;
+public:
+    Movement();
+    Movement(Movement const &src);
+    Movement(Vec3 vel);
+    Movement(float x, float y, float z);
+    ~Movement();
 
-    public:
-        Movement(Movement const &src);
-        Movement(Vec3 vel);
-        Movement(float x, float y, float z);
-        ~Movement();
+    Movement    &operator=(Movement const &cp);
 
-        Vec3 getVelocity()const;
-
-        void setVelocity(float x, float y, float z);
-        void setVelocity(Vec3 vel);
-
-        Movement &operator=(Movement const &cp);
+    Vec3        GetVelocity() const;
+    void        SetVelocity(Vec3 vel);
+    void        SetVelocity(float x, float y, float z);
 };

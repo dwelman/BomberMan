@@ -107,7 +107,9 @@ set(COMPSRC "targsrc/components/")
 set(SOURCE_COMP
 		${COMPSRC}Position.cpp
 		${COMPSRC}Collision.cpp
-		${COMPSRC}BaseComponent.cpp)
+		${COMPSRC}BaseComponent.cpp
+		${COMPSRC}Movement.cpp
+		${COMPSRC}Render.cpp)
 
 set(INCLUDE "include/")
 set(COMP_INCL "include/components/")
@@ -125,7 +127,9 @@ set(COMP_INCL "include/components/")
 set(HEADERS_COMP
 		${COMP_INCL}Position.hpp
 		${COMP_INCL}Collision.hpp
-		${COMP_INCL}BaseComponent.hpp)
+		${COMP_INCL}BaseComponent.hpp
+		${COMP_INCL}Movement.hpp
+		${COMP_INCL}Render.hpp)
 
 set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 

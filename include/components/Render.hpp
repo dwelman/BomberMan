@@ -6,27 +6,24 @@
 
 class Render : public BaseComponent
 {
-    private:
-        Render();
+private:
+    std::size_t m_meshID;
+    std::size_t m_textureID;
+    bool        m_active;
 
-        std::size_t m_meshID;
-        std::size_t m_textureID;
-        bool active = true;
+    Render();
+public:
+    Render(std::size_t meshID, std::size_t textureID, bool active);
+    Render(std::size_t meshID, std::size_t textureID);
+    Render(Render const &src);
+    ~Render();
 
-    public:
-        Render(Render const &src);
-        Render(std::size_t mesh, std::size_t text, bool act);
-        Render(std::size_t mesh, std::size_t text);
-        ~Render();
+    Render &operator=(Render const &cp);
 
-        std::size_t getMeshID()const;
-        std::size_t getTextureID()const;
-        bool getActive()const;
-
-        void setMeshID(std::size_t ID);
-        void setTextureID(std::size_t ID);
-        void setActive(bool act);
-
-
-        Render &operator=(Render const &cp);
+    std::size_t GetMeshID() const;
+    std::size_t GetTextureID() const;
+    bool        GetActive() const;
+    void        SetMeshID(std::size_t ID);
+    void        SetTextureID(std::size_t ID);
+    void        SetActive(bool act);
 };
