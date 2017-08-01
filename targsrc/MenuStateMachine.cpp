@@ -1,6 +1,6 @@
 #include "MenuStateMachine.hpp"
 
-MenuStateMachine::MenuStateMachine() : currentState(0)
+MenuStateMachine::MenuStateMachine() : m_currentState(0)
 {
 }
 
@@ -11,10 +11,10 @@ MenuStateMachine::MenuStateMachine(MenuStateMachine const & m)
 
 MenuStateMachine & MenuStateMachine::operator=(MenuStateMachine const & m)
 {
-	this->currentState = m.currentState;
-	for (std::size_t i = m.states.size(); i < m.states.size(); i++)
+	this->m_currentState = m.m_currentState;
+	for (std::size_t i = m.m_states.size(); i < m.m_states.size(); i++)
 	{
-		states.push_back(StateObject(m.states[i]));
+		m_states.push_back(StateObject(m.m_states[i]));
 	}
 	return (*this);
 }
@@ -25,35 +25,35 @@ MenuStateMachine::~MenuStateMachine()
 
 void MenuStateMachine::ActivateStateAt(std::size_t i) const
 {
-	states[i].Activate();
+	m_states[i].Activate();
 }
 
 void MenuStateMachine::ActivateCurrentState() const
 {
-	states[currentState].Activate();
+	m_states[m_currentState].Activate();
 }
 
 void MenuStateMachine::ShiftStateUp()
 {
-	if (currentState == 0)
+	if (m_currentState == 0)
 	{
-		currentState = states.size() - 1;
+		m_currentState = m_states.size() - 1;
 	}
 	else
 	{
-		currentState--;
+		m_currentState--;
 	}
 }
 
 void MenuStateMachine::ShiftStateDown()
 {
-	if (currentState == states.size() - 1)
+	if (m_currentState == m_states.size() - 1)
 	{
-		currentState = 0;
+		m_currentState = 0;
 	}
 	else
 	{
-		currentState++;
+		m_currentState++;
 	}
 }
 
@@ -61,11 +61,11 @@ void MenuStateMachine::AddState(void(*activateFunc)(void))
 {
 	if (activateFunc != nullptr)
 	{
-		states.push_back(StateObject(activateFunc));
+		m_states.push_back(StateObject(activateFunc));
 	}
 }
 
 std::size_t MenuStateMachine::GetActiveState() const
 {
-    return (currentState);
+    return (m_currentState);
 }

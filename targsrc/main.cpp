@@ -4,11 +4,13 @@
 		*Dean du Toit
 		*Reyno van der Westhuizen
 		*Michael Eckhardt
+		*Luke Hamlyn
 	Copyright (c) 2017
 */
 
 #include "main.hpp"
 #include "RenderEngine.hpp"
+#include "GameManager.hpp"
 
 SDL_Window *initWindow(ConfigEditor &cfg)
 {

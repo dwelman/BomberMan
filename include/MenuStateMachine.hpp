@@ -6,6 +6,9 @@
 
 class MenuStateMachine
 {
+private:
+	std::size_t					m_currentState;
+	std::vector<StateObject>	m_states;
 public:
 	MenuStateMachine();
 	MenuStateMachine(MenuStateMachine const &m);
@@ -17,7 +20,4 @@ public:
 	void						ShiftStateDown();
 	void						AddState(void(*activateFunc)(void));
     std::size_t                 GetActiveState() const;
-private:
-	std::size_t					currentState;
-	std::vector<StateObject>	states;
 };
