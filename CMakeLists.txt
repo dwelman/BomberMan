@@ -102,8 +102,10 @@ set(SOURCE
 		${TARGSRC}GameManager.cpp
 		${TARGSRC}Entity.cpp
 		${TARGSRC}Vec3.cpp
-		${TARGSRC}DrawGUI.cpp
-		${TARGSRC}UIElement.cpp)
+		${TARGSRC}GUI.cpp
+		${TARGSRC}UIElement.cpp
+		${TARGSRC}GUIRenderer.cpp
+		)
 
 set(COMPSRC "targsrc/components/")
 set(SOURCE_COMP
@@ -111,7 +113,8 @@ set(SOURCE_COMP
 		${COMPSRC}Collision.cpp
 		${COMPSRC}BaseComponent.cpp
 		${COMPSRC}Movement.cpp
-		${COMPSRC}Render.cpp)
+		${COMPSRC}Render.cpp
+		)
 
 set(INCLUDE "include/")
 set(COMP_INCL "include/components/")
@@ -126,6 +129,7 @@ set(HEADERS
 		${INCLUDE}Vec3.hpp
 		${INCLUDE}UIElement.hpp
 		${INCLUDE}GUI.hpp
+		${INCLUDE}GUIRenderer.hpp
 		)
 
 set(COMP_INCL "include/components/")

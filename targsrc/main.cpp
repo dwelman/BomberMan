@@ -49,18 +49,18 @@ SDL_Window *initWindow(ConfigEditor &cfg)
 
 void gameLoop(SDL_Window *window, renderData rdata)
 {
-	GUIData	guiData;
+	GUIRenderer	guiRenderer("shaders/gui2D_vertex.glsl", "shaders/gui2D_fragment.glsl");
     SDL_Event e;
 
-	initGui(guiData);
+	initGui(guiRenderer);
     do
     {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         SDL_PollEvent(&e);
 
-      draw(window, rdata);
-	  //drawGUI(window, rdata, guiData);
-      SDL_GL_SwapWindow(window);
+		draw(window, rdata);
+		//guiRenderer.RenderGUI();
+		SDL_GL_SwapWindow(window);
     }
 	while (e.type != SDL_QUIT);
 }
