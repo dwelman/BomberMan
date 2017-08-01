@@ -2,7 +2,7 @@
 
 //External
 #include <GL/glew.h>
-#ifdef  WIN32
+#ifdef  _WIN32
 # include <Windows.h>
 #include <gl/glu.h>
 #endif 
