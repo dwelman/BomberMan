@@ -3,6 +3,8 @@ cmake_minimum_required (VERSION 3.5)
 set(PROJECT_NAME "Bomberman")
 project (${PROJECT_NAME})
 
+set(CMAKE_CXX_FLAGS "-std=c++11")
+
 set(cmake_build_type debug)
 
 set (PLATFORM ${CMAKE_SYSTEM_NAME})
@@ -96,7 +98,7 @@ set(SOURCE
 		${TARGSRC}MenuStateMachine.cpp
 		${TARGSRC}ConfigEditor.cpp
 		${TARGSRC}StateObject.cpp
-		${TARGSRC}VBOIndexer.cpp)
+		${TARGSRC}VBOIndexer.cpp
 		${TARGSRC}GameManager.cpp
 		${TARGSRC}Entity.cpp
 		${TARGSRC}Vec3.cpp)
@@ -104,7 +106,8 @@ set(SOURCE
 set(COMPSRC "targsrc/components/")
 set(SOURCE_COMP
 		${COMPSRC}Position.cpp
-		${COMPSRC}Collision.cpp)
+		${COMPSRC}Collision.cpp
+		${COMPSRC}BaseComponent.cpp)
 
 set(INCLUDE "include/")
 set(COMP_INCL "include/components/")
@@ -113,7 +116,7 @@ set(HEADERS
 		${INCLUDE}MenuStateMachine.hpp
 		${INCLUDE}RenderEngine.hpp
 		${INCLUDE}ConfigEditor.hpp
-		${INCLUDE}VBOIndexer.hpp)
+		${INCLUDE}VBOIndexer.hpp
 		${INCLUDE}GameManager.hpp
 		${INCLUDE}Entity.hpp
 		${INCLUDE}Vec3.hpp)
@@ -121,7 +124,8 @@ set(HEADERS
 set(COMP_INCL "include/components/")
 set(HEADERS_COMP
 		${COMP_INCL}Position.hpp
-		${COMP_INCL}Collision.hpp)
+		${COMP_INCL}Collision.hpp
+		${COMP_INCL}BaseComponent.hpp)
 
 set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 

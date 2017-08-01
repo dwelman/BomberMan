@@ -2,8 +2,9 @@
 
 #include "Vec3.hpp"
 #include "components/Position.hpp"
+#include "components/BaseComponent.hpp"
 
-class Collision
+class Collision : public BaseComponent
 {
 private:
     Vec3    m_colliderSize;

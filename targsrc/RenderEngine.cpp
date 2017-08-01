@@ -343,7 +343,7 @@ renderData initGlew()
 	GLuint tx = loadBMP("textures/ore2.bmp", rdata.Textures[0]);
     tx = loadBMP("textures/Cobblestone.bmp", rdata.Textures[1]);
     tx = loadBMP("textures/ore.bmp", rdata.Textures[2]);
-    rdata.objRes = loadOBJ("obj/cube.obj", rdata.objVertices, rdata.objUVS, rdata.objNormals);
+    rdata.objRes = loadOBJ("obj/suzanne.obj", rdata.objVertices, rdata.objUVS, rdata.objNormals);
 	rdata.MatrixID = glGetUniformLocation(rdata.shaders, "MVP");
 	rdata.ViewMatrixID = glGetUniformLocation(rdata.shaders, "V");
 	rdata.ModelMatrixID = glGetUniformLocation(rdata.shaders, "M");

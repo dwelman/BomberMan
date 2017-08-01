@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Vec3.hpp"
+#include "components/BaseComponent.hpp"
 
-class Position
+class Position : public BaseComponent
 {
 private:
     Vec3    m_pos;

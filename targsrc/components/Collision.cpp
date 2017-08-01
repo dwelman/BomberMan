@@ -1,25 +1,36 @@
 #include "components/Collision.hpp"
 #include <iostream>
 
-Collision::Collision(Vec3 const &colliderSize) : m_colliderSize(colliderSize), m_checkCollision(false)
+Collision::Collision() : BaseComponent(COLLISION)
 {
 
 }
 
-Collision::Collision(Vec3 const & colliderSize, bool checkCollision) : m_colliderSize(colliderSize), m_checkCollision(checkCollision)
+Collision::Collision(Vec3 const &colliderSize) : Collision()
 {
+    m_colliderSize = colliderSize;
+    m_checkCollision = false;
 }
 
-Collision::Collision(float x, float y, float z) : m_colliderSize(x, y, z), m_checkCollision(false)
+Collision::Collision(Vec3 const & colliderSize, bool checkCollision) : Collision()
 {
-
+    m_colliderSize = colliderSize;
+    m_checkCollision = checkCollision;
 }
 
-Collision::Collision(float x, float y, float z, bool checkCollision) : m_colliderSize(x, y, z), m_checkCollision(checkCollision)
+Collision::Collision(float x, float y, float z) : Collision()
 {
+    m_colliderSize = Vec3(x, y, z);
+    m_checkCollision = false;
 }
 
-Collision::Collision(Collision const &c)
+Collision::Collision(float x, float y, float z, bool checkCollision) : Collision()
+{
+    m_colliderSize = Vec3(x, y, z);
+    m_checkCollision = checkCollision;
+}
+
+Collision::Collision(Collision const &c) : Collision()
 {
     *this = c;
 }

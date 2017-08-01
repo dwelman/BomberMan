@@ -1,21 +1,21 @@
 #include "components/Position.hpp"
 
-Position::Position()
+Position::Position() : BaseComponent(POSITION)
 {
 
 }
 
-Position::Position(Vec3 const &v) : m_pos(v)
+Position::Position(Vec3 const &v) : Position()
 {
-
+    m_pos = v;
 }
 
-Position::Position(float x, float y, float z) : m_pos(x, y, z)
+Position::Position(float x, float y, float z) : Position()
 {
-
+    m_pos = Vec3(x, y, z);
 }
 
-Position::Position(Position const &p)
+Position::Position(Position const &p) : Position()
 {
     *this = p;
 }
