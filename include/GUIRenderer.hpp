@@ -24,6 +24,7 @@ public:
 	GUIRenderer(const char * vertex_file_path, const char * fragment_file_path);
 	void		RenderGUI();
 	void		AddUIElement(UIElement *element);
+	void 		checkEvents(SDL_Event &e);
 	static void Ortho2D(float* mat, float left, float right, float bottom, float top);
 
 };
