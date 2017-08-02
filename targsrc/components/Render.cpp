@@ -49,17 +49,17 @@ bool Render::getActive()const
     return active;
 }
 
-void Render::setMeshID(std::size_t mesh)
+void Render::setMeshID(std::size_t meshID)
 {
-    m_meshID = mesh;
+    m_meshID = meshID;
 }
 
-void Render::setTextureID(std::size_t text)
+void Render::setTextureID(std::size_t textureID)
 {
-    m_textureID = text;
+    m_textureID = textureID;
 }
 
-void Render::setActive(bool act)
+void Render::setActive(bool active)
 {
-    active = act;
+    m_active = active;
 }

@@ -23,7 +23,7 @@ public:
     std::size_t GetMeshID() const;
     std::size_t GetTextureID() const;
     bool        GetActive() const;
-    void        SetMeshID(std::size_t ID);
-    void        SetTextureID(std::size_t ID);
-    void        SetActive(bool act);
+    void        SetMeshID(std::size_t meshID);
+    void        SetTextureID(std::size_t textureID);
+    void        SetActive(bool active);
 };
