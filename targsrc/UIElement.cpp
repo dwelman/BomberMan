@@ -23,38 +23,14 @@ UIElement::UIElement(int _x, int _y, int _w, int _h)
 	rect.w = _w;
 	rect.h = _h;
 
-	memset(vertices, 0, 18 * sizeof(float));
-
-	//Top Left -- T1
-	vertices[0] = _x;
-	vertices[1] = _y;
-
-	//Bottom Left
-	vertices[3] = static_cast<float> (_x);
-	vertices[4] = static_cast<float> (_y + _h);
-
-	//Bottom Right
-	vertices[6] = static_cast<float> (_x + _w);
-	vertices[7] = static_cast<float> (_y + _h);
-
-
-	//Bottom Right -- T2
-	vertices[9] = static_cast<float> (_x + _w);
-	vertices[10] = static_cast<float> (_y + _h);
-
-	//Top Right -- T2
-	vertices[12] = static_cast<float> (_x + _w);
-	vertices[13] = static_cast<float> (_y);
-
-	//Bottom Right --T2
-	vertices[15] = _x;
-	vertices[16] = _y;
+	
 
 	memcpy (&text , &rect, sizeof(SDL_Rect));
 	memset(&mouseDown, 0, sizeof(MouseEvent));
 	memset(&mouseUp, 0, sizeof(MouseEvent));
 	memset(&mouseMove, 0, sizeof(MouseEvent));
 	memset(&mouseLeave, 0, sizeof(MouseEvent));
+
 }
 
 UIElement::UIElement(const UIElement & src)
@@ -155,7 +131,6 @@ void UIElement::draw(SDL_Renderer *ren)
 {
 	if (visible)
 	{
-
 		if (texture != nullptr)
 		{
 			SDL_RenderCopy(ren, texture, NULL, &rect);
@@ -174,13 +149,6 @@ void UIElement::draw(SDL_Renderer *ren)
 			}
 			SDL_SetRenderDrawColor(ren, 42, 42, 42, 42);
 		}
-	}
-}
-
-void UIElement::drawGL()
-{
-	if (visible)
-	{
 	}
 }
 
@@ -257,6 +225,8 @@ void			UIElement::setTexture(SDL_Texture *_texture)
 
 }
 
+
+
 void				UIElement::setText(SDL_Renderer * ren, const char *text, TTF_Font *font, SDL_Color col)
 {
 	SDL_Surface *text_surface = TTF_RenderText_Solid(font ,text, col);
@@ -264,10 +234,6 @@ void				UIElement::setText(SDL_Renderer * ren, const char *text, TTF_Font *font,
 	SDL_FreeSurface(text_surface);
 }
 
-float * UIElement::getVertices()
-{
-	return (this->vertices);
-}
 
 void UIElement::onMouseDown()
 {
