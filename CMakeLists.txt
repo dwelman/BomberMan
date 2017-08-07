@@ -105,7 +105,6 @@ set(SOURCE
 		${TARGSRC}GUI.cpp
 		${TARGSRC}UIElement.cpp
 		${TARGSRC}GUIRenderer.cpp
-		${TARGSRC}LoadImage.cpp
 		)
 
 set(COMPSRC "targsrc/components/")

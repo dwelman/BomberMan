@@ -3,13 +3,6 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <iostream>
-#include <GL/glew.h>
-
-SDL_Surface *LoadImageToSurface(std::string file, SDL_Renderer *renderer);
-
-SDL_Texture *LoadImageToTexture(std::string file, SDL_Renderer *renderer);
-
-GLuint		*LoadImageGL(std::string file, SDL_Renderer *renderer, GLuint &texture);
 
 class UIElement;
 
@@ -30,7 +23,7 @@ class UIElement
 private:
 	SDL_Rect					rect;
 	SDL_Rect					text;
-
+	float 						vertices[18];
 	MouseEvent					mouseDown,
 								mouseUp,
 								mouseMove,
@@ -48,7 +41,6 @@ public:
 	SDL_Texture					*texture;
 	SDL_Texture					*textTexture;
 
-
 	UIElement();
 	UIElement(int _x, int _y, int w, int h);
 	UIElement(const UIElement &src);
@@ -58,6 +50,7 @@ public:
 	bool		checkEvent(const SDL_Event &e, bool exec = true);
 	bool		inRange(int x, int y);
 	void		draw(SDL_Renderer *ren);
+	void		drawGL();
 	void		show();
 	void		hide();
 	void		enable();
@@ -105,7 +98,7 @@ public:
 	void				setColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 	void				setTexture(SDL_Texture *_texture);
 	void				setText(SDL_Renderer * ren, const char *text, TTF_Font *font, SDL_Color col);
-
+	float				*getVertices();
 	virtual void		onMouseDown();
 	virtual void		onMouseUp();
 	virtual void		onMouseMove();

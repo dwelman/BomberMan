@@ -20,9 +20,9 @@
 #include <ConfigEditor.hpp>
 
 
+void	startGUI(SDL_Window *win);
+
 int     draw(SDL_Window *window, renderData rdata);
 
 
-
 static ConfigEditor g_cfg("resources/settings.cfg");
-
