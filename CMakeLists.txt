@@ -114,6 +114,7 @@ set(SOURCE_COMP
 		${COMPSRC}BaseComponent.cpp
 		${COMPSRC}Movement.cpp
 		${COMPSRC}Render.cpp
+		${COMPSRC}PlayerController.cpp
 		)
 
 set(INCLUDE "include/")
@@ -138,7 +139,8 @@ set(HEADERS_COMP
 		${COMP_INCL}Collision.hpp
 		${COMP_INCL}BaseComponent.hpp
 		${COMP_INCL}Movement.hpp
-		${COMP_INCL}Render.hpp)
+		${COMP_INCL}Render.hpp
+		${COMP_INCL}PlayerController.hpp)
 
 set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
