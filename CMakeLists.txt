@@ -117,6 +117,11 @@ set(SOURCE_COMP
 		${COMPSRC}PlayerController.cpp
 		)
 
+set(SYSSOURCE "targsrc/systems/")
+set(SOURCE_SYS
+		${SYSSOURCE}CollisionSystem.cpp
+		)
+
 set(INCLUDE "include/")
 set(COMP_INCL "include/components/")
 set(HEADERS
@@ -142,13 +147,18 @@ set(HEADERS_COMP
 		${COMP_INCL}Render.hpp
 		${COMP_INCL}PlayerController.hpp)
 
+set(SYS_INCL "include/systems/")
+set(HEADERS_SYS
+		${SYS_INCL}CollisionSystem.hpp
+		)
+
 set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 include_directories(${INCLUDE} ${SDL_INCLUDE} ${SDL_IMAGE_INCLUDE} ${SDL_TTF_INCLUDE} ${SDL_MIXER_INCLUDE} ${GLEW_INCLUDE} ${GLM_INCLUDE} ${OPENGL_INCLUDE})
 
 link_directories(${SDL_LIB_DIR} ${SDL_TTF_LIB_DIR} ${SDL_IMAGE_LIB_DIR}  ${SDL_MIXER_LIB_DIR} ${GLEW_LIB_DIR})
 
-add_executable(${PROJECT_NAME} ${SOURCE} ${HEADERS})
+add_executable(${PROJECT_NAME} ${SOURCE} ${HEADERS} ${SOURCE_COMP} ${SOURCE_SYS} ${HEADERS_COMP} ${HEADERS_SYS})
 
 target_link_libraries(${PROJECT_NAME} SDL2 SDL2_ttf SDL2_image ${GLEW_NAME} SDL2_mixer ${OPENGL_gl_LIBRARY})
 

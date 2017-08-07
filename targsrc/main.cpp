@@ -70,7 +70,6 @@ int	main(int argc, char *argv[])
 	renderData rdata;
 
 	SDL_Window	*window = initWindow(g_cfg);
-
 	rdata = initGlew();
 	if (window == nullptr || rdata.res == -1)
 		return (-1);

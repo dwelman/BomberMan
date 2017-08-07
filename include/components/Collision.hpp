@@ -27,6 +27,5 @@ public:
     void        SetColliderSize(Vec3 const &v);
 	bool		GetCheckCollision() const;
 	void		SetCheckCollision(bool checkCollision);
-    bool        CheckCollision(Position const &thisPos, Position const &otherPos, Collision const &otherCollide) const;
 };
 

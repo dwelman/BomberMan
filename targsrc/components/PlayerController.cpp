@@ -1,4 +1,4 @@
-#include "PlayerController.hpp"
+#include "components/PlayerController.hpp"
 
 PlayerController::PlayerController() : BaseComponent(PLAYERCONTROLLER)
 {

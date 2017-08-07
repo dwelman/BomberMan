@@ -6,7 +6,8 @@ enum ComponentMask
     POSITION = 1,
     COLLISION = 2,
     RENDER = 4,
-    MOVEMENT = 8
+    MOVEMENT = 8,
+    PLAYERCONTROLLER = 16
 };
 
 #define COMPONENT_MASK_TYPE char
@@ -23,6 +24,7 @@ public:
     ~BaseComponent();
 
     BaseComponent   &operator=(BaseComponent const &c);
+
     ComponentMask   GetComponentType() const;
     void            SetComponentType(ComponentMask mask);
 };

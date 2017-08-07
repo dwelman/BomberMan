@@ -5,11 +5,12 @@
 
 class PlayerController : public BaseComponent
 {
-    public:
-        PlayerController();
-        PlayerController(PlayerController const &src);
-        ~PlayerController();
+private:
+
+public:
+    PlayerController();
+    PlayerController(PlayerController const &src);
+    ~PlayerController();
 
     PlayerController    &operator=(PlayerController const &cp);
-
 };

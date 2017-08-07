@@ -2,10 +2,6 @@
 
 Entity::Entity()
 {
-    //This variable tracks the current next available ID, which will increase when a new entity is created
-    static std::size_t m_currentID = 0;
-    m_ID = m_currentID;
-    m_currentID++;
     m_componentFlags = 0;
 }
 
@@ -41,7 +37,43 @@ void Entity::SetComponentFlags(COMPONENT_MASK_TYPE flags)
     m_componentFlags = flags;
 }
 
-std::size_t Entity::GetID() const
+void Entity::RegisterComponent(std::size_t componentID, ComponentMask componentType)
 {
-    return (m_ID);
+    auto iter = m_childComponents.find(componentID);
+    if (iter == m_childComponents.end())
+    {
+        m_childComponents.emplace(std::make_pair(componentID, componentType));
+    }
+    else
+    {
+        m_childComponents[componentID] = componentType;
+    }
+}
+
+void Entity::DeregisterComponent(std::size_t componentID)
+{
+    auto iter = m_childComponents.find(componentID);
+    if (iter != m_childComponents.end())
+    {
+        m_childComponents.erase(iter);
+    }
+}
+
+//This will return the first/only component found of the type given
+std::size_t Entity::GetComponentOfType(COMPONENT_MASK_TYPE flag)
+{
+    auto iter = m_childComponents.begin();
+    while (iter != m_childComponents.end())
+    {
+        if (iter->second == flag)
+        {
+            return (iter->first);
+        }
+    }
+    throw ChildComponentNotFoundException();
+}
+
+const char *Entity::ChildComponentNotFoundException::what() const throw()
+{
+    return ("Child component not found in entity");
 }

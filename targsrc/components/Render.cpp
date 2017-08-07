@@ -34,32 +34,32 @@ Render &Render::operator=(Render const &cp)
     return(*this);
 }
 
-std::size_t Render::getMeshID()const
+std::size_t Render::GetMeshID()const
 {
-    return m_meshID;
+    return (m_meshID);
 }
 
-std::size_t Render::getTextureID()const
+std::size_t Render::GetTextureID()const
 {
-    return m_textureID;
+    return (m_textureID);
 }
 
-bool Render::getActive()const
+bool Render::GetActive()const
 {
-    return active;
+    return (m_active);
 }
 
-void Render::setMeshID(std::size_t meshID)
+void Render::SetMeshID(std::size_t meshID)
 {
     m_meshID = meshID;
 }
 
-void Render::setTextureID(std::size_t textureID)
+void Render::SetTextureID(std::size_t textureID)
 {
     m_textureID = textureID;
 }
 
-void Render::setActive(bool active)
+void Render::SetActive(bool active)
 {
     m_active = active;
 }
