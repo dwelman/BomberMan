@@ -22,8 +22,8 @@ Entity::~Entity()
 
 Entity &Entity::operator=(Entity const &e)
 {
-    //ID is set upon creation and never changed, therefore it is not copied
     this->m_componentFlags = e.m_componentFlags;
+    this->m_childComponents = e.m_childComponents;
     return (*this);
 }
 

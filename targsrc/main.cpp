@@ -68,6 +68,7 @@ void gameLoop(SDL_Window *window, renderData rdata)
 int	main(int argc, char *argv[])
 {
 	renderData rdata;
+	GameManager manager;
 
 	SDL_Window	*window = initWindow(g_cfg);
 	rdata = initGlew();

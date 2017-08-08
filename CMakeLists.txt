@@ -120,6 +120,7 @@ set(SOURCE_COMP
 set(SYSSOURCE "targsrc/systems/")
 set(SOURCE_SYS
 		${SYSSOURCE}CollisionSystem.cpp
+		${SYSSOURCE}MovementSystem.cpp
 		)
 
 set(INCLUDE "include/")
@@ -150,6 +151,7 @@ set(HEADERS_COMP
 set(SYS_INCL "include/systems/")
 set(HEADERS_SYS
 		${SYS_INCL}CollisionSystem.hpp
+		${SYS_INCL}MovementSystem.hpp
 		)
 
 set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})

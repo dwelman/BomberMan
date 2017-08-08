@@ -21,7 +21,7 @@ private:
 public:
     BaseComponent(ComponentMask mask);
     BaseComponent(BaseComponent const &c);
-    ~BaseComponent();
+    virtual ~BaseComponent() = 0;
 
     BaseComponent   &operator=(BaseComponent const &c);
 
