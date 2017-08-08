@@ -12,6 +12,10 @@
 #include <SDL_mixer.h>
 #include <SDL_opengl.h>
 #include <glm/glm.hpp>
+#include <CEGUI/CEGUI.h>
+#include <CEGUI/RendererModules/OpenGL/GLRenderer.h>
+
+//Standard
 #include <iostream>
 
 //Internal

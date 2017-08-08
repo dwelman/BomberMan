@@ -43,6 +43,23 @@ if (WIN32)
 
 	#OPENGL
 	find_package(OpenGL)
+	
+	#CEGUI
+	set(CEGUI_LIBS	CEGUIBase-0_Static
+					CEGUICommonDialogs-0_Static 
+					CEGUICoreWindowRendererSet_Static 
+					CEGUIExpatParser_Static 
+					CEGUIOpenGLRenderer-0_Static
+					CEGUISILLYImageCodec_Static)
+					
+	set(CEGUI_LIBS_DYNAMIC	CEGUIBase-0
+					CEGUICommonDialogs-0 
+					CEGUICoreWindowRendererSet
+					CEGUIExpatParser
+					CEGUIOpenGLRenderer-0
+					CEGUISILLYImageCodec)
+					
+	set(CEGUI_LIB_PATH	${CMAKE_CURRENT_SOURCE_DIR}/libs/${PLATFORM}/cegui)
 else()
 	set(BREW ~/.brew)
 	set(BREW_INCLUDE ${BREW}/include)
@@ -105,7 +122,8 @@ set(SOURCE
 		${TARGSRC}GUI.cpp
 		${TARGSRC}UIElement.cpp
 		${TARGSRC}GUIRenderer.cpp
-		${TARGSRC}Clock.cpp
+		${TARGSRC}Clock.cpp		
+		${TARGSRC}InjectInput.cpp
 		)
 
 set(COMPSRC "targsrc/components/")
@@ -162,11 +180,11 @@ set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 include_directories(${INCLUDE} ${SDL_INCLUDE} ${SDL_IMAGE_INCLUDE} ${SDL_TTF_INCLUDE} ${SDL_MIXER_INCLUDE} ${GLEW_INCLUDE} ${GLM_INCLUDE} ${OPENGL_INCLUDE})
 
-link_directories(${SDL_LIB_DIR} ${SDL_TTF_LIB_DIR} ${SDL_IMAGE_LIB_DIR}  ${SDL_MIXER_LIB_DIR} ${GLEW_LIB_DIR})
+link_directories(${SDL_LIB_DIR} ${SDL_TTF_LIB_DIR} ${SDL_IMAGE_LIB_DIR}  ${SDL_MIXER_LIB_DIR} ${GLEW_LIB_DIR} ${CEGUI_LIB_PATH})
 
 add_executable(${PROJECT_NAME} ${SOURCE} ${HEADERS} ${SOURCE_COMP} ${SOURCE_SYS} ${HEADERS_COMP} ${HEADERS_SYS})
 
-target_link_libraries(${PROJECT_NAME} SDL2 SDL2_ttf SDL2_image ${GLEW_NAME} SDL2_mixer ${OPENGL_gl_LIBRARY})
+target_link_libraries(${PROJECT_NAME} SDL2 SDL2_ttf SDL2_image ${GLEW_NAME} SDL2_mixer ${OPENGL_gl_LIBRARY} ${CEGUI_LIBS_DYNAMIC})
 
 if (WIN32)
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD				# Adds a post-build event to copy SDL dll to bin dir
@@ -190,8 +208,20 @@ if (WIN32)
 			"${SDL_MIXER_LIB_DIR}/libvorbis-0.dll" "${SDL_MIXER_LIB_DIR}/libvorbisfile-3.dll" "${SDL_MIXER_LIB_DIR}/smpeg2.dll"
 			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
 
-	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD				# Adds a post-build event to copy SDL dll to bin dir
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			"${GLEW_LIB_DIR}/glew32.dll"	#input-file
+			"${GLEW_LIB_DIR}/glew32.dll"
 			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+			
+	#CEGUI + Dependancies
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+		"${CEGUI_LIB_PATH}/CEGUIBase-0.dll" "${CEGUI_LIB_PATH}/CEGUICommonDialogs-0.dll" "${CEGUI_LIB_PATH}/CEGUICoreWindowRendererSet.dll" 
+		"${CEGUI_LIB_PATH}/CEGUIOpenGLRenderer-0.dll" "${CEGUI_LIB_PATH}/CEGUISILLYImageCodec.dll"
+		"${CEGUI_LIB_PATH}/freetype_d.dll" "${CEGUI_LIB_PATH}/glew_d.dll" "${CEGUI_LIB_PATH}/glfw_d.dll" "${CEGUI_LIB_PATH}/jpeg_d.dll" "${CEGUI_LIB_PATH}/libexpat_d.dll" 
+		"${CEGUI_LIB_PATH}/libpng_d.dll" "${CEGUI_LIB_PATH}/pcre_d.dll" "${CEGUI_LIB_PATH}/SILLY_d.dll" "${CEGUI_LIB_PATH}/zlib_d.dll"
+		#"${CEGUI_LIB_PATH}/freetype.dll" "${CEGUI_LIB_PATH}/glew.dll" "${CEGUI_LIB_PATH}/glfw.dll" "${CEGUI_LIB_PATH}/jpeg.dll" "${CEGUI_LIB_PATH}/libexpat.dll" 
+		#"${CEGUI_LIB_PATH}/libpng.dll" "${CEGUI_LIB_PATH}/pcre.dll" "${CEGUI_LIB_PATH}/SILLY.dll" "${CEGUI_LIB_PATH}/zlib.dll"
+		$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+		
 endif()
