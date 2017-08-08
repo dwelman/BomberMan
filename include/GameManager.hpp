@@ -6,6 +6,7 @@
 
 #include "Entity.hpp"
 #include "components/BaseComponent.hpp"
+#include "components/PlayerController.hpp"
 #include "systems/CollisionSystem.hpp"
 #include "systems/MovementSystem.hpp"
 
@@ -15,8 +16,10 @@ private:
 	std::vector<Entity>			            m_entities;
 	std::map<std::size_t, BaseComponent*>	m_components;
 	std::size_t 				            m_currentComponentID;
+    float                                   m_deltaTime;
 
-	void		checkCollisions(Collision &c, Position &p, std::size_t ID);
+	void		handleCollisions(Collision &c, Position &p, std::size_t ID);
+    void        handleMovement(Position &p, Movement &m);
     void        createEntity(std::string entityType);
 public:
 	GameManager();

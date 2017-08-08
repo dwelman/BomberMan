@@ -21,7 +21,7 @@ GameManager & GameManager::operator=(GameManager const & gm)
 	return (*this);
 }
 
-void	GameManager::checkCollisions(Collision &c, Position &p, std::size_t ID)
+void	GameManager::handleCollisions(Collision &c, Position &p, std::size_t ID)
 {
 	for (std::size_t i = 0; i < m_entities.size(); i++)
 	{
@@ -50,6 +50,17 @@ void	GameManager::checkCollisions(Collision &c, Position &p, std::size_t ID)
 	}
 }
 
+
+void GameManager::handleMovement(Position &p, Movement &m)
+{
+    Vec3 newPos = p.GetPosition();
+    float newX = newPos.GetX();
+    float newY = newPos.GetY();
+    float newZ = newPos.GetZ();
+
+    newX += m.GetDirection().GetX() * m.GetSpeed() * m_deltaTime;
+}
+
 /*
  * This factory method exists within the game manager as it is closely tied to the entity and component
  * lists within this class, therefore it makes the most sense to keep it within this class
@@ -65,8 +76,9 @@ void GameManager::createEntity(std::string entityType)
         entity.RegisterComponent(m_currentComponentID, COLLISION);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
         entity.RegisterComponent(m_currentComponentID, MOVEMENT);
-        m_components.emplace(std::make_pair(m_currentComponentID++, new Movement(0, 0, 0)));
-        //m_components.emplace(std::make_pair(m_currentComponentID++, new ));
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Movement(0, 0, 0, 10)));
+        entity.RegisterComponent(m_currentComponentID, PLAYERCONTROLLER);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new PlayerController()));
     }
     else if (entityType == "indestructible_wall")
     {
@@ -134,7 +146,7 @@ void 	GameManager::Update()
                     std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
                     Movement *movement = dynamic_cast<Movement *>(m_components[movementID]);
                     Position *position = dynamic_cast<Position *>(m_components[positionID]);
-                    //Do something with movement
+                    handleMovement(*position, *movement);
                 }
                 catch (std::exception &e)
                 {
@@ -154,7 +166,7 @@ void 	GameManager::Update()
                     Position *position = dynamic_cast<Position *>(m_components[positionID]);
                     if (collision->GetCheckCollision() == true)
                     {
-                        checkCollisions(*collision, *position, i);
+                        handleCollisions(*collision, *position, i);
                     }
                 }
                 catch (std::exception &e)
