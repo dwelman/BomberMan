@@ -11,6 +11,7 @@
 #include "main.hpp"
 #include "RenderEngine.hpp"
 #include "GameManager.hpp"
+#include "Clock.hpp"
 #include <GUI.hpp>
 
 SDL_Window *initWindow(ConfigEditor &cfg)
@@ -51,12 +52,19 @@ void gameLoop(SDL_Window *window, renderData rdata)
 {
 	GUIRenderer	guiRenderer("shaders/gui2D_vertex.glsl", "shaders/gui2D_fragment.glsl");
     SDL_Event e;
+	GameManager manager;
 
 	initGui(guiRenderer);
     do
     {
+		Clock::Instance().Tick();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         SDL_PollEvent(&e);
+
+		if (manager.Update() == true)
+		{
+			break;
+		}
 
 		draw(window, rdata);
 		//guiRenderer.RenderGUI();
@@ -68,7 +76,6 @@ void gameLoop(SDL_Window *window, renderData rdata)
 int	main(int argc, char *argv[])
 {
 	renderData rdata;
-	GameManager manager;
 
 	SDL_Window	*window = initWindow(g_cfg);
 	rdata = initGlew();

@@ -48,6 +48,7 @@ void Entity::RegisterComponent(std::size_t componentID, ComponentMask componentT
     {
         m_childComponents[componentID] = componentType;
     }
+	m_componentFlags |= componentType;
 }
 
 void Entity::DeregisterComponent(std::size_t componentID)
@@ -69,6 +70,7 @@ std::size_t Entity::GetComponentOfType(COMPONENT_MASK_TYPE flag)
         {
             return (iter->first);
         }
+		iter++;
     }
     throw ChildComponentNotFoundException();
 }

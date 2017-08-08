@@ -1,8 +1,12 @@
 #include "GameManager.hpp"
+#include "Clock.hpp"
+
+#include <iostream>
 
 GameManager::GameManager()
 {
 	m_currentComponentID = 0;
+	m_deltaTime = 0.35f;
     createEntity("player");
 }
 
@@ -59,6 +63,9 @@ void GameManager::handleMovement(Position &p, Movement &m)
     float newZ = newPos.GetZ();
 
     newX += m.GetDirection().GetX() * m.GetSpeed() * m_deltaTime;
+	newY += m.GetDirection().GetY() * m.GetSpeed() * m_deltaTime;
+	newZ += m.GetDirection().GetZ() * m.GetSpeed() * m_deltaTime;
+	p.SetPosition(Vec3(newX, newY, newZ));
 }
 
 /*
@@ -111,8 +118,19 @@ void GameManager::createEntity(std::string entityType)
     m_entities.push_back(Entity(entity));
 }
 
-void 	GameManager::Update()
+bool 	GameManager::Update()
 {
+	m_deltaTime = Clock::Instance().GetDeltaTime();
+	static int cycles = 0;
+	Movement *m = dynamic_cast<Movement*>(m_components[m_entities[0].GetComponentOfType(MOVEMENT)]);
+	m->SetDirection(1, 0, 0);
+	Position *p = dynamic_cast<Position*>(m_components[m_entities[0].GetComponentOfType(POSITION)]);
+	std::cout << "X: " << p->GetPosition().GetX() << " Y: " << p->GetPosition().GetY() << " Z: " << p->GetPosition().GetZ() << std::endl;
+	if (cycles == 5)
+	{
+		return (true);
+	}
+	cycles++;
 	for (std::size_t i = 0; i < m_entities.size(); i++)
 	{
         //Check each component for the relevant flags
@@ -175,5 +193,6 @@ void 	GameManager::Update()
                 }
             }
         }
+		return (false);
 	}
 }

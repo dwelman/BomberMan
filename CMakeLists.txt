@@ -105,6 +105,7 @@ set(SOURCE
 		${TARGSRC}GUI.cpp
 		${TARGSRC}UIElement.cpp
 		${TARGSRC}GUIRenderer.cpp
+		${TARGSRC}Clock.cpp
 		)
 
 set(COMPSRC "targsrc/components/")
@@ -121,6 +122,7 @@ set(SYSSOURCE "targsrc/systems/")
 set(SOURCE_SYS
 		${SYSSOURCE}CollisionSystem.cpp
 		${SYSSOURCE}MovementSystem.cpp
+		${SYSSOURCE}PlayerControllerSystem.cpp
 		)
 
 set(INCLUDE "include/")
@@ -137,6 +139,7 @@ set(HEADERS
 		${INCLUDE}UIElement.hpp
 		${INCLUDE}GUI.hpp
 		${INCLUDE}GUIRenderer.hpp
+		${INCLUDE}Clock.hpp
 		)
 
 set(COMP_INCL "include/components/")
@@ -152,6 +155,7 @@ set(SYS_INCL "include/systems/")
 set(HEADERS_SYS
 		${SYS_INCL}CollisionSystem.hpp
 		${SYS_INCL}MovementSystem.hpp
+		${SYS_INCL}PlayerControllerSystem.hpp
 		)
 
 set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
