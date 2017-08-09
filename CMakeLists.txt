@@ -219,7 +219,7 @@ if (WIN32)
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
 		"${CEGUI_LIB_PATH}/CEGUIBase-0_d.dll" "${CEGUI_LIB_PATH}/CEGUICommonDialogs-0_d.dll" "${CEGUI_LIB_PATH}/CEGUICoreWindowRendererSet_d.dll" 
-		"${CEGUI_LIB_PATH}/CEGUIOpenGLRenderer-0_d.dll" "${CEGUI_LIB_PATH}/CEGUISILLYImageCodec_d.dll"
+		"${CEGUI_LIB_PATH}/CEGUIOpenGLRenderer-0_d.dll" "${CEGUI_LIB_PATH}/CEGUISILLYImageCodec_d.dll" "${CEGUI_LIB_PATH}/CEGUIExpatParser_d.dll"
 		"${CEGUI_LIB_PATH}/freetype_d.dll" "${CEGUI_LIB_PATH}/glew_d.dll" "${CEGUI_LIB_PATH}/glfw_d.dll" "${CEGUI_LIB_PATH}/jpeg_d.dll" "${CEGUI_LIB_PATH}/libexpat_d.dll" 
 		"${CEGUI_LIB_PATH}/libpng_d.dll" "${CEGUI_LIB_PATH}/pcre_d.dll" "${CEGUI_LIB_PATH}/SILLY_d.dll" "${CEGUI_LIB_PATH}/zlib_d.dll"
 		#"${CEGUI_LIB_PATH}/freetype.dll" "${CEGUI_LIB_PATH}/glew.dll" "${CEGUI_LIB_PATH}/glfw.dll" "${CEGUI_LIB_PATH}/jpeg.dll" "${CEGUI_LIB_PATH}/libexpat.dll" 
