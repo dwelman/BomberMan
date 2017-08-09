@@ -50,27 +50,25 @@ SDL_Window *initWindow(ConfigEditor &cfg)
 
 void gameLoop(SDL_Window *window, renderData rdata)
 {
-	GUIRenderer	guiRenderer("shaders/gui2D_vertex.glsl", "shaders/gui2D_fragment.glsl");
-    SDL_Event e;
 	GameManager manager;
+	bool				mustQuit = false;
+	double				guiLastTimePulse = initGui(window);
 
-	initGui(guiRenderer);
     do
     {
 		Clock::Instance().Tick();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        SDL_PollEvent(&e);
 
 		if (manager.Update() == true)
 		{
-			break;
+//			break;
 		}
-
-		draw(window, rdata);
-		//guiRenderer.RenderGUI();
+		//draw(window, rdata);
+		renderGUIInjectEvents(window, guiLastTimePulse, mustQuit);
 		SDL_GL_SwapWindow(window);
+		SDL_Delay(10);
     }
-	while (e.type != SDL_QUIT);
+	while (mustQuit == false);
 }
 
 int	main(int argc, char *argv[])
