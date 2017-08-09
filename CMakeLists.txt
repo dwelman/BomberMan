@@ -5,7 +5,7 @@ project (${PROJECT_NAME})
 
 set(CMAKE_CXX_FLAGS "-std=c++11")
 
-set(cmake_build_type debug)
+set(CMAKE_BUILD_TYPE Debug)
 
 set (PLATFORM ${CMAKE_SYSTEM_NAME})
 
@@ -52,13 +52,15 @@ if (WIN32)
 					CEGUIOpenGLRenderer-0_Static
 					CEGUISILLYImageCodec_Static)
 					
-	set(CEGUI_LIBS_DYNAMIC	CEGUIBase-0
-					CEGUICommonDialogs-0 
-					CEGUICoreWindowRendererSet
-					CEGUIExpatParser
-					CEGUIOpenGLRenderer-0
-					CEGUISILLYImageCodec)
-					
+	set(CEGUI_LIBS_DYNAMIC	CEGUIBase-0_d
+				CEGUICommonDialogs-0_d
+				CEGUICoreWindowRendererSet_d
+				CEGUIExpatParser_d
+				CEGUIOpenGLRenderer-0_d
+				CEGUISILLYImageCodec_d)
+		
+
+	message ("${CEGUI_LIBS_DYNAMIC}")	
 	set(CEGUI_LIB_PATH	${CMAKE_CURRENT_SOURCE_DIR}/libs/${PLATFORM}/cegui)
 else()
 	set(BREW ~/.brew)
@@ -216,8 +218,8 @@ if (WIN32)
 	#CEGUI + Dependancies
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different
-		"${CEGUI_LIB_PATH}/CEGUIBase-0.dll" "${CEGUI_LIB_PATH}/CEGUICommonDialogs-0.dll" "${CEGUI_LIB_PATH}/CEGUICoreWindowRendererSet.dll" 
-		"${CEGUI_LIB_PATH}/CEGUIOpenGLRenderer-0.dll" "${CEGUI_LIB_PATH}/CEGUISILLYImageCodec.dll"
+		"${CEGUI_LIB_PATH}/CEGUIBase-0_d.dll" "${CEGUI_LIB_PATH}/CEGUICommonDialogs-0_d.dll" "${CEGUI_LIB_PATH}/CEGUICoreWindowRendererSet_d.dll" 
+		"${CEGUI_LIB_PATH}/CEGUIOpenGLRenderer-0_d.dll" "${CEGUI_LIB_PATH}/CEGUISILLYImageCodec_d.dll"
 		"${CEGUI_LIB_PATH}/freetype_d.dll" "${CEGUI_LIB_PATH}/glew_d.dll" "${CEGUI_LIB_PATH}/glfw_d.dll" "${CEGUI_LIB_PATH}/jpeg_d.dll" "${CEGUI_LIB_PATH}/libexpat_d.dll" 
 		"${CEGUI_LIB_PATH}/libpng_d.dll" "${CEGUI_LIB_PATH}/pcre_d.dll" "${CEGUI_LIB_PATH}/SILLY_d.dll" "${CEGUI_LIB_PATH}/zlib_d.dll"
 		#"${CEGUI_LIB_PATH}/freetype.dll" "${CEGUI_LIB_PATH}/glew.dll" "${CEGUI_LIB_PATH}/glfw.dll" "${CEGUI_LIB_PATH}/jpeg.dll" "${CEGUI_LIB_PATH}/libexpat.dll" 

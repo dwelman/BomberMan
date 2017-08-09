@@ -13,7 +13,7 @@
 #include <SDL_opengl.h>
 #include <glm/glm.hpp>
 #include <CEGUI/CEGUI.h>
-#include <CEGUI/RendererModules/OpenGL/GLRenderer.h>
+
 
 //Standard
 #include <iostream>
@@ -23,8 +23,6 @@
 #include <RenderEngine.hpp>
 #include <ConfigEditor.hpp>
 
-
-void	startGUI(SDL_Window *win);
 
 int     draw(SDL_Window *window, renderData rdata);
 

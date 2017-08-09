@@ -1,17 +1,15 @@
 #pragma once
 #include <main.hpp>
-#include <GUIRenderer.hpp>
+#include <CEGUI/RendererModules/OpenGL/GL3Renderer.h>
 
-struct GUIData
-{
-	GLuint					shader;
-	std::vector<UIElement*>	UIElements;
-	float					*vertexBuffer;
-	size_t					vertexBufferSize;
-	size_t					vertexBufferElements;
-};
+double  initGui(SDL_Window *window);
 
-void    initGui(GUIRenderer &guiRenderer);
+void	renderGUIInjectEvents(SDL_Window *window, double guiLastTimePulse, bool &must_quit);
 
-void    drawGUI(SDL_Window *window, renderData rdata, GUIData guiData);
+void	initializeKeyMap();
 
+void	injectInput(bool & must_quit, CEGUI::GUIContext& context, SDL_Event &e);
+
+void	injectTimePulse(double& last_time_pulse);
+
+void	captureInputForGameLogic(SDL_Event const &e, bool & must_quit);
