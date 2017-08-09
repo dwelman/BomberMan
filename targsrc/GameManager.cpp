@@ -121,16 +121,6 @@ void GameManager::createEntity(std::string entityType)
 bool 	GameManager::Update()
 {
 	m_deltaTime = Clock::Instance().GetDeltaTime();
-	static int cycles = 0;
-	Movement *m = dynamic_cast<Movement*>(m_components[m_entities[0].GetComponentOfType(MOVEMENT)]);
-	m->SetDirection(1, 0, 0);
-	Position *p = dynamic_cast<Position*>(m_components[m_entities[0].GetComponentOfType(POSITION)]);
-	std::cout << "X: " << p->GetPosition().GetX() << " Y: " << p->GetPosition().GetY() << " Z: " << p->GetPosition().GetZ() << std::endl;
-	if (cycles == 5)
-	{
-		return (true);
-	}
-	cycles++;
 	for (std::size_t i = 0; i < m_entities.size(); i++)
 	{
         //Check each component for the relevant flags
