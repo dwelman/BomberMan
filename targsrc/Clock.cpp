@@ -23,7 +23,7 @@ void Clock::Tick()
 {
 	m_lastTickTime = m_nowTickTime;
 	m_nowTickTime = SDL_GetPerformanceCounter();
-	m_delta = (double)((m_nowTickTime - m_lastTickTime) * 1000 / SDL_GetPerformanceFrequency());
+	m_delta = (double)((m_nowTickTime - m_lastTickTime) * 1000 / SDL_GetPerformanceFrequency()) * 0.001;
 }
 
 double	Clock::GetDeltaTime()
