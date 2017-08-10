@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <GUIScheme version="5" name="TaharezLook">
-	<Imageset filename="resources/GUI/TaharezLook.imageset" />
-	<Font filename="resources/GUI/DejaVuSans-12.font" />
-	<LookNFeel filename="resources/GUI/TaharezLook.looknfeel" />
+	<Imageset filename="TaharezLook.imageset" />
+	<Font filename="DejaVuSans-12.font" />
+	<LookNFeel filename="TaharezLook.looknfeel" />
 	<WindowRendererSet filename="CEGUICoreWindowRendererSet" />
 
 	<FalagardMapping windowType="TaharezLook/Label"       targetType="DefaultWindow"     renderer="Core/Default"      lookNFeel="TaharezLook/Label" />

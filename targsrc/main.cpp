@@ -52,8 +52,10 @@ void gameLoop(SDL_Window *window, renderData rdata)
 {
 	GameManager manager;
 	bool				mustQuit = false;
-//double				guiLastTimePulse = initGui(window);
+	GUIFunctionCrate	crate;
+	double				guiLastTimePulse = initGui(window, crate);
 
+	crate.triggerExitParam = &mustQuit;
     do
     {
 		Clock::Instance().Tick();
@@ -63,8 +65,8 @@ void gameLoop(SDL_Window *window, renderData rdata)
 		{
 //			break;
 		}
-		//draw(window, rdata);
-		//renderGUIInjectEvents(window, guiLastTimePulse, mustQuit);
+	//	draw(window, rdata);
+		renderGUIInjectEvents(window, guiLastTimePulse, mustQuit);
 		SDL_GL_SwapWindow(window);
 		SDL_Delay(10);
     }

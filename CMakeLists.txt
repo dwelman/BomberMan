@@ -112,9 +112,11 @@ else()
 			CEGUISILLYImageCodec.dylib)
 
 	set(CEGUI_LIB_PATH	${CMAKE_CURRENT_SOURCE_DIR}/libs/darwin/cegui)
+	
+	set (CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_CURRENT_SOURCE_DIR})
+
 
 #GLM
 set(GLM_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/libs/glm)
@@ -135,6 +137,8 @@ set(SOURCE
 		${TARGSRC}GUIRenderer.cpp
 		${TARGSRC}Clock.cpp		
 		${TARGSRC}InjectInput.cpp
+	#	${TARGSRC}MenuEvents.cpp
+
 		)
 
 set(COMPSRC "targsrc/components/")
