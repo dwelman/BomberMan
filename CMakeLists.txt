@@ -145,6 +145,7 @@ set(SOURCE_COMP
 		${COMPSRC}Movement.cpp
 		${COMPSRC}Render.cpp
 		${COMPSRC}PlayerController.cpp
+		${COMPSRC}Bomb.cpp
 		)
 
 set(SYSSOURCE "targsrc/systems/")
@@ -152,10 +153,9 @@ set(SOURCE_SYS
 		${SYSSOURCE}CollisionSystem.cpp
 		${SYSSOURCE}MovementSystem.cpp
 		${SYSSOURCE}PlayerControllerSystem.cpp
-		)
+		${SYSSOURCE}BombSystem.cpp)
 
 set(INCLUDE "include/")
-set(COMP_INCL "include/components/")
 set(HEADERS
 		${INCLUDE}main.hpp
 		${INCLUDE}MenuStateMachine.hpp
@@ -178,14 +178,15 @@ set(HEADERS_COMP
 		${COMP_INCL}BaseComponent.hpp
 		${COMP_INCL}Movement.hpp
 		${COMP_INCL}Render.hpp
-		${COMP_INCL}PlayerController.hpp)
+		${COMP_INCL}PlayerController.hpp
+		${COMP_INCL}Bomb.hpp)
 
 set(SYS_INCL "include/systems/")
 set(HEADERS_SYS
 		${SYS_INCL}CollisionSystem.hpp
 		${SYS_INCL}MovementSystem.hpp
 		${SYS_INCL}PlayerControllerSystem.hpp
-		)
+		${SYS_INCL}BombSystem.hpp)
 
 set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR} )
 

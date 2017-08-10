@@ -75,6 +75,18 @@ std::size_t Entity::GetComponentOfType(COMPONENT_MASK_TYPE flag)
     throw ChildComponentNotFoundException();
 }
 
+std::vector<std::size_t> Entity::GetChildrenIDs() const
+{
+    std::vector<size_t> ret;
+    auto iter = m_childComponents.begin();
+    while (iter != m_childComponents.end())
+    {
+        ret.push_back(iter->first);
+        iter++;
+    }
+    return (ret);
+}
+
 const char *Entity::ChildComponentNotFoundException::what() const throw()
 {
     return ("Child component not found in entity");

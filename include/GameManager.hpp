@@ -9,6 +9,7 @@
 #include "systems/PlayerControllerSystem.hpp"
 #include "systems/CollisionSystem.hpp"
 #include "systems/MovementSystem.hpp"
+#include "systems/BombSystem.hpp"
 
 class GameManager
 {
@@ -21,6 +22,7 @@ private:
 	void		handleCollisions(Collision &c, Position &p, std::size_t ID);
     void        handleMovement(Position &p, Movement &m);
     void        createEntity(std::string entityType);
+    void        deleteEntity(std::size_t ID);
 public:
 	GameManager();
 	GameManager(GameManager const &gm);

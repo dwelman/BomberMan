@@ -52,7 +52,7 @@ void gameLoop(SDL_Window *window, renderData rdata)
 {
 	GameManager manager;
 	bool				mustQuit = false;
-	double				guiLastTimePulse = initGui(window);
+//double				guiLastTimePulse = initGui(window);
 
     do
     {
@@ -64,7 +64,7 @@ void gameLoop(SDL_Window *window, renderData rdata)
 //			break;
 		}
 		//draw(window, rdata);
-		renderGUIInjectEvents(window, guiLastTimePulse, mustQuit);
+		//renderGUIInjectEvents(window, guiLastTimePulse, mustQuit);
 		SDL_GL_SwapWindow(window);
 		SDL_Delay(10);
     }

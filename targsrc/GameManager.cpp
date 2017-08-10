@@ -118,6 +118,23 @@ void GameManager::createEntity(std::string entityType)
     m_entities.push_back(Entity(entity));
 }
 
+
+void GameManager::deleteEntity(std::size_t ID)
+{
+    std::vector<std::size_t>    components;
+
+    components = m_entities[ID].GetChildrenIDs();
+    for (std::size_t i = 0; i < components.size(); i++)
+    {
+        auto iter = m_components.find(components[i]);
+        if (iter != m_components.end())
+        {
+            m_components.erase(iter);
+        }
+    }
+    m_entities.erase(m_entities.begin() + ID);
+}
+
 bool 	GameManager::Update()
 {
 	m_deltaTime = Clock::Instance().GetDeltaTime();
@@ -127,21 +144,24 @@ bool 	GameManager::Update()
         COMPONENT_MASK_TYPE bitmask = m_entities[i].GetComponentFlags();
         //Player control system
         {
-            /*if ((bitmask & MOVEMENT_SYSTEM_FLAGS) == MOVEMENT_SYSTEM_FLAGS)
+            if ((bitmask & PLAYER_CONTROLLER_SYSTEM_FLAGS) == PLAYER_CONTROLLER_SYSTEM_FLAGS)
             {
                 try
                 {
-                    std::size_t movementID = m_entities[i].GetComponentOfType(MOVEMENT);
-                    std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
-                    Movement *movement = dynamic_cast<Movement *>(m_components[movementID]);
-                    Position *position = dynamic_cast<Position *>(m_components[positionID]);
+                    std::size_t playerControllerID = m_entities[i].GetComponentOfType(PLAYERCONTROLLER);
+                    PlayerController *playerController = dynamic_cast<PlayerController *>(m_components[playerControllerID]);
                     //Do something with movement
+                    if ((bitmask & MOVEMENT) == MOVEMENT)
+                    {
+                        std::size_t movementID = m_entities[i].GetComponentOfType(MOVEMENT);
+                        Movement *movement = dynamic_cast<Movement *>(m_components[movementID]);
+                    }
                 }
                 catch (std::exception &e)
                 {
 
                 }
-            }*/
+            }
         }
 
         //Movement System
@@ -158,7 +178,7 @@ bool 	GameManager::Update()
                 }
                 catch (std::exception &e)
                 {
-
+                    return (false);
                 }
             }
         }
@@ -167,7 +187,8 @@ bool 	GameManager::Update()
         {
             if ((bitmask & COLLISION_SYSTEM_FLAGS) == COLLISION_SYSTEM_FLAGS)
             {
-                try {
+                try
+                {
                     std::size_t collisionID = m_entities[i].GetComponentOfType(COLLISION);
                     std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
                     Collision *collision = dynamic_cast<Collision *>(m_components[collisionID]);
@@ -179,7 +200,31 @@ bool 	GameManager::Update()
                 }
                 catch (std::exception &e)
                 {
+                    return (false);
+                }
+            }
+        }
 
+        //Bomb system
+        {
+            if ((bitmask & BOMB_SYSTEM_FLAGS) == BOMB_SYSTEM_FLAGS)
+            {
+                try
+                {
+                    std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
+                    std::size_t bombID = m_entities[i].GetComponentOfType(BOMB);
+                    Position *position = dynamic_cast<Position *>(m_components[positionID]);
+                    Bomb *bomb = dynamic_cast<Bomb *>(m_components[bombID]);
+                    BombSystem::ChangeBombTimeByDelta(*bomb, -(Clock::Instance().GetDeltaTime()));
+                    if (bomb->GetBombTime() <= 0)
+                    {
+                        //Explode
+                        deleteEntity(i);
+                    }
+                }
+                catch (std::exception &e)
+                {
+                    return (false);
                 }
             }
         }

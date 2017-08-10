@@ -2,6 +2,7 @@
 
 #include <cstdio>
 #include <map>
+#include <vector>
 
 #include "components/BaseComponent.hpp"
 
@@ -19,11 +20,12 @@ public:
 
     Entity  &operator=(Entity const &e);
 
-    COMPONENT_MASK_TYPE GetComponentFlags() const;
-    void                SetComponentFlags(COMPONENT_MASK_TYPE flags);
-	void				RegisterComponent(std::size_t componentID, ComponentMask componentType);
-	void				DeregisterComponent(std::size_t componentID);
-	std::size_t 		GetComponentOfType(COMPONENT_MASK_TYPE flag);
+    COMPONENT_MASK_TYPE 		GetComponentFlags() const;
+    void                		SetComponentFlags(COMPONENT_MASK_TYPE flags);
+	void						RegisterComponent(std::size_t componentID, ComponentMask componentType);
+	void						DeregisterComponent(std::size_t componentID);
+	std::size_t 				GetComponentOfType(COMPONENT_MASK_TYPE flag);
+	std::vector<std::size_t>	GetChildrenIDs() const;
 
 	class ChildComponentNotFoundException : public std::exception
 	{
