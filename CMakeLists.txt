@@ -61,7 +61,7 @@ if (WIN32)
 		
 
 	message ("${CEGUI_LIBS_DYNAMIC}")	
-	set(CEGUI_LIB_PATH	${CMAKE_CURRENT_SOURCE_DIR}/libs/${PLATFORM}/cegui)
+	set(CEGUI_LIB_PATH	${CMAKE_CURRENT_SOURCE_DIR}/libs/Windows/cegui)
 else()
 	set(BREW ~/.brew)
 	set(BREW_INCLUDE ${BREW}/include)
@@ -104,7 +104,17 @@ else()
 	message ("Found OpenGL library at ${OPENGL_INCLUDE}")
 	message ("Found OpenGL library at ${OPENGL_gl_LIBRARY}")
 
+	set(CEGUI_LIBS_DYNAMIC	CEGUIBase-0.dylib
+			CEGUICommonDialogs-0.dylib
+			CEGUICoreWindowRendererSet.dylib
+			CEGUIExpatParser.dylib
+			CEGUIOpenGLRenderer-0.dylib
+			CEGUISILLYImageCodec.dylib)
+
+	set(CEGUI_LIB_PATH	${CMAKE_CURRENT_SOURCE_DIR}/libs/darwin/cegui)
 endif()
+
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_CURRENT_SOURCE_DIR})
 
 #GLM
 set(GLM_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/libs/glm)
@@ -121,7 +131,6 @@ set(SOURCE
 		${TARGSRC}GameManager.cpp
 		${TARGSRC}Entity.cpp
 		${TARGSRC}Vec3.cpp
-		${TARGSRC}GUI.cpp
 		${TARGSRC}UIElement.cpp
 		${TARGSRC}GUIRenderer.cpp
 		${TARGSRC}Clock.cpp		
@@ -178,7 +187,7 @@ set(HEADERS_SYS
 		${SYS_INCL}PlayerControllerSystem.hpp
 		)
 
-set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR} )
 
 include_directories(${INCLUDE} ${SDL_INCLUDE} ${SDL_IMAGE_INCLUDE} ${SDL_TTF_INCLUDE} ${SDL_MIXER_INCLUDE} ${GLEW_INCLUDE} ${GLM_INCLUDE} ${OPENGL_INCLUDE})
 
