@@ -138,7 +138,7 @@ set(SOURCE
 		${TARGSRC}Clock.cpp		
 		${TARGSRC}InjectInput.cpp
 	#	${TARGSRC}MenuEvents.cpp
-
+		${TARGSRC}RenderObject.cpp
 		)
 
 set(COMPSRC "targsrc/components/")
@@ -173,6 +173,7 @@ set(HEADERS
 		${INCLUDE}GUI.hpp
 		${INCLUDE}GUIRenderer.hpp
 		${INCLUDE}Clock.hpp
+		${INCLUDE}RenderObject.hpp
 		)
 
 set(COMP_INCL "include/components/")

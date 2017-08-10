@@ -52,10 +52,9 @@ void gameLoop(SDL_Window *window, renderData rdata)
 {
 	GameManager manager;
 	bool				mustQuit = false;
-	GUIFunctionCrate	crate;
-	double				guiLastTimePulse = initGui(window, crate);
+	//double				guiLastTimePulse = initGui(window);
+	RenderEngine rEngine;
 
-	crate.triggerExitParam = &mustQuit;
     do
     {
 		Clock::Instance().Tick();
@@ -65,8 +64,8 @@ void gameLoop(SDL_Window *window, renderData rdata)
 		{
 //			break;
 		}
-	//	draw(window, rdata);
-		renderGUIInjectEvents(window, guiLastTimePulse, mustQuit);
+		rEngine.Draw(window, rdata);
+		//renderGUIInjectEvents(window, guiLastTimePulse, mustQuit);
 		SDL_GL_SwapWindow(window);
 		SDL_Delay(10);
     }
@@ -76,9 +75,13 @@ void gameLoop(SDL_Window *window, renderData rdata)
 int	main(int argc, char *argv[])
 {
 	renderData rdata;
+	RenderEngine rEngine;
+    RenderObject *obj;
+    obj = new RenderObject;
 
 	SDL_Window	*window = initWindow(g_cfg);
-	rdata = initGlew();
+	rdata.rObjs.push_back(*obj);
+	rdata = rEngine.initGlew(rdata);
 	if (window == nullptr || rdata.res == -1)
 		return (-1);
 

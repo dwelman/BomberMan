@@ -1,6 +1,7 @@
 #ifndef BOMBERMAN_RENDERENGINE_HPP
 #define BOMBERMAN_RENDERENGINE_HPP
 
+#include "RenderObject.hpp"
 #include "main.hpp"
 #include "VBOIndexer.hpp"
 #include <glm/vec2.hpp>
@@ -10,39 +11,72 @@
 
 struct renderData
 {
-    GLuint shaders;
-    GLuint MatrixID;
+	GLuint shaders;
+	GLuint MatrixID;
 	GLuint ViewMatrixID;
 	GLuint ModelMatrixID;
+	GLuint ModelView3x3MatrixID;
 	GLuint LightID;
 	GLuint TextureID;
-    GLuint *Textures;
-	GLuint TextureID2;
-    GLuint VertexBuffer;
-    GLuint UVBuffer;
+	GLuint DiffuseTextureID;
+	GLuint NormalTextureID;
+	GLuint SpecularTextureID;
+	GLuint *Textures;
+	GLuint VertexBuffer;
+	GLuint UVBuffer;
 	GLuint NormalBuffer;
+	GLuint TangentBuffer;
+	GLuint BitangentBuffer;
 	GLuint ElementBuffer;
 	std::vector<unsigned short> Indices;
 	std::vector<glm::vec3> indexed_vertices;
 	std::vector<glm::vec2> indexed_uvs;
 	std::vector<glm::vec3> indexed_normals;
+	std::vector<glm::vec3> indexed_tangents;
+	std::vector<glm::vec3> indexed_bitangents;
 	std::vector<glm::vec3> objVertices;
 	std::vector<glm::vec2> objUVS;
 	std::vector<glm::vec3> objNormals;
-    bool objRes;
-    int res;
+	std::vector<glm::vec3> objTangents;
+	std::vector<glm::vec3> objBitangents;
+    std::vector<RenderObject> rObjs;
+	int objRes;
+	int res;
 };
 
-GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path);
-GLuint loadBMP(const char * imagepath);
-bool loadOBJ(
-        const char * path,
-        std::vector<glm::vec3> & out_vertices,
-        std::vector<glm::vec2> & out_uvs,
-        std::vector<glm::vec3> & out_normals
-);
-renderData     initGlew();
-int     draw(SDL_Window *window, renderData rdata);
+class RenderEngine
+{
+	public:
+		RenderEngine();
+		RenderEngine(const RenderEngine &renderEngine);
+		RenderEngine &operator = (const RenderEngine &rhs);
+		~RenderEngine();
 
+		void setViewMatrix(glm::mat4 viewMatrix);
+		void setProjectionMatrix(glm::mat4 projectionMatrix);
+		glm::mat4 getViewMatrix();
+		glm::mat4 getProjectionMatrix();
+		void computeMatricesFromInputs(SDL_Window *window);
+		//static GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
+		GLuint loadBMP(const char * imagepath, GLuint texture);
+		GLuint loadDDS(const char * imagepath, GLuint texture);
+		bool loadOBJ(const char * path, std::vector<glm::vec3> & out_vertices, std::vector<glm::vec2> & out_uvs, std::vector<glm::vec3> & out_normals);
+		void computeTangentBasis(/*Inputs*/std::vector<glm::vec3> & vertices, std::vector<glm::vec2> & uvs, std::vector<glm::vec3> & normals, /*Outputs*/std::vector<glm::vec3> & tangents, std::vector<glm::vec3> & bitangents);
+		renderData initGlew(renderData rdata);
+		int Draw(SDL_Window *window, renderData rdata);
 
-#endif //BOMBERMAN_RENDERENGINE_HPP
+	private:
+		glm::mat4 ViewMatrix;
+		glm::mat4 ProjectionMatrix;
+		glm::vec3 position;
+
+		float horizontalAngle,
+				verticalAngle,
+				FoV,
+				speed,
+				mouseSpeed;
+};
+
+GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
+
+#endif
