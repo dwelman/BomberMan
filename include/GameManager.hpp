@@ -6,6 +6,7 @@
 
 #include "Entity.hpp"
 #include "components/BaseComponent.hpp"
+#include "components/Tag.hpp"
 #include "systems/PlayerControllerSystem.hpp"
 #include "systems/CollisionSystem.hpp"
 #include "systems/MovementSystem.hpp"
@@ -18,6 +19,7 @@ private:
 	std::map<std::size_t, BaseComponent*>	m_components;
 	std::size_t 				            m_currentComponentID;
     double                                  m_deltaTime;
+    std::vector<std::size_t>                m_toBeDeleted;
 
 	void		handleCollisions(Collision &c, Position &p, std::size_t ID);
     void        handleMovement(Position &p, Movement &m);

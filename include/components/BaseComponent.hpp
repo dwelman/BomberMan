@@ -8,7 +8,8 @@ enum ComponentMask
     RENDER = 4,
     MOVEMENT = 8,
     PLAYERCONTROLLER = 16,
-    BOMB = 32
+    BOMB = 32,
+    TAG = 64
 };
 
 #define COMPONENT_MASK_TYPE char

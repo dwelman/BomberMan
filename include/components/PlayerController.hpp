@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdio>
 #include "Vec3.hpp"
 #include "components/BaseComponent.hpp"
 
