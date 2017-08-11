@@ -647,9 +647,10 @@ renderData RenderEngine::initGlew(renderData rdata)
 //	}
 //}
 
-int RenderEngine::Draw(SDL_Window *window, renderData rdata)
+int RenderEngine::Draw(SDL_Window *window, renderData rdata, bool gameStarted)
 {
-    this->computeMatricesFromInputs(window);
+    if (gameStarted)
+        this->computeMatricesFromInputs(window);
     glm::mat4 ProjectionMatrix = this->getProjectionMatrix();
     glm::mat4 ViewMatrix = this->getViewMatrix();
     glm::mat4 ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));

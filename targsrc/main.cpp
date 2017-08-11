@@ -49,7 +49,9 @@ void gameLoop(SDL_Window *window, renderData rdata)
 	double				guiLastTimePulse = initGui(window, crate);
 	RenderEngine        rEngine;
 
+    manager.SetGameStarted(false);
     rdata = rEngine.initGlew(rdata);
+    crate.manager = &manager;
     crate.mustQuit = &mustQuit;
     do
     {
@@ -60,8 +62,9 @@ void gameLoop(SDL_Window *window, renderData rdata)
 		{
 //			break;
 		}
-		//rEngine.Draw(window, rdata);
-		renderGUIInjectEvents(manager, window, guiLastTimePulse, mustQuit);
+		rEngine.Draw(window, rdata, manager.GetGameStarted());
+        if (!manager.GetGameStarted())
+		    renderGUIInjectEvents(manager, window, guiLastTimePulse, mustQuit);
 		SDL_GL_SwapWindow(window);
 		//SDL_Delay(10);
     }

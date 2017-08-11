@@ -9,7 +9,7 @@ struct GUIFunctionCrate
 {
 	std::vector<MenuFunction*>	MenuFunctions;
 	bool						*mustQuit;
-
+    GameManager                 *manager;
 	~GUIFunctionCrate();
 };
 
@@ -56,3 +56,5 @@ void	destroyGUI(GUIFunctionCrate &crate);
 //Events
 
 bool setExit(const CEGUI::EventArgs& /*e*/, CEGUI::NamedElement *_element, GUIFunctionCrate	&var);
+
+bool startGameMainMenu(const CEGUI::EventArgs& /*e*/, CEGUI::NamedElement *_element, GUIFunctionCrate	&var);
