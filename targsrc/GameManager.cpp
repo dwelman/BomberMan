@@ -7,6 +7,7 @@ GameManager::GameManager()
 {
 	m_currentComponentID = 0;
 	m_deltaTime = 0.35f;
+    m_gameStarted = false;
     createEntity("player");
 }
 

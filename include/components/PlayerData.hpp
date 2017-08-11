@@ -11,7 +11,7 @@ private:
 
     PlayerData();
 public:
-    PlayerData(std::size_t m_bombNumber, float move);
+    PlayerData(std::size_t bombNumber, float moveSpeed);
     PlayerData(PlayerData const &pd);
     ~PlayerData();
 
