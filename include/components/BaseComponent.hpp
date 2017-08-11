@@ -9,10 +9,11 @@ enum ComponentMask
     MOVEMENT = 8,
     PLAYERCONTROLLER = 16,
     BOMB = 32,
-    TAG = 64
+    TAG = 64,
+    EXPLOSION = 128
 };
 
-#define COMPONENT_MASK_TYPE char
+#define COMPONENT_MASK_TYPE short
 
 class BaseComponent
 {

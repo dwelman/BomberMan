@@ -130,6 +130,17 @@ void GameManager::createEntity(std::string entityType)
         entity.RegisterComponent(m_currentComponentID, BOMB);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Bomb(3.0)));
     }
+    else if (entityType == "explosion")
+    {
+        entity.RegisterComponent(m_currentComponentID, POSITION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Position(0, 0, 0)));
+        entity.RegisterComponent(m_currentComponentID, COLLISION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
+        entity.RegisterComponent(m_currentComponentID, TAG);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(DAMAGE_ENEMY_TAG | DAMAGE_PLAYER_TAG | DAMAGE_WALL_TAG)));
+        entity.RegisterComponent(m_currentComponentID, EXPLOSION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Explosion(3, Vec3(0, 0, 0), 0.4)));
+    }
     else
     {
         return ;
@@ -137,6 +148,81 @@ void GameManager::createEntity(std::string entityType)
     m_entities.push_back(Entity(entity));
 }
 
+void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos)
+{
+    Entity entity;
+    if (entityType == "player")
+    {
+        //TODO: Read this from config file later
+        entity.RegisterComponent(m_currentComponentID, POSITION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
+        entity.RegisterComponent(m_currentComponentID, COLLISION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
+        entity.RegisterComponent(m_currentComponentID, MOVEMENT);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Movement(0, 0, 0, 10)));
+        entity.RegisterComponent(m_currentComponentID, PLAYERCONTROLLER);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new PlayerController()));
+        entity.RegisterComponent(m_currentComponentID, TAG);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(PLAYER_TAG)));
+    }
+    else if (entityType == "indestructible_wall")
+    {
+        entity.RegisterComponent(m_currentComponentID, POSITION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
+        entity.RegisterComponent(m_currentComponentID, COLLISION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
+        entity.RegisterComponent(m_currentComponentID, TAG);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(WALL_TAG | INDESTRUCTIBLE_TAG)));
+    }
+    else if (entityType == "destructible_wall")
+    {
+        entity.RegisterComponent(m_currentComponentID, POSITION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
+        entity.RegisterComponent(m_currentComponentID, COLLISION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
+        entity.RegisterComponent(m_currentComponentID, TAG);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(WALL_TAG)));
+    }
+    else if (entityType == "enemy_1")
+    {
+
+    }
+    else if (entityType == "enemy_2")
+    {
+
+    }
+    else if (entityType == "enemy_3")
+    {
+
+    }
+    else if (entityType == "bomb")
+    {
+        entity.RegisterComponent(m_currentComponentID, POSITION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
+        entity.RegisterComponent(m_currentComponentID, COLLISION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
+        entity.RegisterComponent(m_currentComponentID, TAG);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(BOMB_TAG)));
+        entity.RegisterComponent(m_currentComponentID, BOMB);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Bomb(3.0)));
+    }
+    else if (entityType == "explosion")
+    {
+        entity.RegisterComponent(m_currentComponentID, POSITION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
+        entity.RegisterComponent(m_currentComponentID, COLLISION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
+        entity.RegisterComponent(m_currentComponentID, TAG);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(DAMAGE_ENEMY_TAG | DAMAGE_PLAYER_TAG | DAMAGE_WALL_TAG)));
+        entity.RegisterComponent(m_currentComponentID, EXPLOSION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Explosion(3, Vec3(0, 0, 0), 0.4)));
+    }
+    else
+    {
+        return ;
+    }
+    m_entities.push_back(Entity(entity));
+}
 
 void GameManager::deleteEntity(std::size_t ID)
 {
@@ -238,7 +324,50 @@ bool 	GameManager::Update()
                     BombSystem::ChangeBombTimeByDelta(*bomb, -(Clock::Instance().GetDeltaTime()));
                     if (bomb->GetBombTime() <= 0)
                     {
-                        //Explode
+                        Explosion *explosion;
+                        createEntityAtPosition("explosion", position->GetPosition());
+                        explosion = dynamic_cast<Explosion *>(m_components[m_entities.back().GetComponentOfType(EXPLOSION)]);
+                        explosion->SetDirection(Vec3(1, 0, 0));
+                        createEntityAtPosition("explosion", position->GetPosition());
+                        explosion = dynamic_cast<Explosion *>(m_components[m_entities.back().GetComponentOfType(EXPLOSION)]);
+                        explosion->SetDirection(Vec3(-1, 0, 0));
+                        createEntityAtPosition("explosion", position->GetPosition());
+                        explosion = dynamic_cast<Explosion *>(m_components[m_entities.back().GetComponentOfType(EXPLOSION)]);
+                        explosion->SetDirection(Vec3(0, 1, 0));
+                        createEntityAtPosition("explosion", position->GetPosition());
+                        explosion = dynamic_cast<Explosion *>(m_components[m_entities.back().GetComponentOfType(EXPLOSION)]);
+                        explosion->SetDirection(Vec3(0, -1, 0));
+                        m_toBeDeleted.push_back(i);
+                    }
+                }
+                catch (std::exception &e)
+                {
+                    return (false);
+                }
+            }
+        }
+
+        //Explosion system
+        {
+            if ((bitmask & EXPLOSION) == EXPLOSION)
+            {
+                try
+                {
+                    std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
+                    std::size_t explosionID = m_entities[i].GetComponentOfType(EXPLOSION);
+                    Position *position = dynamic_cast<Position *>(m_components[positionID]);
+                    Explosion *explosion = dynamic_cast<Explosion *>(m_components[explosionID]);
+                    if (explosion->GetChildExplosions() > 0)
+                    {
+                        Vec3 newPos = position->GetPosition() + explosion->GetDirection();
+                        createEntityAtPosition("explosion", newPos);
+                        Explosion *newExplosion = dynamic_cast<Explosion *>(m_components[m_entities.back().GetComponentOfType(EXPLOSION)]);
+                        newExplosion->SetChildExplosions(explosion->GetChildExplosions() - 1);
+                        explosion->SetChildExplosions(0);
+                    }
+                    explosion->SetDuration(explosion->GetDuration() - Clock::Instance().GetDeltaTime());
+                    if (explosion->GetDuration() <= 0)
+                    {
                         m_toBeDeleted.push_back(i);
                     }
                 }
@@ -255,4 +384,14 @@ bool 	GameManager::Update()
         }
 		return (false);
 	}
+}
+
+bool GameManager::GetGameStarted() const
+{
+    return (m_gameStarted);
+}
+
+void GameManager::SetGameStarted(bool gameStarted)
+{
+    m_gameStarted = gameStarted;
 }
