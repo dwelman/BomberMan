@@ -27,14 +27,6 @@ inline void	  setupResourceGroups()
 	//	CEGUI::ScriptModule::setDefaultResourceGroup("lua_scripts");
 }
 
-bool setExit(const CEGUI::EventArgs& /*e*/, void *var) 
-{
-	bool	*must_exit = reinterpret_cast<bool*>(var);
-
-	*must_exit = true;
-	return (true);
-};
-
 void		loadResources()
 {
 	//Load Schemes
@@ -55,14 +47,19 @@ void		setupEvents(GUIFunctionCrate &crate)
 {
 	//Main menu
 	CEGUI::NamedElement *exit = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("Exit");
-	crate.triggerExit =	new MenuFunction<bool*> (exit, CEGUI::PushButton::EventClicked, &setExit, crate.triggerExitParam);
+	crate.MenuFunctions.push_back(new MenuFunction(exit, CEGUI::PushButton::EventClicked, &setExit, crate));
 }
+//MenuFunction(CEGUI::NamedElement *_element, const CEGUI::String &name, ccev eventFunction, GUIFunctionCrate	&var)
 
-void		destroyGUI()
+void		destroyGUI(GUIFunctionCrate &crate)
 {
 	/*
 	TODO
 	*/
+	// Clean crate
+	for (auto it = crate.MenuFunctions.begin(); it != crate.MenuFunctions.end(); it++)
+		delete (*it);
+
 	CEGUI::System::destroy();
 	//CEGUI::OpenGL3Renderer::destroy(static_cast<CEGUI::OpenGL3Renderer&>(myRenderer));
 }
@@ -87,11 +84,39 @@ double    initGui(SDL_Window *window, GUIFunctionCrate &crate)
 	return (0.001 * static_cast<double>(SDL_GetTicks()));
 }
 
-void	captureInputForGameLogic(SDL_Event &e, bool & must_quit)
+void	captureInputForGameManager(GameManager &manager, SDL_Event &e, bool & must_quit)
 {
+	ePlayerAction	action = P_NOACTION;
 	if (e.type == SDL_QUIT)
 		must_quit = true;
+
 	//TODO game logic stoofs
+	if (e.type == SDL_KEYDOWN)
+	{
+		switch (e.key.keysym.sym)
+		{
+			case SDLK_LEFT :
+				action = P_MOVE_LEFT;
+				break;
+			case SDLK_RIGHT :
+				action = P_MOVE_RIGHT;
+				break;
+			case SDLK_UP :
+				action = P_MOVE_UP;
+				break;
+			case SDLK_DOWN :
+				action = P_MOVE_DOWN;
+				break;
+			case SDLK_SPACE :
+				action = P_PLACE_BOMB;
+				break;
+		}
+		if (action != P_NOACTION)
+		{
+			// Feed actions  into GM
+			std::cout << "action = " << action << std::endl;
+		}
+	}
 }
 
 void	captureInputForState(SDL_Event &e, bool & must_quit)
@@ -102,7 +127,7 @@ void	captureInputForState(SDL_Event &e, bool & must_quit)
 	}
 }
 
-void	renderGUIInjectEvents(SDL_Window *window, double guiLastTimePulse, bool &must_quit)
+void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiLastTimePulse, bool &must_quit)
 {
 	CEGUI::GUIContext&	context = CEGUI::System::getSingleton().getDefaultGUIContext();
 	SDL_Event			e;
@@ -110,7 +135,7 @@ void	renderGUIInjectEvents(SDL_Window *window, double guiLastTimePulse, bool &mu
 	while (SDL_PollEvent(&e))
 	{
 		injectInput(must_quit, context, e);
-		captureInputForGameLogic(e, must_quit);
+		captureInputForGameManager(manager, e, must_quit);
 		captureInputForState(e, must_quit);
 	}
 	injectTimePulse(guiLastTimePulse);

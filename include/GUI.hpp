@@ -1,18 +1,28 @@
 #pragma once
 #include <main.hpp>
 #include <CEGUI/RendererModules/OpenGL/GL3Renderer.h>
+#include <GameManager.hpp>
 
-typedef	bool(*ccev)(const CEGUI::EventArgs &e, void *var);
+struct MenuFunction;
 
-template <typename T>
+struct GUIFunctionCrate
+{
+	std::vector<MenuFunction*>	MenuFunctions;
+	bool						*mustQuit;
+
+	~GUIFunctionCrate();
+};
+
+typedef	bool(*ccev)(const CEGUI::EventArgs &e, CEGUI::NamedElement *_element , GUIFunctionCrate &var);
+
 struct MenuFunction
 {
-	T					&var;
+	GUIFunctionCrate	&var;
 	ccev				customEvent;
 	CEGUI::NamedElement	*element;
 
-	MenuFunction(CEGUI::NamedElement *_element, const CEGUI::String &name, ccev eventFunction, T &var) :
-		var(var), element(_element)
+	MenuFunction(CEGUI::NamedElement *_element, const CEGUI::String &name, ccev eventFunction, GUIFunctionCrate	&_var) :
+		var(_var), element(_element)
 	{
 		customEvent = eventFunction;
 		element->subscribeEvent(name, CEGUI::Event::Subscriber(&MenuFunction::invoke, this));
@@ -20,23 +30,17 @@ struct MenuFunction
 
 	bool invoke(const CEGUI::EventArgs& e)
 	{
-		return (customEvent(e, var));
+		return (customEvent(e, element ,var));
 	}
 
 	virtual ~MenuFunction() {};
 };
 
-struct GUIFunctionCrate
-{
-	MenuFunction<bool*>	*triggerExit;
-	bool				*triggerExitParam;
 
-	~GUIFunctionCrate();
-};
 
 double  initGui(SDL_Window *window, GUIFunctionCrate &crate);
 
-void	renderGUIInjectEvents(SDL_Window *window, double guiLastTimePulse, bool &must_quit);
+void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiLastTimePulse, bool &must_quit);
 
 void	initializeKeyMap();
 
@@ -44,6 +48,11 @@ void	injectInput(bool & must_quit, CEGUI::GUIContext& context, SDL_Event &e);
 
 void	injectTimePulse(double& last_time_pulse);
 
-void	captureInputForGameLogic(SDL_Event const &e, bool & must_quit);
-
 void	loadResources();
+
+void	destroyGUI(GUIFunctionCrate &crate);
+
+
+//Events
+
+bool setExit(const CEGUI::EventArgs& /*e*/, CEGUI::NamedElement *_element, GUIFunctionCrate	&var);

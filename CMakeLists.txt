@@ -137,7 +137,7 @@ set(SOURCE
 		${TARGSRC}GUIRenderer.cpp
 		${TARGSRC}Clock.cpp		
 		${TARGSRC}InjectInput.cpp
-	#	${TARGSRC}MenuEvents.cpp
+		${TARGSRC}Events.cpp
 		${TARGSRC}RenderObject.cpp
 		)
 
@@ -151,6 +151,7 @@ set(SOURCE_COMP
 		${COMPSRC}PlayerController.cpp
 		${COMPSRC}Bomb.cpp
 		${COMPSRC}Explosion.cpp
+		${COMPSRC}Tag.cpp
 		)
 
 set(SYSSOURCE "targsrc/systems/")

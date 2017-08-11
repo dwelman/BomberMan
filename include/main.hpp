@@ -23,8 +23,14 @@
 #include <RenderEngine.hpp>
 #include <ConfigEditor.hpp>
 
-
-int     draw(SDL_Window *window, renderData rdata);
-
+enum    ePlayerAction
+{
+    P_NOACTION = 0,
+    P_MOVE_UP,
+    P_MOVE_LEFT,
+    P_MOVE_RIGHT,
+    P_MOVE_DOWN,
+    P_PLACE_BOMB
+};
 
 static ConfigEditor g_cfg("resources/settings.cfg");
