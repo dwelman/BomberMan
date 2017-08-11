@@ -13,7 +13,7 @@ private:
 
     Explosion();
 public:
-    Explosion(std::size_t childExplosions, Vec3 dirction, double duration)
+    Explosion(std::size_t childExplosions, Vec3 dirction, double duration);
     Explosion(Explosion const &e);
     ~Explosion();
 

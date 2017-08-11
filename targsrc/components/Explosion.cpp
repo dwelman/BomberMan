@@ -9,6 +9,13 @@ Explosion::Explosion() : BaseComponent(EXPLOSION)
 
 }
 
+Explosion::Explosion(std::size_t childExplosions, Vec3 dirction, double duration) : Explosion()
+{
+    m_childExplosions = childExplosions;
+    m_direction = dirction;
+    m_duration = duration;
+}
+
 Explosion::Explosion(Explosion const &e) : Explosion()
 {
     *this = e;
