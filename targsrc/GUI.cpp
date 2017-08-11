@@ -35,7 +35,7 @@ bool setExit(const CEGUI::EventArgs& /*e*/, void *var)
 	return (true);
 };
 
-inline void		loadResources()
+void		loadResources()
 {
 	//Load Schemes
 	CEGUI::SchemeManager::getSingleton().createFromFile("AlfiskoSkin.scheme");
@@ -46,7 +46,7 @@ inline void		loadResources()
 
 	//Load Layouts
 	CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
-	CEGUI::Window* myRoot = wmgr.loadLayoutFromFile("Testlayout.layout");
+	CEGUI::Window* myRoot = wmgr.loadLayoutFromFile("TestLayout.layout");
 	CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(myRoot);
 
 }
@@ -71,6 +71,7 @@ double    initGui(SDL_Window *window, GUIFunctionCrate &crate)
 {
 	try
 	{
+
 		initializeKeyMap();
 		CEGUI::OpenGL3Renderer::bootstrapSystem();
 		CEGUI::OpenGL3Renderer& myRenderer = CEGUI::OpenGL3Renderer::create();
@@ -114,6 +115,10 @@ void	renderGUIInjectEvents(SDL_Window *window, double guiLastTimePulse, bool &mu
 	}
 	injectTimePulse(guiLastTimePulse);
 	glDisable(GL_DEPTH_TEST);
-	CEGUI::System::getSingleton().renderAllGUIContexts();
+    glDisable(GL_TEXTURE_2D);
+	glActiveTexture(GL_TEXTURE0);
+    CEGUI::System::getSingleton().renderAllGUIContexts();
 	glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
+
 }
