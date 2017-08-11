@@ -38,23 +38,19 @@ SDL_Window *initWindow(ConfigEditor &cfg)
 		std::cerr << "OpenGL context could not be created! SDL Error: %s\n" << SDL_GetError();
 		return (nullptr);
 	}
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-	if (err != GLEW_OK)
-	{
-		std::cerr << "Error : " << "Failed to initialize GLEW" << std::endl;
-		return nullptr;
-	}
 	return (window);
 }
 
 void gameLoop(SDL_Window *window, renderData rdata)
 {
-	GameManager manager;
+	GameManager         manager;
 	bool				mustQuit = false;
-	//double				guiLastTimePulse = initGui(window);
-	RenderEngine rEngine;
+    GUIFunctionCrate    crate;
+	double				guiLastTimePulse = initGui(window, crate);
+	RenderEngine        rEngine;
 
+    rdata = rEngine.initGlew(rdata);
+    crate.triggerExitParam = &mustQuit;
     do
     {
 		Clock::Instance().Tick();
@@ -67,7 +63,7 @@ void gameLoop(SDL_Window *window, renderData rdata)
 		rEngine.Draw(window, rdata);
 		//renderGUIInjectEvents(window, guiLastTimePulse, mustQuit);
 		SDL_GL_SwapWindow(window);
-		SDL_Delay(10);
+		//SDL_Delay(10);
     }
 	while (mustQuit == false);
 }
@@ -81,13 +77,10 @@ int	main(int argc, char *argv[])
 
 	SDL_Window	*window = initWindow(g_cfg);
 	rdata.rObjs.push_back(*obj);
-	rdata = rEngine.initGlew(rdata);
 	if (window == nullptr || rdata.res == -1)
 		return (-1);
 
 	gameLoop(window, rdata);
-
-	//startGUI(window);
 	SDL_Quit();
 	return (0);
 }
