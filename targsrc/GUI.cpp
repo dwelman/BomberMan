@@ -27,10 +27,11 @@ inline void	  setupResourceGroups()
 	//	CEGUI::ScriptModule::setDefaultResourceGroup("lua_scripts");
 }
 
-void		loadResources()
+void		loadResources(GUIFunctionCrate &crate)
 {
 	//Load Schemes
 	CEGUI::SchemeManager::getSingleton().createFromFile("AlfiskoSkin.scheme");
+	CEGUI::SchemeManager::getSingleton().createFromFile("Generic.scheme");
 
 	//Setup Defaults
 	CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("AlfiskoSkin/MouseArrow");
@@ -38,19 +39,34 @@ void		loadResources()
 
 	//Load Layouts
 	CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
-	CEGUI::Window* myRoot = wmgr.loadLayoutFromFile("TestLayout.layout");
-	CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(myRoot);
+	crate.main = wmgr.loadLayoutFromFile("TestLayout.layout");
+
+	crate.settings = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("Settings.layout");
+	//crate.main->addChild(crate.settings);
+	crate.settings->setVisible(false);
+
+	CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(crate.main);
 
 }
 
 void		setupEvents(GUIFunctionCrate &crate)
 {
 	//Main menu
+	CEGUI::NamedElement *start = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("StartGame");
+	crate.MenuFunctions.push_back(new MenuFunction(start, CEGUI::PushButton::EventClicked, &startGameMainMenu, crate));
+
+	CEGUI::NamedElement *settings = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("SettingsBtn");
+	crate.MenuFunctions.push_back(new MenuFunction(settings, CEGUI::PushButton::EventClicked, &openSettingsMenu, crate));
+
+	//Settings
+	CEGUI::NamedElement *closeSettings = crate.settings->getChildElementRecursive("Close");
+	crate.MenuFunctions.push_back(new MenuFunction(closeSettings, CEGUI::PushButton::EventClicked, &openMainMenu, crate));
+	
 	CEGUI::NamedElement *exit = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("Exit");
 	crate.MenuFunctions.push_back(new MenuFunction(exit, CEGUI::PushButton::EventClicked, &setExit, crate));
 
-    CEGUI::NamedElement *start = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("StartGame");
-    crate.MenuFunctions.push_back(new MenuFunction(start, CEGUI::PushButton::EventClicked, &startGameMainMenu, crate));
+
+    
 }
 //MenuFunction(CEGUI::NamedElement *_element, const CEGUI::String &name, ccev eventFunction, GUIFunctionCrate	&var)
 
@@ -76,9 +92,9 @@ double    initGui(SDL_Window *window, GUIFunctionCrate &crate)
 		CEGUI::OpenGL3Renderer::bootstrapSystem();
 		CEGUI::OpenGL3Renderer& myRenderer = CEGUI::OpenGL3Renderer::create();
 
-		SDL_ShowCursor(SDL_DISABLE);
+		SDL_ShowCursor(SDL_ENABLE);
 		setupResourceGroups();
-		loadResources();
+		loadResources(crate);
 		setupEvents(crate);
 	}
 	catch (...)
