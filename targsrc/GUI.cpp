@@ -4,9 +4,27 @@
 
 //#include <MenuFunction.hpp>
 
+void               loadDefaultSettings(GUIFunctionCrate &crate)
+{
+    crate.settingContainer.resolution.push_back("800x600");
+    crate.settingContainer.resolution.push_back("1280x720");
+    crate.settingContainer.resolution.push_back("1920x1080");
+    crate.settingContainer.resolution.setIterator( g_cfg["xres"].to_str() + "x" + g_cfg["yres"].to_str() );
+
+    crate.settingContainer.fullScreen.push_back("Yes");
+    crate.settingContainer.fullScreen.push_back("No");
+    crate.settingContainer.fullScreen.setIterator( g_cfg["fullscreen"].to_str() == "true" ? "Yes" : "No" );
+}
+
+GUIFunctionCrate::GUIFunctionCrate()
+{
+    memset(this, 0, sizeof(GUIFunctionCrate));
+
+    loadDefaultSettings(*this);
+}
+
 GUIFunctionCrate::~GUIFunctionCrate()
 {
-	memset(this, 0, sizeof(GUIFunctionCrate));
 }
 
 inline void	  setupResourceGroups()
@@ -42,7 +60,6 @@ void		loadResources(GUIFunctionCrate &crate)
 	crate.main = wmgr.loadLayoutFromFile("TestLayout.layout");
 
 	crate.settings = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("Settings.layout");
-	//crate.main->addChild(crate.settings);
 	crate.settings->setVisible(false);
 
 	CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(crate.main);
@@ -65,10 +82,28 @@ void		setupEvents(GUIFunctionCrate &crate)
 	CEGUI::NamedElement *exit = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("Exit");
 	crate.MenuFunctions.push_back(new MenuFunction(exit, CEGUI::PushButton::EventClicked, &setExit, crate));
 
+    CEGUI::NamedElement *resolutionNext = crate.settings->getChildElementRecursive("ResolutionNext");
+    crate.MenuFunctions.push_back(new MenuFunction(resolutionNext, CEGUI::PushButton::EventClicked, &resolutionNextClick, crate));
 
-    
+    CEGUI::NamedElement *resolutionPrev = crate.settings->getChildElementRecursive("ResolutionPrevious");
+    crate.MenuFunctions.push_back(new MenuFunction(resolutionPrev, CEGUI::PushButton::EventClicked, &resolutionPreviousClick, crate));
+
+    CEGUI::NamedElement *fullscreenNext = crate.settings->getChildElementRecursive("FullscreenNext");
+    crate.MenuFunctions.push_back(new MenuFunction(fullscreenNext, CEGUI::PushButton::EventClicked, &fullscreenNextClick, crate));
+
+    CEGUI::NamedElement *fullscreenPrev = crate.settings->getChildElementRecursive("FullscreenPrevious");
+    crate.MenuFunctions.push_back(new MenuFunction(fullscreenPrev, CEGUI::PushButton::EventClicked, &fullscreenPreviousClick, crate));
+
 }
 //MenuFunction(CEGUI::NamedElement *_element, const CEGUI::String &name, ccev eventFunction, GUIFunctionCrate	&var)
+
+void        initValues(GUIFunctionCrate &crate)
+{
+    CEGUI::NamedElement *resolutionValue = crate.settings->getChildElementRecursive("ResolutionValue");
+    resolutionValue->setProperty("Text", g_cfg["xres"].to_str() + "x" + g_cfg["yres"].to_str());
+    CEGUI::NamedElement *fullscreenValue = crate.settings->getChildElementRecursive("FullscreenValue");
+    fullscreenValue->setProperty("Text", g_cfg["fullscreen"].to_str() == "true" ? "Yes" : "No");
+}
 
 void		destroyGUI(GUIFunctionCrate &crate)
 {
@@ -96,6 +131,7 @@ double    initGui(SDL_Window *window, GUIFunctionCrate &crate)
 		setupResourceGroups();
 		loadResources(crate);
 		setupEvents(crate);
+        initValues(crate);
 	}
 	catch (...)
 	{
