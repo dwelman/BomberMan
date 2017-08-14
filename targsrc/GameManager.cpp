@@ -26,7 +26,7 @@ GameManager & GameManager::operator=(GameManager const & gm)
 	return (*this);
 }
 
-void	GameManager::handleCollisions(Collision &c, Position &p, std::size_t ID)
+void	GameManager::handleCollisions(Collision &c, Position &p, Tag &t, std::size_t ID)
 {
 	for (std::size_t i = 0; i < m_entities.size(); i++)
 	{
@@ -39,11 +39,41 @@ void	GameManager::handleCollisions(Collision &c, Position &p, std::size_t ID)
 				{
 					std::size_t collisionID = m_entities[i].GetComponentOfType(COLLISION);
 					std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
-					Collision *collision = static_cast<Collision*>(m_components[collisionID]);
-					Position *position = static_cast<Position*>(m_components[positionID]);
+					Collision *collision = dynamic_cast<Collision*>(m_components[collisionID]);
+					Position *position = dynamic_cast<Position*>(m_components[positionID]);
 					if (CollisionSystem::CheckCollision(p, c, *position, *collision) == true)
 					{
-						//Do collision
+                        std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
+                        Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
+						if (TagSystem::CheckMaskForTag(t.GetTagMask(), DAMAGE_PLAYER_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), PLAYER_TAG)
+                            && !TagSystem::CheckMaskForTag(tag->GetTagMask(), INDESTRUCTIBLE_TAG))
+                        {
+                            //Player dies
+                            m_toBeDeleted.push_back(i);
+                        }
+                        if (TagSystem::CheckMaskForTag(t.GetTagMask(), DAMAGE_WALL_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), WALL_TAG)
+                            && !TagSystem::CheckMaskForTag(tag->GetTagMask(), INDESTRUCTIBLE_TAG))
+                        {
+                            //Wall is destroyed
+                            m_toBeDeleted.push_back(i);
+                        }
+                        if (TagSystem::CheckMaskForTag(t.GetTagMask(), DAMAGE_ENEMY_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), ENEMY_TAG)
+                            && !TagSystem::CheckMaskForTag(tag->GetTagMask(), INDESTRUCTIBLE_TAG))
+                        {
+                            //Enemy is destroyed
+                            m_toBeDeleted.push_back(i);
+                        }
+
+                        if (TagSystem::CheckMaskForTag(t.GetTagMask(), PLAYER_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), POWERUP_TAG))
+                        {
+                            //Player collects a powerup
+                            m_toBeDeleted.push_back(i);
+                        }
+
+                        if (TagSystem::CheckMaskForTag(t.GetTagMask(), MOVING_ENTITY_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), WALL_TAG))
+                        {
+                            //Entity hits a wall and must turn around
+                        }
 					}
 				}
 				catch (std::exception &e)
@@ -88,7 +118,7 @@ void GameManager::createEntity(std::string entityType)
         entity.RegisterComponent(m_currentComponentID, PLAYERCONTROLLER);
         m_components.emplace(std::make_pair(m_currentComponentID++, new PlayerController()));
         entity.RegisterComponent(m_currentComponentID, TAG);
-        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(PLAYER_TAG)));
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(PLAYER_TAG | MOVING_ENTITY_TAG)));
     }
     else if (entityType == "indestructible_wall")
     {
@@ -302,7 +332,9 @@ bool 	GameManager::Update()
                     Position *position = dynamic_cast<Position *>(m_components[positionID]);
                     if (collision->GetCheckCollision() == true)
                     {
-                        handleCollisions(*collision, *position, i);
+                        std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
+                        Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
+                        handleCollisions(*collision, *position, *tag, i);
                     }
                 }
                 catch (std::exception &e)

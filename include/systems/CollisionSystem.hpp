@@ -3,7 +3,7 @@
 #include "components/Collision.hpp"
 #include "components/Position.hpp"
 
-#define COLLISION_SYSTEM_FLAGS (COLLISION|POSITION)
+#define COLLISION_SYSTEM_FLAGS (COLLISION|POSITION|TAG)
 
 namespace CollisionSystem
 {

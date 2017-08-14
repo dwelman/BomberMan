@@ -6,8 +6,8 @@
 
 #include "Entity.hpp"
 #include "components/BaseComponent.hpp"
-#include "components/Tag.hpp"
 #include "components/Explosion.hpp"
+#include "systems/TagSystem.hpp"
 #include "systems/PlayerControllerSystem.hpp"
 #include "systems/CollisionSystem.hpp"
 #include "systems/MovementSystem.hpp"
@@ -23,7 +23,7 @@ private:
     std::vector<std::size_t>                m_toBeDeleted;
     bool                                    m_gameStarted;
 
-	void		handleCollisions(Collision &c, Position &p, std::size_t ID);
+	void		handleCollisions(Collision &c, Position &p, Tag &t, std::size_t ID);
     void        handleMovement(Position &p, Movement &m);
     void        createEntity(std::string entityType);
     void        createEntityAtPosition(std::string entityType, Vec3 const &pos);

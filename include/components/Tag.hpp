@@ -12,7 +12,8 @@ enum TagType
     POWERUP_TAG = 32,
     DAMAGE_PLAYER_TAG = 64,
     DAMAGE_ENEMY_TAG = 128,
-    DAMAGE_WALL_TAG = 256
+    DAMAGE_WALL_TAG = 256,
+    MOVING_ENTITY_TAG = 512
 };
 
 #define TAG_MASK_TYPE short

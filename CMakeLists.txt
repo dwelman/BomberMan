@@ -160,7 +160,9 @@ set(SOURCE_SYS
 		${SYSSOURCE}CollisionSystem.cpp
 		${SYSSOURCE}MovementSystem.cpp
 		${SYSSOURCE}PlayerControllerSystem.cpp
-		${SYSSOURCE}BombSystem.cpp)
+		${SYSSOURCE}BombSystem.cpp
+		${SYSSOURCE}TagSystem.cpp
+		)
 
 set(INCLUDE "include/")
 set(HEADERS
@@ -197,7 +199,9 @@ set(HEADERS_SYS
 		${SYS_INCL}CollisionSystem.hpp
 		${SYS_INCL}MovementSystem.hpp
 		${SYS_INCL}PlayerControllerSystem.hpp
-		${SYS_INCL}BombSystem.hpp)
+		${SYS_INCL}BombSystem.hpp
+		${SYS_INCL}TagSystem.hpp
+		)
 
 set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR} )
 
