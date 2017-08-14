@@ -43,6 +43,7 @@ public:
         (*this)[key] = val;
     }
     void              saveConfig();
+	void              reload();
 };
 
 

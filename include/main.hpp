@@ -22,6 +22,7 @@
 #include "MenuStateMachine.hpp"
 #include <RenderEngine.hpp>
 #include <ConfigEditor.hpp>
+#include <Util.hpp>
 
 enum    ePlayerAction
 {
@@ -34,3 +35,4 @@ enum    ePlayerAction
 };
 
 static ConfigEditor g_cfg("resources/settings.cfg");
+

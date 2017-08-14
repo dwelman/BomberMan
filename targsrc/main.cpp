@@ -24,7 +24,7 @@ SDL_Window *initWindow(ConfigEditor &cfg)
 	SDL_Window *window = SDL_CreateWindow(
 		"Bomberman", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, cfg["xres"].to_int(), cfg["yres"].to_int(),
 		SDL_WINDOW_OPENGL);
-    if (cfg["Fullscreen"].to_str() == "true")
+    if (case_ins_cmp(cfg["Fullscreen"].to_str(), "yes"))
         SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);

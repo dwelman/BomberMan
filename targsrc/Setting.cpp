@@ -1,56 +1,89 @@
 //
 // Created by Dean DU TOIT on 2017/08/14.
 //
-#include <Setting.hpp>
+
+#include <Settings.hpp>
+#include <main.hpp>
+
+Setting::Setting(std::string cfgkey, std::string activeValue)
+{
+	this->cfgkey = cfgkey;
+	this->activeValue = activeValue;
+	push_back(activeValue.c_str());
+	it = 0;
+}
 
 void    Setting::push_back(std::string *val)
 {
-    values.push_back(val);
-    if (values.size() == 1)
-        it = values.begin();
+    push_back(val->c_str());
 }
 
-#include <iostream>
 void    Setting::push_back(const char *val)
 {
+	if (values.size() > 0)
+		for (int i = 0; i < values.size(); i++)
+		{
+
+			if (case_ins_cmp(val, *values[i]))
+				return;
+		}
     values.push_back(new std::string(val));
-    std::cout << *values[0] << std::endl;
-    it = values.begin();
 }
 
-std::vector<std::string*>::iterator    &Setting::next()
+std::string*    &Setting::next()
 {
-    if (it + 1 == values.end())
-        it = values.begin();
+    if (it == values.size() - 1)
+        it = 0;
     else
         it++;
-    return (it);
+    return (values[it]);
 }
 
-std::vector<std::string*>::iterator   &Setting::previous()
+std::string*   &Setting::previous()
 {
-    if (it == values.begin())
+    if (it == 0)
     {
-        it = values.end();
-        it--;
+        it = values.size() > 0 ? values.size() - 1 : 0;
     }
     else
         it--;
-    return (it);
+    return (values[it]);
 }
 
-std::vector<std::string*>::iterator  &Setting::current()
+std::string*  &Setting::current()
 {
-    return (it);
+    return (values[it]);
 }
 
 void                                Setting::setIterator(std::string val)
 {
-    for (auto itr = values.begin(); itr != values.end(); itr++)
+    for (int i = 0; i < values.size(); i++)
     {
-        if (**itr == val)
+		if (*values[i] == val)
         {
-            it = itr;
+            it += i;
         }
     }
 }
+
+SettingsState::SettingsState()
+{
+	memset(this, 0, sizeof(SettingsState));
+}
+
+VideoSettings::VideoSettings()
+{
+	memset(this, 0, sizeof(VideoSettings));
+}
+
+Setting::Setting()
+{
+	memset(this, 0, sizeof(Setting));
+}
+
+void				loadSettingsFromDefaultConfig(SettingsState &settings)
+{
+	settings.video.resolution = Setting("#multiple", g_cfg["xres"].to_str() + "x" + g_cfg["yres"].to_str());
+	settings.video.fullScreen = Setting("#multiple", case_ins_cmp("yes", g_cfg["fullscreen"].to_str()) ? "Yes" : "No");
+}
+

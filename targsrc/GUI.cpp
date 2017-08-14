@@ -2,25 +2,25 @@
 #include <main.hpp>
 #include <GUI.hpp>
 
-//#include <MenuFunction.hpp>
-
-void               loadDefaultSettings(GUIFunctionCrate &crate)
+void				populateSettingSpinners(SettingsState &s)
 {
-    crate.settingContainer.resolution.push_back("800x600");
-    crate.settingContainer.resolution.push_back("1280x720");
-    crate.settingContainer.resolution.push_back("1920x1080");
-    crate.settingContainer.resolution.setIterator( g_cfg["xres"].to_str() + "x" + g_cfg["yres"].to_str() );
+	s.video.resolution.push_back("1280x720");
+	s.video.resolution.push_back("1920x1080");
+	s.video.resolution.setIterator(s.video.resolution.activeValue);
 
-    crate.settingContainer.fullScreen.push_back("Yes");
-    crate.settingContainer.fullScreen.push_back("No");
-    crate.settingContainer.fullScreen.setIterator( g_cfg["fullscreen"].to_str() == "true" ? "Yes" : "No" );
+	s.video.fullScreen.push_back("Yes");
+	s.video.fullScreen.push_back("No");
+	s.video.fullScreen.setIterator(s.video.fullScreen.activeValue);
 }
+
+
 
 GUIFunctionCrate::GUIFunctionCrate()
 {
     memset(this, 0, sizeof(GUIFunctionCrate));
 
-    loadDefaultSettings(*this);
+	loadSettingsFromDefaultConfig(this->activeSettings);
+	pendingSettings = activeSettings;
 }
 
 GUIFunctionCrate::~GUIFunctionCrate()
@@ -54,6 +54,9 @@ void		loadResources(GUIFunctionCrate &crate)
 	//Setup Defaults
 	CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("AlfiskoSkin/MouseArrow");
 	CEGUI::System::getSingleton().getDefaultGUIContext().setDefaultFont("Jura-18");
+	CEGUI::FontManager::getSingleton().createFromFile("Jura-18.font");
+	CEGUI::FontManager::getSingleton().createFromFile("Jura-13.font");
+	CEGUI::FontManager::getSingleton().createFromFile("Jura-10.font");
 
 	//Load Layouts
 	CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
@@ -66,35 +69,7 @@ void		loadResources(GUIFunctionCrate &crate)
 
 }
 
-void		setupEvents(GUIFunctionCrate &crate)
-{
-	//Main menu
-	CEGUI::NamedElement *start = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("StartGame");
-	crate.MenuFunctions.push_back(new MenuFunction(start, CEGUI::PushButton::EventClicked, &startGameMainMenu, crate));
 
-	CEGUI::NamedElement *settings = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("SettingsBtn");
-	crate.MenuFunctions.push_back(new MenuFunction(settings, CEGUI::PushButton::EventClicked, &openSettingsMenu, crate));
-
-	//Settings
-	CEGUI::NamedElement *closeSettings = crate.settings->getChildElementRecursive("Close");
-	crate.MenuFunctions.push_back(new MenuFunction(closeSettings, CEGUI::PushButton::EventClicked, &openMainMenu, crate));
-	
-	CEGUI::NamedElement *exit = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("Exit");
-	crate.MenuFunctions.push_back(new MenuFunction(exit, CEGUI::PushButton::EventClicked, &setExit, crate));
-
-    CEGUI::NamedElement *resolutionNext = crate.settings->getChildElementRecursive("ResolutionNext");
-    crate.MenuFunctions.push_back(new MenuFunction(resolutionNext, CEGUI::PushButton::EventClicked, &resolutionNextClick, crate));
-
-    CEGUI::NamedElement *resolutionPrev = crate.settings->getChildElementRecursive("ResolutionPrevious");
-    crate.MenuFunctions.push_back(new MenuFunction(resolutionPrev, CEGUI::PushButton::EventClicked, &resolutionPreviousClick, crate));
-
-    CEGUI::NamedElement *fullscreenNext = crate.settings->getChildElementRecursive("FullscreenNext");
-    crate.MenuFunctions.push_back(new MenuFunction(fullscreenNext, CEGUI::PushButton::EventClicked, &fullscreenNextClick, crate));
-
-    CEGUI::NamedElement *fullscreenPrev = crate.settings->getChildElementRecursive("FullscreenPrevious");
-    crate.MenuFunctions.push_back(new MenuFunction(fullscreenPrev, CEGUI::PushButton::EventClicked, &fullscreenPreviousClick, crate));
-
-}
 //MenuFunction(CEGUI::NamedElement *_element, const CEGUI::String &name, ccev eventFunction, GUIFunctionCrate	&var)
 
 void        initValues(GUIFunctionCrate &crate)
@@ -102,7 +77,7 @@ void        initValues(GUIFunctionCrate &crate)
     CEGUI::NamedElement *resolutionValue = crate.settings->getChildElementRecursive("ResolutionValue");
     resolutionValue->setProperty("Text", g_cfg["xres"].to_str() + "x" + g_cfg["yres"].to_str());
     CEGUI::NamedElement *fullscreenValue = crate.settings->getChildElementRecursive("FullscreenValue");
-    fullscreenValue->setProperty("Text", g_cfg["fullscreen"].to_str() == "true" ? "Yes" : "No");
+    fullscreenValue->setProperty("Text", case_ins_cmp("yes", g_cfg["fullscreen"].to_str()) ? "Yes" : "No");
 }
 
 void		destroyGUI(GUIFunctionCrate &crate)
@@ -111,11 +86,11 @@ void		destroyGUI(GUIFunctionCrate &crate)
 	TODO
 	*/
 	// Clean crate
-	for (auto it = crate.MenuFunctions.begin(); it != crate.MenuFunctions.end(); it++)
-		delete (*it);
+//	for (auto it = crate.MenuFunctions.begin(); it != crate.MenuFunctions.end(); it++)
+//		delete (*it);
 
 	CEGUI::System::destroy();
-	//CEGUI::OpenGL3Renderer::destroy(static_cast<CEGUI::OpenGL3Renderer&>(myRenderer));
+	CEGUI::OpenGL3Renderer::destroy(static_cast<CEGUI::OpenGL3Renderer&>(*crate.guiRenderer));
 }
 
 double    initGui(SDL_Window *window, GUIFunctionCrate &crate)
@@ -125,13 +100,14 @@ double    initGui(SDL_Window *window, GUIFunctionCrate &crate)
 
 		initializeKeyMap();
 		CEGUI::OpenGL3Renderer::bootstrapSystem();
-		CEGUI::OpenGL3Renderer& myRenderer = CEGUI::OpenGL3Renderer::create();
+		crate.guiRenderer = &CEGUI::OpenGL3Renderer::create();
 
 		SDL_ShowCursor(SDL_ENABLE);
 		setupResourceGroups();
 		loadResources(crate);
 		setupEvents(crate);
         initValues(crate);
+		populateSettingSpinners(crate.activeSettings);
 	}
 	catch (...)
 	{
@@ -201,4 +177,23 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 	glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
 
+}
+
+void		reloadDisplayMode(SDL_Window *win, GUIFunctionCrate &crate)
+{
+	SDL_DisplayMode	dsp;
+	SDL_GetDesktopDisplayMode(0, &dsp);
+
+	g_cfg.reload();
+	dsp.w = g_cfg["xres"].to_int();
+	dsp.h = g_cfg["yres"].to_int();
+
+	destroyGUI(crate);
+	//crate.guiRenderer->setDisplaySize(CEGUI::Sizef(dsp.w, dsp.h));
+
+	SDL_SetWindowSize(win, g_cfg["xres"].to_int(), g_cfg["yres"].to_int());
+	SDL_SetWindowDisplayMode(win, &dsp);
+	//const SDL_DisplayMode* mode)
+	initGui(win, crate);
+	crate.displayChanged = false;
 }

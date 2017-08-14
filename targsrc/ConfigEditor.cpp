@@ -6,35 +6,7 @@
 
 ConfigEditor::ConfigEditor(std::string const _filename) : filename(_filename)
 {
-    std::ifstream stream;
-    stream.open (filename);
-    std::string line;
-    size_t      find;
-    std::string key;
-    std::string val;
-
-	if (stream.is_open())
-	{
-		while (getline(stream, line))
-		{
-			if (line.find("#") != std::string::npos)
-				line = line.substr(0, line.find("#"));
-			find = line.find("=");
-			if (find != std::string::npos)
-			{
-				key = line.substr(0, find);
-				val = line.substr(find + 1, line.size() - find);
-				if (key.size() && val.size())
-				{
-					for (auto it = key.begin(); it < key.end(); it++)
-						*it = std::toupper(*it);
-					keys[key] = val;
-				}
-			}
-		}
-	}
-	else
-		std::cerr << "Error : " << filename << "not found" << std::endl;
+	reload();
 }
 
 ConfigEditor::ConfigEditor(ConfigEditor const &src)
@@ -70,6 +42,39 @@ void              ConfigEditor::saveConfig()
     {
         stream << it->first << "=" << it->second << "\n";
     }
+};
+
+void              ConfigEditor::reload()
+{
+	std::ifstream stream;
+	stream.open(filename);
+	std::string line;
+	size_t      find;
+	std::string key;
+	std::string val;
+
+	if (stream.is_open())
+	{
+		while (getline(stream, line))
+		{
+			if (line.find("#") != std::string::npos)
+				line = line.substr(0, line.find("#"));
+			find = line.find("=");
+			if (find != std::string::npos)
+			{
+				key = line.substr(0, find);
+				val = line.substr(find + 1, line.size() - find);
+				if (key.size() && val.size())
+				{
+					for (auto it = key.begin(); it < key.end(); it++)
+						*it = std::toupper(*it);
+					keys[key] = val;
+				}
+			}
+		}
+	}
+	else
+		std::cerr << "Error : " << filename << "not found" << std::endl;
 };
 
 keyref::keyref(std::string &_ref) : ref(_ref)

@@ -2,29 +2,25 @@
 #include <main.hpp>
 #include <CEGUI/RendererModules/OpenGL/GL3Renderer.h>
 #include <GameManager.hpp>
-#include <Setting.hpp>
+#include <Settings.hpp>
 
 struct MenuFunction;
 struct Setting;
 
-struct SettingContainer
-{
-	Setting							resolution;
-	Setting							fullScreen;
-
-};
-
 struct GUIFunctionCrate
 {
-	GameManager                 	*manager;
+	GameManager                 *manager;
+	CEGUI::OpenGL3Renderer		*guiRenderer;
+	bool						*mustQuit;
+	bool						displayChanged;
 	//Layouts
 	CEGUI::Window* main;
 	CEGUI::Window* settings;
 
-	SettingContainer			settingContainer;
+	SettingsState				activeSettings;
+	SettingsState				pendingSettings;
 
 	std::vector<MenuFunction*>	MenuFunctions;
-	bool						*mustQuit;
 
 	GUIFunctionCrate();
 	~GUIFunctionCrate();
@@ -65,10 +61,13 @@ void	injectTimePulse(double& last_time_pulse);
 
 void	loadResources();
 
-void	loadDefaultSettings(GUIFunctionCrate &crate);
+void	setupEvents(GUIFunctionCrate &crate);
+
+void	loadSettingsFromDefaultConfig(SettingsState &settings);
 
 void	destroyGUI(GUIFunctionCrate &crate);
 
+void		reloadDisplayMode(SDL_Window *win, GUIFunctionCrate &crate);
 
 //Events
 
@@ -87,3 +86,5 @@ bool resolutionPreviousClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_el
 bool fullscreenNextClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate	&var);
 
 bool fullscreenPreviousClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate	&var);
+
+bool applyClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate	&var);

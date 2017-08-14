@@ -3,10 +3,12 @@
 <GUILayout version="4" >
     <Window type="DefaultWindow" name="Settings" >
         <Property name="Area" value="{{0,3},{0,0},{1,3},{1,0}}" />
+        <Property name="Font" value="GreatVibes-16" />
         <Property name="MaxSize" value="{{1,0},{1,0}}" />
         <Window type="AlfiskoSkin/FrameWindow" name="SettingsMenu" >
             <Property name="Area" value="{{0.25,0},{0.1,0},{0.75,0},{0.9,0}}" />
             <Property name="Text" value=" Settings" />
+            <Property name="AlwaysOnTop" value="true" />
             <AutoWindow namePath="__auto_titlebar__" >
                 <Property name="AlwaysOnTop" value="false" />
             </AutoWindow>
@@ -71,8 +73,27 @@
                 <Property name="AutoRenderingSurface" value="true" />
             </Window>
             <Window type="AlfiskoSkin/Button" name="Close" >
-                <Property name="Area" value="{{0.75,0},{0.92,0},{0.95,0},{0.92,32}}" />
+                <Property name="Area" value="{{0.74,0},{0.92,0},{0.94,0},{0.986,0}}" />
                 <Property name="Text" value="Close" />
+            </Window>
+            <Window type="AlfiskoSkin/Button" name="Apply" >
+                <Property name="Area" value="{{0.5,0},{0.92,0},{0.7,0},{0.986,0}}" />
+                <Property name="Text" value="Apply" />
+            </Window>
+            <Window type="Generic/LabelWithOutline" name="VidRestartNotice" >
+                <Property name="Area" value="{{0,-1},{0.938,-9},{0.5,-1},{0.938,23}}" />
+                <Property name="Font" value="Jura-10" />
+                <Property name="Text" value=" *Restart the game to apply video changes" />
+                <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                <Property name="Visible" value="false" />
+                <Property name="AspectRatio" value="1.7" />
+                <Property name="PixelAligned" value="false" />
+                <Property name="DragDropTarget" value="false" />
+                <Property name="HorzFormatting" value="LeftAligned" />
+                <Property name="VertFormatting" value="TopAligned" />
+                <Property name="NormalTextColour" value="FFD1191F" />
+                <Property name="AutoRenderingSurface" value="true" />
+                <Property name="MousePassThroughEnabled" value="true" />
             </Window>
         </Window>
     </Window>
