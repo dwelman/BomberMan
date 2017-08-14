@@ -6,8 +6,12 @@
 GameManager::GameManager()
 {
 	m_currentComponentID = 0;
-	m_deltaTime = 0.35f;
     m_gameStarted = false;
+    m_playerMoveSpeed = 2;
+    m_playerBombAmount = 1;
+    m_explosionSize = 1;
+    m_lives = 3;
+    m_score = 0;
     createEntity("player");
 }
 
@@ -49,6 +53,7 @@ void	GameManager::handleCollisions(Collision &c, Position &p, Tag &t, std::size_
                             && !TagSystem::CheckMaskForTag(tag->GetTagMask(), INDESTRUCTIBLE_TAG))
                         {
                             //Player dies
+                            m_lives--;
                             m_toBeDeleted.push_back(i);
                         }
                         if (TagSystem::CheckMaskForTag(t.GetTagMask(), DAMAGE_WALL_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), WALL_TAG)
@@ -56,6 +61,14 @@ void	GameManager::handleCollisions(Collision &c, Position &p, Tag &t, std::size_
                         {
                             //Wall is destroyed
                             m_toBeDeleted.push_back(i);
+                        }
+                        if (TagSystem::CheckMaskForTag(t.GetTagMask(), DAMAGE_WALL_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), BOMB_TAG)
+                            && !TagSystem::CheckMaskForTag(tag->GetTagMask(), INDESTRUCTIBLE_TAG))
+                        {
+                            //Bomb is set off
+                            std::size_t bombID = m_entities[i].GetComponentOfType(BOMB);
+                            Bomb *bomb = dynamic_cast<Bomb*>(m_components[bombID]);
+                            bomb->SetBombTime(0);
                         }
                         if (TagSystem::CheckMaskForTag(t.GetTagMask(), DAMAGE_ENEMY_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), ENEMY_TAG)
                             && !TagSystem::CheckMaskForTag(tag->GetTagMask(), INDESTRUCTIBLE_TAG))
@@ -114,7 +127,7 @@ void GameManager::createEntity(std::string entityType)
         entity.RegisterComponent(m_currentComponentID, COLLISION);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
         entity.RegisterComponent(m_currentComponentID, MOVEMENT);
-        m_components.emplace(std::make_pair(m_currentComponentID++, new Movement(0, 0, 0, 10)));
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Movement(0, 0, 0, m_playerMoveSpeed)));
         entity.RegisterComponent(m_currentComponentID, PLAYERCONTROLLER);
         m_components.emplace(std::make_pair(m_currentComponentID++, new PlayerController()));
         entity.RegisterComponent(m_currentComponentID, TAG);
@@ -170,7 +183,7 @@ void GameManager::createEntity(std::string entityType)
         entity.RegisterComponent(m_currentComponentID, TAG);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(DAMAGE_ENEMY_TAG | DAMAGE_PLAYER_TAG | DAMAGE_WALL_TAG)));
         entity.RegisterComponent(m_currentComponentID, EXPLOSION);
-        m_components.emplace(std::make_pair(m_currentComponentID++, new Explosion(3, Vec3(0, 0, 0), 0.4)));
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Explosion(m_explosionSize, Vec3(0, 0, 0), 0.4)));
     }
     else
     {
@@ -190,7 +203,7 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
         entity.RegisterComponent(m_currentComponentID, COLLISION);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
         entity.RegisterComponent(m_currentComponentID, MOVEMENT);
-        m_components.emplace(std::make_pair(m_currentComponentID++, new Movement(0, 0, 0, 10)));
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Movement(0, 0, 0, m_playerMoveSpeed)));
         entity.RegisterComponent(m_currentComponentID, PLAYERCONTROLLER);
         m_components.emplace(std::make_pair(m_currentComponentID++, new PlayerController()));
         entity.RegisterComponent(m_currentComponentID, TAG);
@@ -246,7 +259,7 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
         entity.RegisterComponent(m_currentComponentID, TAG);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(DAMAGE_ENEMY_TAG | DAMAGE_PLAYER_TAG | DAMAGE_WALL_TAG)));
         entity.RegisterComponent(m_currentComponentID, EXPLOSION);
-        m_components.emplace(std::make_pair(m_currentComponentID++, new Explosion(3, Vec3(0, 0, 0), 0.4)));
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Explosion(m_explosionSize, Vec3(0, 0, 0), 0.4)));
     }
     else
     {
@@ -292,6 +305,15 @@ bool 	GameManager::Update()
                     {
                         std::size_t movementID = m_entities[i].GetComponentOfType(MOVEMENT);
                         Movement *movement = dynamic_cast<Movement *>(m_components[movementID]);
+                    }
+
+                    //if bomb placed
+                    std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
+                    Position *position = dynamic_cast<Position *>(m_components[positionID]);
+                    if (m_playerBombAmount > 0)
+                    {
+                        m_playerBombAmount--;
+                        createEntityAtPosition("bomb", position->GetPosition());
                     }
                 }
                 catch (std::exception &e)
@@ -370,6 +392,7 @@ bool 	GameManager::Update()
                         createEntityAtPosition("explosion", position->GetPosition());
                         explosion = dynamic_cast<Explosion *>(m_components[m_entities.back().GetComponentOfType(EXPLOSION)]);
                         explosion->SetDirection(Vec3(0, -1, 0));
+                        m_playerBombAmount++;
                         m_toBeDeleted.push_back(i);
                     }
                 }

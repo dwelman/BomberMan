@@ -151,7 +151,6 @@ set(SOURCE_COMP
 		${COMPSRC}PlayerController.cpp
 		${COMPSRC}Bomb.cpp
 		${COMPSRC}Explosion.cpp
-		${COMPSRC}PlayerData.cpp
 		${COMPSRC}Tag.cpp
 		)
 
@@ -192,7 +191,7 @@ set(HEADERS_COMP
 		${COMP_INCL}Bomb.hpp
 		${COMP_INCL}Tag.hpp
 		${COMP_INCL}Explosion.hpp
-		${COMP_INCL}PlayerData.hpp)
+		)
 
 set(SYS_INCL "include/systems/")
 set(HEADERS_SYS
