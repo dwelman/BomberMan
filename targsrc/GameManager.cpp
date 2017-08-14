@@ -13,6 +13,7 @@ GameManager::GameManager()
     m_lives = 3;
     m_score = 0;
     createEntity("player");
+    srand(time(NULL));
 }
 
 GameManager::GameManager(GameManager const & gm)
@@ -61,6 +62,28 @@ void	GameManager::handleCollisions(Collision &c, Position &p, Tag &t, std::size_
                         {
                             //Wall is destroyed
                             m_toBeDeleted.push_back(i);
+                            //Explosion is destroyed as well
+                            std::size_t explosionID = m_entities[ID].GetComponentOfType(EXPLOSION);
+                            Explosion *explosion = dynamic_cast<Explosion*>(m_components[explosionID]);
+                            explosion->SetDuration(0);
+                            explosion->SetChildExplosions(0);
+
+                            //A powerup may spawn
+                            if (rand() % 100 <= 30)
+                            {
+                                if (rand() % 100 >= 66)
+                                {
+                                    createEntityAtPosition("powerup_life", position->GetPosition());
+                                }
+                                else if (rand() >= 33)
+                                {
+                                    createEntityAtPosition("powerup_bomb_amount", position->GetPosition());
+                                }
+                                else
+                                {
+                                    createEntityAtPosition("powerup_bomb_strength", position->GetPosition());
+                                }
+                            }
                         }
                         if (TagSystem::CheckMaskForTag(t.GetTagMask(), DAMAGE_WALL_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), BOMB_TAG)
                             && !TagSystem::CheckMaskForTag(tag->GetTagMask(), INDESTRUCTIBLE_TAG))
@@ -80,6 +103,20 @@ void	GameManager::handleCollisions(Collision &c, Position &p, Tag &t, std::size_
                         if (TagSystem::CheckMaskForTag(t.GetTagMask(), PLAYER_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), POWERUP_TAG))
                         {
                             //Player collects a powerup
+                            std::size_t powerupID = m_entities[i].GetComponentOfType(POWERUP);
+                            Powerup *powerup = dynamic_cast<Powerup *>(m_components[powerupID]);
+                            if (powerup->GetPowerupType() == LIFE)
+                            {
+                                m_lives++;
+                            }
+                            else if (powerup->GetPowerupType() == BOMB_AMOUNT_UP)
+                            {
+                                m_playerBombAmount++;
+                            }
+                            else if (powerup->GetPowerupType() == BOMB_STRENGTH_UP)
+                            {
+                                m_explosionSize++;
+                            }
                             m_toBeDeleted.push_back(i);
                         }
 
@@ -260,6 +297,39 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
         m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(DAMAGE_ENEMY_TAG | DAMAGE_PLAYER_TAG | DAMAGE_WALL_TAG)));
         entity.RegisterComponent(m_currentComponentID, EXPLOSION);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Explosion(m_explosionSize, Vec3(0, 0, 0), 0.4)));
+    }
+    else if (entityType == "powerup_life")
+    {
+        entity.RegisterComponent(m_currentComponentID, POSITION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
+        entity.RegisterComponent(m_currentComponentID, COLLISION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
+        entity.RegisterComponent(m_currentComponentID, TAG);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(POWERUP_TAG)));
+        entity.RegisterComponent(m_currentComponentID, POWERUP);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Powerup(LIFE)));
+    }
+    else if (entityType == "powerup_bomb_amount")
+    {
+        entity.RegisterComponent(m_currentComponentID, POSITION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
+        entity.RegisterComponent(m_currentComponentID, COLLISION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
+        entity.RegisterComponent(m_currentComponentID, TAG);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(POWERUP_TAG)));
+        entity.RegisterComponent(m_currentComponentID, POWERUP);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Powerup(BOMB_AMOUNT_UP)));
+    }
+    else if (entityType == "powerup_bomb_strength")
+    {
+        entity.RegisterComponent(m_currentComponentID, POSITION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
+        entity.RegisterComponent(m_currentComponentID, COLLISION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
+        entity.RegisterComponent(m_currentComponentID, TAG);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(POWERUP_TAG)));
+        entity.RegisterComponent(m_currentComponentID, POWERUP);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Powerup(BOMB_STRENGTH_UP)));
     }
     else
     {

@@ -3,10 +3,12 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <cstdlib>
 
 #include "Entity.hpp"
 #include "components/BaseComponent.hpp"
 #include "components/Explosion.hpp"
+#include "components/Powerup.hpp"
 #include "systems/TagSystem.hpp"
 #include "systems/PlayerControllerSystem.hpp"
 #include "systems/CollisionSystem.hpp"
