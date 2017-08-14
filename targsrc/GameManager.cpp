@@ -2,6 +2,7 @@
 #include "Clock.hpp"
 
 #include <iostream>
+#include <time.h>
 
 GameManager::GameManager()
 {
