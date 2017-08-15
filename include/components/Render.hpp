@@ -2,6 +2,7 @@
 
 #include "Vec3.hpp"
 #include "components/BaseComponent.hpp"
+#include "RenderEngine.hpp"
 #include <cstddef>
 
 class Render : public BaseComponent

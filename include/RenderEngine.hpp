@@ -10,6 +10,20 @@
 
 class GameManager;
 
+enum ObjectType
+{
+	BLOCK = 1,
+	IND_BLOCK,
+	PLAYER,
+	BOMB,
+	ENEMY_1,
+	ENEMY_2,
+	ENEMY_3,
+	LIFE_POWERUP,
+	BOMB_STRENGTH_POWERUP,
+	BOMB_AMOUNT_POWERUP
+};
+
 struct renderData
 {
 	float xPos;
@@ -32,7 +46,7 @@ struct renderData
 	GLuint TangentBuffer;
 	GLuint BitangentBuffer;
 	GLuint ElementBuffer;
-    enum type {iBlocks = 1, dBlock, Player, Bomb, Enemy1, Enemy2, Enemy3, lPower, bPower, baPower};
+    ObjectType type;
 	std::vector<unsigned short> Indices;
 	std::vector<glm::vec3> indexed_vertices;
 	std::vector<glm::vec2> indexed_uvs;
