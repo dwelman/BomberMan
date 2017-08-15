@@ -5,15 +5,21 @@
 #include <map>
 #include <cstdlib>
 
+#include "main.hpp"
+#include "RenderEngine.hpp"
 #include "Entity.hpp"
 #include "components/BaseComponent.hpp"
 #include "components/Explosion.hpp"
 #include "components/Powerup.hpp"
+#include "components/Render.hpp"
 #include "systems/TagSystem.hpp"
 #include "systems/PlayerControllerSystem.hpp"
 #include "systems/CollisionSystem.hpp"
 #include "systems/MovementSystem.hpp"
 #include "systems/BombSystem.hpp"
+#include "systems/RenderSystem.hpp"
+
+class RenderEngine;
 
 class GameManager
 {
@@ -42,6 +48,7 @@ public:
 
 	GameManager	&operator=(GameManager const &gm);
     bool        Update();
+    void        GetRenderData(std::vector<renderData> &rdata);
     bool        GetGameStarted() const;
     void        SetGameStarted(bool gameStarted);
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include <main.hpp>
 #include <UIElement.hpp>
+#include "RenderEngine.hpp"
 
 class GUIRenderer
 {

@@ -1,5 +1,4 @@
-#ifndef BOMBERMAN_RENDERENGINE_HPP
-#define BOMBERMAN_RENDERENGINE_HPP
+#pragma once
 
 #include "RenderObject.hpp"
 #include "main.hpp"
@@ -8,6 +7,8 @@
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+class GameManager;
 
 struct renderData
 {
@@ -80,5 +81,3 @@ class RenderEngine
 };
 
 GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
-
-#endif

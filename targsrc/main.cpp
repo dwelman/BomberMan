@@ -9,10 +9,9 @@
 */
 
 #include "main.hpp"
-#include "RenderEngine.hpp"
-#include "GameManager.hpp"
 #include "Clock.hpp"
 #include <GUI.hpp>
+#include "GameManager.hpp"
 
 SDL_Window *initWindow(ConfigEditor &cfg)
 {
@@ -62,6 +61,7 @@ void gameLoop(SDL_Window *window, std::vector<renderData> rdata)
 		{
 //			break;
 		}
+        manager.GetRenderData(rdata);
 		rEngine.Draw(window, rdata, manager.GetGameStarted());
         if (!manager.GetGameStarted())
 		    renderGUIInjectEvents(manager, window, guiLastTimePulse, mustQuit);

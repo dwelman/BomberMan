@@ -513,6 +513,27 @@ bool 	GameManager::Update()
 	}
 }
 
+void        GameManager::GetRenderData(std::vector<renderData> &rdata)
+{
+    for (std::size_t i = 0; i < m_entities.size(); i++)
+    {
+        COMPONENT_MASK_TYPE mask = m_entities[i].GetComponentFlags();
+        if ((mask & RENDER_SYSTEM_FLAGS) == RENDER_SYSTEM_FLAGS)
+        {
+            std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
+            Position *position = dynamic_cast<Position *>(m_components[positionID]);
+            std::size_t renderID = m_entities[i].GetComponentOfType(RENDER);
+            Render *render= dynamic_cast<Render *>(m_components[positionID]);
+
+            renderData newObj;
+            newObj.xPos = position->GetPosition().GetX();
+            newObj.yPos = position->GetPosition().GetY();
+            newObj.zPos = position->GetPosition().GetZ();
+            rdata.push_back(newObj);
+        }
+    }
+}
+
 bool GameManager::GetGameStarted() const
 {
     return (m_gameStarted);

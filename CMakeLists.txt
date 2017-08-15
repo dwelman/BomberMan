@@ -164,6 +164,7 @@ set(SOURCE_SYS
 		${SYSSOURCE}PlayerControllerSystem.cpp
 		${SYSSOURCE}BombSystem.cpp
 		${SYSSOURCE}TagSystem.cpp
+		${SYSSOURCE}RenderSystem.cpp
 		)
 
 set(INCLUDE "include/")
@@ -206,6 +207,7 @@ set(HEADERS_SYS
 		${SYS_INCL}PlayerControllerSystem.hpp
 		${SYS_INCL}BombSystem.hpp
 		${SYS_INCL}TagSystem.hpp
+		${SYS_INCL}RenderSystem.hpp
 		)
 
 set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR} )
