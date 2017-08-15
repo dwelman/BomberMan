@@ -461,7 +461,7 @@ void        GameManager::GetRenderData(std::vector<GameObjectRenderInfo> &g)
                 std::size_t renderID = m_entities[i].GetComponentOfType(RENDER);
                 Render *render= dynamic_cast<Render *>(m_components[renderID]);
 
-                GameObjectRenderInfo newObj(render->GetObjectType(), position->GetPosition(), Vec3(0, 0, 0));
+                GameObjectRenderInfo newObj(render->GetObjectType(), position->GetPosition(), East);
                 g.push_back(newObj);
             }
         }

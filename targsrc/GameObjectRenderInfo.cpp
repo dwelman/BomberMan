@@ -5,7 +5,7 @@ GameObjectRenderInfo::GameObjectRenderInfo()
 
 }
 
-GameObjectRenderInfo::GameObjectRenderInfo(ObjectType objectType, Vec3 position, Vec3 direction) : m_objectType(objectType), m_position(position), m_direction(direction)
+GameObjectRenderInfo::GameObjectRenderInfo(ObjectType objectType, Vec3 position, Direction direction) : m_objectType(objectType), m_position(position), m_direction(direction)
 {
 
 }
@@ -35,10 +35,10 @@ ObjectType GameObjectRenderInfo::GetObjectType() const
 
 Vec3 GameObjectRenderInfo::GetPosition() const
 {
-    return (m_direction);
+    return (m_position);
 }
 
-Vec3 GameObjectRenderInfo::GetDirection() const
+Direction GameObjectRenderInfo::GetDirection() const
 {
     return (m_direction);
 }
@@ -53,7 +53,7 @@ void GameObjectRenderInfo::SetPosition(Vec3 position)
     m_position = position;
 }
 
-void GameObjectRenderInfo::SetDirection(Vec3 direction)
+void GameObjectRenderInfo::SetDirection(Direction direction)
 {
     m_direction = direction;
 }

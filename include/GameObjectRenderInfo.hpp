@@ -4,16 +4,38 @@
 #include "RenderEngine.hpp"
 #include "Vec3.hpp"
 
+enum ObjectType
+{
+    BLOCK_OT = 0,
+    IND_BLOCK_OT,
+    PLAYER_OT,
+    BOMB_OT,
+    ENEMY_1_OT,
+    ENEMY_2_OT,
+    ENEMY_3_OT,
+    LIFE_POWERUP_OT,
+    BOMB_STRENGTH_POWERUP_OT,
+    BOMB_AMOUNT_POWERUP_OT
+};
+
+enum Direction
+{
+    East = 0,
+    North,
+    West,
+    South
+};
+
 class GameObjectRenderInfo
 {
 private:
     ObjectType  m_objectType;
     Vec3        m_position;
-    Vec3        m_direction;
+    Direction        m_direction;
 
     GameObjectRenderInfo();
 public:
-    GameObjectRenderInfo(ObjectType objectType, Vec3 position, Vec3 direction);
+    GameObjectRenderInfo(ObjectType objectType, Vec3 position, Direction direction);
     GameObjectRenderInfo(GameObjectRenderInfo const &g);
 
     ~GameObjectRenderInfo();
@@ -22,8 +44,8 @@ public:
 
     ObjectType  GetObjectType() const;
     Vec3        GetPosition() const;
-    Vec3        GetDirection() const;
+    Direction   GetDirection() const;
     void        SetObjectType(ObjectType type);
     void        SetPosition(Vec3 position);
-    void        SetDirection(Vec3 direction);
+    void        SetDirection(Direction direction);
 };

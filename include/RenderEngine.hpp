@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RenderObject.hpp"
+#include "GameObjectRenderInfo.hpp"
 #include "main.hpp"
 #include "VBOIndexer.hpp"
 #include <glm/vec2.hpp>
@@ -9,33 +10,20 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 class GameManager;
-
-enum ObjectType
-{
-	BLOCK_OT = 1,
-	IND_BLOCK_OT,
-	PLAYER_OT,
-	BOMB_OT,
-	ENEMY_1_OT,
-	ENEMY_2_OT,
-	ENEMY_3_OT,
-	LIFE_POWERUP_OT,
-	BOMB_STRENGTH_POWERUP_OT,
-	BOMB_AMOUNT_POWERUP_OT
-};
+class GameObjectRenderInfo;
 
 struct renderData
 {
-	float xPos;
-	float yPos;
-	float zPos;
+//	float xPos;
+//	float yPos;
+//	float zPos;
 	GLuint shaders;
 	GLuint MatrixID;
 	GLuint ViewMatrixID;
 	GLuint ModelMatrixID;
 	GLuint ModelView3x3MatrixID;
 	GLuint LightID;
-	GLuint TextureID;
+	//GLuint TextureID;
 	GLuint DiffuseTextureID;
 	GLuint NormalTextureID;
 	GLuint SpecularTextureID;
@@ -46,7 +34,7 @@ struct renderData
 	GLuint TangentBuffer;
 	GLuint BitangentBuffer;
 	GLuint ElementBuffer;
-    ObjectType type;
+    //ObjectType type;
 	std::vector<unsigned short> Indices;
 	std::vector<glm::vec3> indexed_vertices;
 	std::vector<glm::vec2> indexed_uvs;
@@ -81,7 +69,7 @@ class RenderEngine
 		bool loadOBJ(const char * path, std::vector<glm::vec3> & out_vertices, std::vector<glm::vec2> & out_uvs, std::vector<glm::vec3> & out_normals);
 		void computeTangentBasis(/*Inputs*/std::vector<glm::vec3> & vertices, std::vector<glm::vec2> & uvs, std::vector<glm::vec3> & normals, /*Outputs*/std::vector<glm::vec3> & tangents, std::vector<glm::vec3> & bitangents);
 		std::vector<renderData> initGlew(std::vector<renderData> rdata);
-		int Draw(SDL_Window *window, std::vector<renderData> rdata, bool gameStarted);
+		int Draw(SDL_Window *window, std::vector<renderData> rdata, bool gameStarted, std::vector<GameObjectRenderInfo>   gameObjects);
 
 	private:
 		glm::mat4 ViewMatrix;

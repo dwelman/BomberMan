@@ -654,146 +654,144 @@ std::vector<renderData> RenderEngine::initGlew(std::vector<renderData> rdata)
 //	}
 //}
 
-int RenderEngine::Draw(SDL_Window *window, std::vector<renderData> rdata, bool gameStarted)
-{
+int RenderEngine::Draw(SDL_Window *window, std::vector<renderData> rdata, bool gameStarted, std::vector<GameObjectRenderInfo> gameObjects) {
     if (gameStarted)
         this->computeMatricesFromInputs(window);
     glm::mat4 ProjectionMatrix = this->getProjectionMatrix();
     glm::mat4 ViewMatrix = this->getViewMatrix();
     glm::mat4 ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-	glm::mat4 ModelViewMatrix = ViewMatrix * ModelMatrix;
-	glm::mat3 ModelView3x3Matrix = glm::mat3(ModelViewMatrix);
+    glm::mat4 ModelViewMatrix = ViewMatrix * ModelMatrix;
+    glm::mat3 ModelView3x3Matrix = glm::mat3(ModelViewMatrix);
     glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
     glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP[0][0]);
-	glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-	glUniformMatrix4fv(rdata[0].ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
-	glUniformMatrix3fv(rdata[0].ModelView3x3MatrixID, 1, GL_FALSE, &ModelView3x3Matrix[0][0]);
+    glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+    glUniformMatrix4fv(rdata[0].ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
+    glUniformMatrix3fv(rdata[0].ModelView3x3MatrixID, 1, GL_FALSE, &ModelView3x3Matrix[0][0]);
 
-	//printf("horizontal angle: %f, vertical angle: %f\n", this->horizontalAngle, this->verticalAngle);
+    //printf("horizontal angle: %f, vertical angle: %f\n", this->horizontalAngle, this->verticalAngle);
 
-	/*static int v = 1;
-	static int i = 0;
-	if (i == 100)
-		v = -1;
-	if (i == 2)
-		v = 1;
-	i += v;*/
+    /*static int v = 1;
+    static int i = 0;
+    if (i == 100)
+        v = -1;
+    if (i == 2)
+        v = 1;
+    i += v;*/
 
-    #ifdef _WIN32
-	    //Sleep(15);
-    #else
-        //usleep(15000);
-    #endif
+#ifdef _WIN32
+    //Sleep(15);
+#else
+    //usleep(15000);
+#endif
 
-	glEnable(GL_CULL_FACE);
-	glUseProgram(rdata[0].shaders);
+    glEnable(GL_CULL_FACE);
+    glUseProgram(rdata[0].shaders);
 
-	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[0]);
+    glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[0]);
 
     glEnable(GL_MULTISAMPLE);
 
-	for (float x = 2; x < 25; x++)
-	{
-		for (int z = 2; z < 45; z++)
-		{
-			glm::mat4 ModelMatrix = glm::mat4(1.0);
-			ModelMatrix = glm::translate(ModelMatrix, glm::vec3(((x * 2) - 4), 0.0f, ((z * 2) - 4)));
-			glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+    for (float x = 2; x < 25; x++) {
+        for (int z = 2; z < 45; z++) {
+            glm::mat4 ModelMatrix = glm::mat4(1.0);
+            ModelMatrix = glm::translate(ModelMatrix, glm::vec3(((x * 2) - 4), 0.0f, ((z * 2) - 4)));
+            glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
-			// Send our transformation to the currently bound shader,
-			// in the "MVP" uniform
-			glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP[0][0]);
-			glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+            // Send our transformation to the currently bound shader,
+            // in the "MVP" uniform
+            glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP[0][0]);
+            glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 
-			// 1rst attribute buffer : vertices
-			glEnableVertexAttribArray(0);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+            // 1rst attribute buffer : vertices
+            glEnableVertexAttribArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-			// 2nd attribute buffer : UVs
-			glEnableVertexAttribArray(1);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
-			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+            // 2nd attribute buffer : UVs
+            glEnableVertexAttribArray(1);
+            glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-			// 3rd attribute buffer : normals
-			glEnableVertexAttribArray(2);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
-			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+            // 3rd attribute buffer : normals
+            glEnableVertexAttribArray(2);
+            glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-			glEnableVertexAttribArray(3);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
-			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+            glEnableVertexAttribArray(3);
+            glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-			glEnableVertexAttribArray(4);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
-			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+            glEnableVertexAttribArray(4);
+            glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
+            glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-			// Index buffer
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
-			glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void*)0);
-		}
-	}
+            // Index buffer
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
+            glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void *) 0);
+        }
+    }
 
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[1]);
-	glUniform1i(rdata[0].DiffuseTextureID, 1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[1]);
+    glUniform1i(rdata[0].DiffuseTextureID, 1);
 
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[2]);
-	glUniform1i(rdata[0].NormalTextureID, 2);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[2]);
+    glUniform1i(rdata[0].NormalTextureID, 2);
 
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[3]);
-	glUniform1i(rdata[0].SpecularTextureID, 3);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[3]);
+    glUniform1i(rdata[0].SpecularTextureID, 3);
 
-	for (float x = 2; x < 14; x++)
-	{
-		for (int z = 2; z < 24; z++)
-		{
-			glm::mat4 ModelMatrix2 = glm::mat4(1.0);
-			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3((((x * 2) * 2)- 8), 2.0f, (((z * 2) * 2) - 8)));
-			glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
+    for (float x = 2; x < 14; x++) {
+        for (int z = 2; z < 24; z++) {
+            glm::mat4 ModelMatrix2 = glm::mat4(1.0);
+            ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3((((x * 2) * 2) - 8), 2.0f, (((z * 2) * 2) - 8)));
+            glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
 
-			glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
-			glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
+            glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
+            glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
 
-			glEnableVertexAttribArray(0);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+            glEnableVertexAttribArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-			glEnableVertexAttribArray(1);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
-			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+            glEnableVertexAttribArray(1);
+            glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-			glEnableVertexAttribArray(2);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
-			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+            glEnableVertexAttribArray(2);
+            glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-			glEnableVertexAttribArray(3);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
-			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+            glEnableVertexAttribArray(3);
+            glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-			glEnableVertexAttribArray(4);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
-			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+            glEnableVertexAttribArray(4);
+            glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
+            glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
-			glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void*)0);
-		}
-	}
-	glActiveTexture(GL_TEXTURE1); glBindTexture(GL_TEXTURE_2D, 0);
-	glActiveTexture(GL_TEXTURE2); glBindTexture(GL_TEXTURE_2D, 0);
-	glActiveTexture(GL_TEXTURE3); glBindTexture(GL_TEXTURE_2D, 0);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
+            glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void *) 0);
+        }
+    }
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     glActiveTexture(GL_TEXTURE1);
 
-	glDisable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
+    glDisable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
 
-	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[4]);
+    glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[4]);
 
-	//drawCubes(blocks);
+    //drawCubes(blocks);
 
     int i, k;
 
@@ -809,62 +807,60 @@ int RenderEngine::Draw(SDL_Window *window, std::vector<renderData> rdata, bool g
 
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
     glEnableVertexAttribArray(2);
     glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-	glEnableVertexAttribArray(3);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glEnableVertexAttribArray(3);
+    glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-	glEnableVertexAttribArray(4);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glEnableVertexAttribArray(4);
+    glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
-    glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void*)0);
-	glDisable(GL_BLEND);
-	glEnable(GL_CULL_FACE);
+    glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void *) 0);
+    glDisable(GL_BLEND);
+    glEnable(GL_CULL_FACE);
 
-	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[5]);
-	//glBindTexture(GL_TEXTURE_2D, rdata.rObjs[0].getTextureID());
+    glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[5]);
+    //glBindTexture(GL_TEXTURE_2D, rdata.rObjs[0].getTextureID());
 
-	int x, z;
+    int x, z;
 
-	x = 5;
-	z = 7;
+    x = 5;
+    z = 7;
 
     glm::mat4 ModelMatrix2 = glm::mat4(1.0);
 
     static int v = 1;
-	static float m = 0.0;
-	if (m >= 40)
-    {
+    static float m = 0.0;
+    if (m >= 40) {
         v = -1;
     }
-	if (m <= 2)
-    {
+    if (m <= 2) {
         v = 1;
     }
     if (v == -1)
-    {
-        ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(x * 2, 1.0f, /*z*/m * 2));
-        ModelMatrix2 = glm::rotate(ModelMatrix2, 3.2f, glm::vec3(0, 1, 0));
-    }
+        gameObjects[1].SetDirection(West);
     else
-    {
-        ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(x * 2, 1.0f, /*z*/m * 2));
-        ModelMatrix2 = glm::rotate(ModelMatrix2, 0.0f, glm::vec3(0, 1, 0));
-    }
+        gameObjects[1].SetDirection(East);
 	m += v / 10.0;
-	//Sleep(15);
-    usleep(15000);
+    ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(x * 2, 1.0f, /*z*/m * 2));
+    ModelMatrix2 = glm::rotate(ModelMatrix2, gameObjects[1].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
+
+    #ifdef _WIN32
+	    Sleep(15);
+    #else
+        usleep(15000);
+    #endif
 
     glm::vec3 lightPos = glm::vec3(x * 2, 9.0f, /*z*/m * 2);
 
