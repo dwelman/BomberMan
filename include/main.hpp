@@ -23,6 +23,7 @@
 #include <RenderEngine.hpp>
 #include <ConfigEditor.hpp>
 #include <Util.hpp>
+#include "GameObjectRenderInfo.hpp"
 
 enum    ePlayerAction
 {

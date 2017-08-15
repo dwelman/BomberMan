@@ -47,6 +47,7 @@ void gameLoop(SDL_Window *window, std::vector<renderData> rdata)
     GUIFunctionCrate    crate;
 	double				guiLastTimePulse = initGui(window, crate);
 	RenderEngine        rEngine;
+    std::vector<GameObjectRenderInfo>   gameObjects;
 
     manager.SetGameStarted(false);
     rdata = rEngine.initGlew(rdata);
@@ -61,11 +62,12 @@ void gameLoop(SDL_Window *window, std::vector<renderData> rdata)
 		{
 //			break;
 		}
-        manager.GetRenderData(rdata);
+        manager.GetRenderData(gameObjects);
 		rEngine.Draw(window, rdata, manager.GetGameStarted());
         if (!manager.GetGameStarted())
 		    renderGUIInjectEvents(manager, window, guiLastTimePulse, mustQuit);
 		SDL_GL_SwapWindow(window);
+        gameObjects.clear();
 		//SDL_Delay(10);
     }
 	while (mustQuit == false);

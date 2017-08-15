@@ -5,8 +5,7 @@
 #include <map>
 #include <cstdlib>
 
-#include "main.hpp"
-#include "RenderEngine.hpp"
+#include "GameObjectRenderInfo.hpp"
 #include "Entity.hpp"
 #include "components/BaseComponent.hpp"
 #include "components/Explosion.hpp"
@@ -38,7 +37,6 @@ private:
 
 	void		handleCollisions(Collision &c, Position &p, Tag &t, std::size_t ID);
     void        handleMovement(Position &p, Movement &m);
-    void        createEntity(std::string entityType);
     void        createEntityAtPosition(std::string entityType, Vec3 const &pos);
     void        deleteEntity(std::size_t ID);
 public:
@@ -48,7 +46,7 @@ public:
 
 	GameManager	&operator=(GameManager const &gm);
     bool        Update();
-    void        GetRenderData(std::vector<renderData> &rdata);
+    void        GetRenderData(std::vector<GameObjectRenderInfo> &g);
     bool        GetGameStarted() const;
     void        SetGameStarted(bool gameStarted);
 };

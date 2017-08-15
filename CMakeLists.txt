@@ -141,6 +141,7 @@ set(SOURCE
 		${TARGSRC}RenderObject.cpp
 		${TARGSRC}Setting.cpp
 		${TARGSRC}Util.cpp
+		${TARGSRC}GameObjectRenderInfo.cpp
 		)
 
 set(COMPSRC "targsrc/components/")
@@ -184,6 +185,7 @@ set(HEADERS
 		${INCLUDE}RenderObject.hpp
 		${INCLUDE}Settings.hpp
 		${INCLUDE}Util.hpp
+		${INCLUDE}GameObjectRenderInfo.hpp
 		)
 
 set(COMP_INCL "include/components/")
