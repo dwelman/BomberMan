@@ -32,6 +32,7 @@ struct renderData
 	GLuint TangentBuffer;
 	GLuint BitangentBuffer;
 	GLuint ElementBuffer;
+    enum type {iBlocks = 1, dBlock, Player, Bomb, Enemy1, Enemy2, Enemy3, lPower, bPower, baPower};
 	std::vector<unsigned short> Indices;
 	std::vector<glm::vec3> indexed_vertices;
 	std::vector<glm::vec2> indexed_uvs;

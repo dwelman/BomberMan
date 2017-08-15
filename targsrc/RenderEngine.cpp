@@ -84,9 +84,9 @@ void RenderEngine::computeMatricesFromInputs(SDL_Window *window)
 
     int xpos, ypos;
 	SDL_GetMouseState(&xpos, &ypos);
-    /*this->horizontalAngle += this->mouseSpeed * float(g_cfg["xres"].to_int() / 2 - xpos);
-    this->verticalAngle += this->mouseSpeed * float(g_cfg["yres"].to_int() / 2 - ypos);
-	SDL_WarpMouseInWindow(window, g_cfg["xres"].to_int() / 2, g_cfg["yres"].to_int() / 2);*/
+//    this->horizontalAngle += this->mouseSpeed * float(g_cfg["xres"].to_int() / 2 - xpos);
+//    this->verticalAngle += this->mouseSpeed * float(g_cfg["yres"].to_int() / 2 - ypos);
+//	SDL_WarpMouseInWindow(window, g_cfg["xres"].to_int() / 2, g_cfg["yres"].to_int() / 2);
 
     // Direction : Spherical coordinates to Cartesian coordinates conversion
     glm::vec3 direction(
@@ -555,7 +555,6 @@ std::vector<renderData> RenderEngine::initGlew(std::vector<renderData> rdata)
     tx = loadBMP("textures/ore.bmp", rdata[0].Textures[4]);
 	tx = loadDDS("textures/DwarfAO.dds", rdata[0].Textures[5]);
     //tx = loadDDS("textures/DwarfAO.dds", rdata.rObjs[0].getTextureID());
-    rdata[0].objRes = loadOBJ("obj/cube.obj", rdata[0].objVertices, rdata[0].objUVS, rdata[0].objNormals);
 
     //std::vector<glm::vec3> objV, objN, objT, objBt;
     //std::vector<glm::vec2> objUV;
@@ -565,6 +564,7 @@ std::vector<renderData> RenderEngine::initGlew(std::vector<renderData> rdata)
     //objV = rdata.rObjs[0].getObjVertices(); objUV = rdata.rObjs[0].getObjUVS(); objN = rdata.rObjs[0].getObjNormals(); objT = rdata.rObjs[0].getObjTangents(); objBt = rdata.rObjs[0].getObjBitangents();
     //iV = rdata.rObjs[0].getIndexedVertices(); iUV = rdata.rObjs[0].getIndexedUVS(); iN = rdata.rObjs[0].getIndexedNormals(); iT = rdata.rObjs[0].getIndexedTangents(); iBt = rdata.rObjs[0].getIndexedBitangents();
 	//ic = rdata.rObjs[0].getIndices();
+    rdata[0].objRes = loadOBJ("obj/cube.obj", rdata[0].objVertices, rdata[0].objUVS, rdata[0].objNormals);
     rdata[1].objRes = loadOBJ("obj/dwarf.obj", rdata[1].objVertices, rdata[1].objUVS, rdata[1].objNormals);
 
 	computeTangentBasis(rdata[0].objVertices, rdata[0].objUVS, rdata[0].objNormals, rdata[0].objTangents, rdata[0].objBitangents);
@@ -581,9 +581,6 @@ std::vector<renderData> RenderEngine::initGlew(std::vector<renderData> rdata)
 
 	indexVBO_TBN(rdata[0].objVertices, rdata[0].objUVS, rdata[0].objNormals, rdata[0].objTangents, rdata[0].objBitangents,
 		rdata[0].Indices, rdata[0].indexed_vertices, rdata[0].indexed_uvs, rdata[0].indexed_normals, rdata[0].indexed_tangents, rdata[0].indexed_bitangents);
-
-	indexVBO_TBN(rdata[1].objVertices, rdata[1].objUVS, rdata[1].objNormals, rdata[1].objTangents, rdata[1].objBitangents,
-		rdata[1].Indices, rdata[1].indexed_vertices, rdata[1].indexed_uvs, rdata[1].indexed_normals, rdata[1].indexed_tangents, rdata[1].indexed_bitangents);
 
     //GLuint vb, uvB, nB, tB, btB;
     //vb = rdata.rObjs[0].getVertexBuffer(); uvB = rdata.rObjs[0].getUVBuffer(); nB = rdata.rObjs[0].getNormalBuffer(); tB = rdata.rObjs[0].getTangentBuffer(); btB = rdata.rObjs[0].getBitangentBuffer();
@@ -612,26 +609,31 @@ std::vector<renderData> RenderEngine::initGlew(std::vector<renderData> rdata)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, rdata[0].Indices.size() * sizeof(unsigned short), &rdata[0].Indices[0], GL_STATIC_DRAW);
 
+    for (int i = 1; i < rdata.size(); i++)
+    {
+        indexVBO_TBN(rdata[i].objVertices, rdata[i].objUVS, rdata[i].objNormals, rdata[i].objTangents, rdata[i].objBitangents,
+                     rdata[i].Indices, rdata[i].indexed_vertices, rdata[i].indexed_uvs, rdata[i].indexed_normals, rdata[i].indexed_tangents, rdata[i].indexed_bitangents);
 
-	glGenBuffers(1, &rdata[1].VertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].VertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, rdata[1].objVertices.size() * sizeof(glm::vec3), &rdata[1].objVertices[0], GL_STATIC_DRAW);
+        glGenBuffers(1, &rdata[i].VertexBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].VertexBuffer);
+        glBufferData(GL_ARRAY_BUFFER, rdata[i].objVertices.size() * sizeof(glm::vec3), &rdata[i].objVertices[0], GL_STATIC_DRAW);
 
-	glGenBuffers(1, &rdata[1].UVBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].UVBuffer);
-	glBufferData(GL_ARRAY_BUFFER, rdata[1].objUVS.size() * sizeof(glm::vec2), &rdata[1].objUVS[0], GL_STATIC_DRAW);
+        glGenBuffers(1, &rdata[1].UVBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].UVBuffer);
+        glBufferData(GL_ARRAY_BUFFER, rdata[i].objUVS.size() * sizeof(glm::vec2), &rdata[i].objUVS[0], GL_STATIC_DRAW);
 
-	glGenBuffers(1, &rdata[1].NormalBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].NormalBuffer);
-	glBufferData(GL_ARRAY_BUFFER, rdata[1].objNormals.size() * sizeof(glm::vec3), &rdata[1].objNormals[0], GL_STATIC_DRAW);
+        glGenBuffers(1, &rdata[1].NormalBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].NormalBuffer);
+        glBufferData(GL_ARRAY_BUFFER, rdata[i].objNormals.size() * sizeof(glm::vec3), &rdata[i].objNormals[0], GL_STATIC_DRAW);
 
-	glGenBuffers(1, &rdata[1].TangentBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].TangentBuffer);
-	glBufferData(GL_ARRAY_BUFFER, rdata[1].objTangents.size() * sizeof(glm::vec3), &rdata[1].objTangents[0], GL_STATIC_DRAW);
+        glGenBuffers(1, &rdata[1].TangentBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].TangentBuffer);
+        glBufferData(GL_ARRAY_BUFFER, rdata[i].objTangents.size() * sizeof(glm::vec3), &rdata[i].objTangents[0], GL_STATIC_DRAW);
 
-	glGenBuffers(1, &rdata[1].BitangentBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].BitangentBuffer);
-	glBufferData(GL_ARRAY_BUFFER, rdata[1].objBitangents.size() * sizeof(glm::vec3), &rdata[1].objBitangents[0], GL_STATIC_DRAW);
+        glGenBuffers(1, &rdata[1].BitangentBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].BitangentBuffer);
+        glBufferData(GL_ARRAY_BUFFER, rdata[i].objBitangents.size() * sizeof(glm::vec3), &rdata[i].objBitangents[0], GL_STATIC_DRAW);
+    }
 
     //rdata.rObjs[0].setObjVertices(objV); rdata.rObjs[0].setObjUVS(objUV); rdata.rObjs[0].setObjNormals(objN); rdata.rObjs[0].setObjTangents(objT); rdata.rObjs[0].setObjBitangents(objBt);
     //rdata.rObjs[0].setIndexedVertices(iV); rdata.rObjs[0].setIndexedUVS(iUV); rdata.rObjs[0].setIndexedNormals(iN); rdata.rObjs[0].setIndexedTangents(iT); rdata.rObjs[0].setIndexedBitangents(iBt);
