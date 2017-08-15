@@ -41,7 +41,7 @@ SDL_Window *initWindow(ConfigEditor &cfg)
 	return (window);
 }
 
-void gameLoop(SDL_Window *window, renderData rdata)
+void gameLoop(SDL_Window *window, std::vector<renderData> rdata)
 {
 	GameManager         manager;
 	bool				mustQuit = false;
@@ -74,14 +74,19 @@ void gameLoop(SDL_Window *window, renderData rdata)
 
 int	main(int argc, char *argv[])
 {
-	renderData rdata;
+	std::vector<renderData> rdata;
+	//renderData rdata;
 	RenderEngine rEngine;
-    RenderObject *obj;
-    obj = new RenderObject;
+	renderData *obj;
+	renderData *obj2;
+	obj = new renderData;
+	obj2 = new renderData;
 
 	SDL_Window	*window = initWindow(g_cfg);
-	rdata.rObjs.push_back(*obj);
-	if (window == nullptr || rdata.res == -1)
+	rdata.push_back(*obj);
+	rdata.push_back(*obj2);
+	//rdata.rObjs.push_back(*obj);
+	if (window == nullptr)
 		return (-1);
 
 	gameLoop(window, rdata);

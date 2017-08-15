@@ -13,9 +13,11 @@
 
 RenderEngine::RenderEngine()
 {
-	this->position = glm::vec3(0, 0, 5);
-	this->horizontalAngle = 3.14f;
-	this->verticalAngle = 0.0f;
+	this->position = glm::vec3(-5.926516f, 51.767967f, 42.664486f);
+//	this->horizontalAngle = 3.14f;
+//	this->verticalAngle = 0.0f;
+    this->horizontalAngle = 7.860002f;
+    this->verticalAngle = -1.060000f;
 	this->FoV = 45.0f;
 	this->speed = 0.01f; // 0.01 units / second
 	this->mouseSpeed = 0.005f;
@@ -82,9 +84,9 @@ void RenderEngine::computeMatricesFromInputs(SDL_Window *window)
 
     int xpos, ypos;
 	SDL_GetMouseState(&xpos, &ypos);
-    this->horizontalAngle += this->mouseSpeed * float(g_cfg["xres"].to_int() / 2 - xpos);
+    /*this->horizontalAngle += this->mouseSpeed * float(g_cfg["xres"].to_int() / 2 - xpos);
     this->verticalAngle += this->mouseSpeed * float(g_cfg["yres"].to_int() / 2 - ypos);
-	SDL_WarpMouseInWindow(window, g_cfg["xres"].to_int() / 2, g_cfg["yres"].to_int() / 2);
+	SDL_WarpMouseInWindow(window, g_cfg["xres"].to_int() / 2, g_cfg["yres"].to_int() / 2);*/
 
     // Direction : Spherical coordinates to Cartesian coordinates conversion
     glm::vec3 direction(
@@ -526,17 +528,17 @@ void RenderEngine::computeTangentBasis(
 	}
 }
 
-renderData RenderEngine::initGlew(renderData rdata)
+std::vector<renderData> RenderEngine::initGlew(std::vector<renderData> rdata)
 {
-    rdata.Textures = new GLuint[6];
-    glGenTextures(6, rdata.Textures);
+    rdata[0].Textures = new GLuint[6];
+    glGenTextures(6, rdata[0].Textures);
 
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();
     if (err != GLEW_OK)
     {
         std::cerr << "Error : " << "Failed to initialize GLEW" << std::endl;
-        rdata.res = -1;
+        rdata[0].res = -1;
     }
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -545,96 +547,99 @@ renderData RenderEngine::initGlew(renderData rdata)
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
     glClearColor(0.1f, 0.0f, 0.0f, 0.0f);
-    rdata.shaders = LoadShaders("shaders/vertex.glsl", "shaders/transparentFragment.glsl");
-	GLuint tx = loadBMP("textures/ore2.bmp", rdata.Textures[0]);
-	tx = loadDDS("textures/diffuse.DDS", rdata.Textures[1]);
-    tx = loadBMP("textures/normal.bmp", rdata.Textures[2]);
-	tx = loadDDS("textures/specular.DDS", rdata.Textures[3]);
-    tx = loadBMP("textures/ore.bmp", rdata.Textures[4]);
-	tx = loadDDS("textures/DwarfAO.dds", rdata.Textures[5]);
+    rdata[0].shaders = LoadShaders("shaders/vertex.glsl", "shaders/transparentFragment.glsl");
+	GLuint tx = loadBMP("textures/ore2.bmp", rdata[0].Textures[0]);
+	tx = loadDDS("textures/diffuse.DDS", rdata[0].Textures[1]);
+    tx = loadBMP("textures/normal.bmp", rdata[0].Textures[2]);
+	tx = loadDDS("textures/specular.DDS", rdata[0].Textures[3]);
+    tx = loadBMP("textures/ore.bmp", rdata[0].Textures[4]);
+	tx = loadDDS("textures/DwarfAO.dds", rdata[0].Textures[5]);
     //tx = loadDDS("textures/DwarfAO.dds", rdata.rObjs[0].getTextureID());
-    rdata.objRes = loadOBJ("obj/cube.obj", rdata.objVertices, rdata.objUVS, rdata.objNormals);
+    rdata[0].objRes = loadOBJ("obj/cube.obj", rdata[0].objVertices, rdata[0].objUVS, rdata[0].objNormals);
 
-    std::vector<glm::vec3> objV, objN, objT, objBt;
-    std::vector<glm::vec2> objUV;
-    std::vector<glm::vec3> iV, iN, iT, iBt;
-    std::vector<glm::vec2> iUV;
-	std::vector<unsigned short> ic;
-    objV = rdata.rObjs[0].getObjVertices(); objUV = rdata.rObjs[0].getObjUVS(); objN = rdata.rObjs[0].getObjNormals(); objT = rdata.rObjs[0].getObjTangents(); objBt = rdata.rObjs[0].getObjBitangents();
-    iV = rdata.rObjs[0].getIndexedVertices(); iUV = rdata.rObjs[0].getIndexedUVS(); iN = rdata.rObjs[0].getIndexedNormals(); iT = rdata.rObjs[0].getIndexedTangents(); iBt = rdata.rObjs[0].getIndexedBitangents();
-	ic = rdata.rObjs[0].getIndices();
-    loadOBJ("obj/dwarf.obj", objV, objUV, objN);
+    //std::vector<glm::vec3> objV, objN, objT, objBt;
+    //std::vector<glm::vec2> objUV;
+    //std::vector<glm::vec3> iV, iN, iT, iBt;
+    //std::vector<glm::vec2> iUV;
+	//std::vector<unsigned short> ic;
+    //objV = rdata.rObjs[0].getObjVertices(); objUV = rdata.rObjs[0].getObjUVS(); objN = rdata.rObjs[0].getObjNormals(); objT = rdata.rObjs[0].getObjTangents(); objBt = rdata.rObjs[0].getObjBitangents();
+    //iV = rdata.rObjs[0].getIndexedVertices(); iUV = rdata.rObjs[0].getIndexedUVS(); iN = rdata.rObjs[0].getIndexedNormals(); iT = rdata.rObjs[0].getIndexedTangents(); iBt = rdata.rObjs[0].getIndexedBitangents();
+	//ic = rdata.rObjs[0].getIndices();
+    rdata[1].objRes = loadOBJ("obj/dwarf.obj", rdata[1].objVertices, rdata[1].objUVS, rdata[1].objNormals);
 
-	computeTangentBasis(rdata.objVertices, rdata.objUVS, rdata.objNormals, rdata.objTangents, rdata.objBitangents);
-    computeTangentBasis(objV, objUV, objN, objT, objBt);
+	computeTangentBasis(rdata[0].objVertices, rdata[0].objUVS, rdata[0].objNormals, rdata[0].objTangents, rdata[0].objBitangents);
+    computeTangentBasis(rdata[1].objVertices, rdata[1].objUVS, rdata[1].objNormals, rdata[1].objTangents, rdata[1].objBitangents);
 
-	rdata.MatrixID = glGetUniformLocation(rdata.shaders, "MVP");
-	rdata.ViewMatrixID = glGetUniformLocation(rdata.shaders, "V");
-	rdata.ModelMatrixID = glGetUniformLocation(rdata.shaders, "M");
-	rdata.ModelView3x3MatrixID = glGetUniformLocation(rdata.shaders, "MV3x3");
-	rdata.DiffuseTextureID = glGetUniformLocation(rdata.shaders, "DiffuseTextureSampler");
-	rdata.NormalTextureID = glGetUniformLocation(rdata.shaders, "NormalTextureSampler");
-	rdata.SpecularTextureID = glGetUniformLocation(rdata.shaders, "SpecularTextureSampler");
-	rdata.LightID = glGetUniformLocation(rdata.shaders, "LightPosition_worldspace");
+	rdata[0].MatrixID = glGetUniformLocation(rdata[0].shaders, "MVP");
+	rdata[0].ViewMatrixID = glGetUniformLocation(rdata[0].shaders, "V");
+	rdata[0].ModelMatrixID = glGetUniformLocation(rdata[0].shaders, "M");
+	rdata[0].ModelView3x3MatrixID = glGetUniformLocation(rdata[0].shaders, "MV3x3");
+	rdata[0].DiffuseTextureID = glGetUniformLocation(rdata[0].shaders, "DiffuseTextureSampler");
+	rdata[0].NormalTextureID = glGetUniformLocation(rdata[0].shaders, "NormalTextureSampler");
+	rdata[0].SpecularTextureID = glGetUniformLocation(rdata[0].shaders, "SpecularTextureSampler");
+	rdata[0].LightID = glGetUniformLocation(rdata[0].shaders, "LightPosition_worldspace");
 
-	indexVBO_TBN(rdata.objVertices, rdata.objUVS, rdata.objNormals, rdata.objTangents, rdata.objBitangents,
-		rdata.Indices, rdata.indexed_vertices, rdata.indexed_uvs, rdata.indexed_normals, rdata.indexed_tangents, rdata.indexed_bitangents);
+	indexVBO_TBN(rdata[0].objVertices, rdata[0].objUVS, rdata[0].objNormals, rdata[0].objTangents, rdata[0].objBitangents,
+		rdata[0].Indices, rdata[0].indexed_vertices, rdata[0].indexed_uvs, rdata[0].indexed_normals, rdata[0].indexed_tangents, rdata[0].indexed_bitangents);
 
-	indexVBO_TBN(objV, objUV, objN, objT, objBt, ic, iV, iUV, iN, iT, iBt);
+	indexVBO_TBN(rdata[1].objVertices, rdata[1].objUVS, rdata[1].objNormals, rdata[1].objTangents, rdata[1].objBitangents,
+		rdata[1].Indices, rdata[1].indexed_vertices, rdata[1].indexed_uvs, rdata[1].indexed_normals, rdata[1].indexed_tangents, rdata[1].indexed_bitangents);
 
-    GLuint vb, uvB, nB, tB, btB;
-    vb = rdata.rObjs[0].getVertexBuffer(); uvB = rdata.rObjs[0].getUVBuffer(); nB = rdata.rObjs[0].getNormalBuffer(); tB = rdata.rObjs[0].getTangentBuffer(); btB = rdata.rObjs[0].getBitangentBuffer();
+    //GLuint vb, uvB, nB, tB, btB;
+    //vb = rdata.rObjs[0].getVertexBuffer(); uvB = rdata.rObjs[0].getUVBuffer(); nB = rdata.rObjs[0].getNormalBuffer(); tB = rdata.rObjs[0].getTangentBuffer(); btB = rdata.rObjs[0].getBitangentBuffer();
 
-    glGenBuffers(1, &rdata.VertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, rdata.VertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, rdata.indexed_vertices.size() * sizeof(glm::vec3), &rdata.indexed_vertices[0], GL_STATIC_DRAW);
+    glGenBuffers(1, &rdata[0].VertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, rdata[0].indexed_vertices.size() * sizeof(glm::vec3), &rdata[0].indexed_vertices[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &rdata.UVBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, rdata.UVBuffer);
-	glBufferData(GL_ARRAY_BUFFER, rdata.indexed_uvs.size() * sizeof(glm::vec2), &rdata.indexed_uvs[0], GL_STATIC_DRAW);
+    glGenBuffers(1, &rdata[0].UVBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
+	glBufferData(GL_ARRAY_BUFFER, rdata[0].indexed_uvs.size() * sizeof(glm::vec2), &rdata[0].indexed_uvs[0], GL_STATIC_DRAW);
 
-	glGenBuffers(1, &rdata.NormalBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata.NormalBuffer);
-	glBufferData(GL_ARRAY_BUFFER, rdata.indexed_normals.size() * sizeof(glm::vec3), &rdata.indexed_normals[0], GL_STATIC_DRAW);
+	glGenBuffers(1, &rdata[0].NormalBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
+	glBufferData(GL_ARRAY_BUFFER, rdata[0].indexed_normals.size() * sizeof(glm::vec3), &rdata[0].indexed_normals[0], GL_STATIC_DRAW);
 
-	glGenBuffers(1, &rdata.TangentBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata.TangentBuffer);
-	glBufferData(GL_ARRAY_BUFFER, rdata.indexed_tangents.size() * sizeof(glm::vec3), &rdata.indexed_tangents[0], GL_STATIC_DRAW);
+	glGenBuffers(1, &rdata[0].TangentBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
+	glBufferData(GL_ARRAY_BUFFER, rdata[0].indexed_tangents.size() * sizeof(glm::vec3), &rdata[0].indexed_tangents[0], GL_STATIC_DRAW);
 
-	glGenBuffers(1, &rdata.BitangentBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata.BitangentBuffer);
-	glBufferData(GL_ARRAY_BUFFER, rdata.indexed_bitangents.size() * sizeof(glm::vec3), &rdata.indexed_bitangents[0], GL_STATIC_DRAW);
+	glGenBuffers(1, &rdata[0].BitangentBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
+	glBufferData(GL_ARRAY_BUFFER, rdata[0].indexed_bitangents.size() * sizeof(glm::vec3), &rdata[0].indexed_bitangents[0], GL_STATIC_DRAW);
 
-	glGenBuffers(1, &rdata.ElementBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata.ElementBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, rdata.Indices.size() * sizeof(unsigned short), &rdata.Indices[0], GL_STATIC_DRAW);
+	glGenBuffers(1, &rdata[0].ElementBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, rdata[0].Indices.size() * sizeof(unsigned short), &rdata[0].Indices[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &vb);
-    glBindBuffer(GL_ARRAY_BUFFER, vb);
-    glBufferData(GL_ARRAY_BUFFER, objV.size() * sizeof(glm::vec3), &objV[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &uvB);
-    glBindBuffer(GL_ARRAY_BUFFER, uvB);
-    glBufferData(GL_ARRAY_BUFFER, objUV.size() * sizeof(glm::vec2), &objUV[0], GL_STATIC_DRAW);
+	glGenBuffers(1, &rdata[1].VertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].VertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, rdata[1].objVertices.size() * sizeof(glm::vec3), &rdata[1].objVertices[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &nB);
-    glBindBuffer(GL_ARRAY_BUFFER, nB);
-    glBufferData(GL_ARRAY_BUFFER, objN.size() * sizeof(glm::vec3), &objN[0], GL_STATIC_DRAW);
+	glGenBuffers(1, &rdata[1].UVBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].UVBuffer);
+	glBufferData(GL_ARRAY_BUFFER, rdata[1].objUVS.size() * sizeof(glm::vec2), &rdata[1].objUVS[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &tB);
-    glBindBuffer(GL_ARRAY_BUFFER, tB);
-    glBufferData(GL_ARRAY_BUFFER, objT.size() * sizeof(glm::vec3), &objT[0], GL_STATIC_DRAW);
+	glGenBuffers(1, &rdata[1].NormalBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].NormalBuffer);
+	glBufferData(GL_ARRAY_BUFFER, rdata[1].objNormals.size() * sizeof(glm::vec3), &rdata[1].objNormals[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &btB);
-    glBindBuffer(GL_ARRAY_BUFFER, btB);
-    glBufferData(GL_ARRAY_BUFFER, objBt.size() * sizeof(glm::vec3), &objBt[0], GL_STATIC_DRAW);
+	glGenBuffers(1, &rdata[1].TangentBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].TangentBuffer);
+	glBufferData(GL_ARRAY_BUFFER, rdata[1].objTangents.size() * sizeof(glm::vec3), &rdata[1].objTangents[0], GL_STATIC_DRAW);
 
-    rdata.rObjs[0].setObjVertices(objV); rdata.rObjs[0].setObjUVS(objUV); rdata.rObjs[0].setObjNormals(objN); rdata.rObjs[0].setObjTangents(objT); rdata.rObjs[0].setObjBitangents(objBt);
-    rdata.rObjs[0].setIndexedVertices(iV); rdata.rObjs[0].setIndexedUVS(iUV); rdata.rObjs[0].setIndexedNormals(iN); rdata.rObjs[0].setIndexedTangents(iT); rdata.rObjs[0].setIndexedBitangents(iBt);
-    rdata.rObjs[0].setVertexBuffer(vb); rdata.rObjs[0].setUVBuffer(uvB); rdata.rObjs[0].setNormalBuffer(nB); rdata.rObjs[0].setTangentBuffer(tB); rdata.rObjs[0].setBitangentBuffer(btB);
-	rdata.rObjs[0].setIndices(ic);
+	glGenBuffers(1, &rdata[1].BitangentBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].BitangentBuffer);
+	glBufferData(GL_ARRAY_BUFFER, rdata[1].objBitangents.size() * sizeof(glm::vec3), &rdata[1].objBitangents[0], GL_STATIC_DRAW);
+
+    //rdata.rObjs[0].setObjVertices(objV); rdata.rObjs[0].setObjUVS(objUV); rdata.rObjs[0].setObjNormals(objN); rdata.rObjs[0].setObjTangents(objT); rdata.rObjs[0].setObjBitangents(objBt);
+    //rdata.rObjs[0].setIndexedVertices(iV); rdata.rObjs[0].setIndexedUVS(iUV); rdata.rObjs[0].setIndexedNormals(iN); rdata.rObjs[0].setIndexedTangents(iT); rdata.rObjs[0].setIndexedBitangents(iBt);
+    //rdata.rObjs[0].setVertexBuffer(vb); rdata.rObjs[0].setUVBuffer(uvB); rdata.rObjs[0].setNormalBuffer(nB); rdata.rObjs[0].setTangentBuffer(tB); rdata.rObjs[0].setBitangentBuffer(btB);
+	//rdata.rObjs[0].setIndices(ic);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glShadeModel(GL_SMOOTH);
 
     return rdata;
 }
@@ -647,7 +652,7 @@ renderData RenderEngine::initGlew(renderData rdata)
 //	}
 //}
 
-int RenderEngine::Draw(SDL_Window *window, renderData rdata, bool gameStarted)
+int RenderEngine::Draw(SDL_Window *window, std::vector<renderData> rdata, bool gameStarted)
 {
     if (gameStarted)
         this->computeMatricesFromInputs(window);
@@ -658,10 +663,12 @@ int RenderEngine::Draw(SDL_Window *window, renderData rdata, bool gameStarted)
 	glm::mat3 ModelView3x3Matrix = glm::mat3(ModelViewMatrix);
     glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
-    glUniformMatrix4fv(rdata.MatrixID, 1, GL_FALSE, &MVP[0][0]);
-	glUniformMatrix4fv(rdata.ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-	glUniformMatrix4fv(rdata.ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
-	glUniformMatrix3fv(rdata.ModelView3x3MatrixID, 1, GL_FALSE, &ModelView3x3Matrix[0][0]);
+    glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP[0][0]);
+	glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+	glUniformMatrix4fv(rdata[0].ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
+	glUniformMatrix3fv(rdata[0].ModelView3x3MatrixID, 1, GL_FALSE, &ModelView3x3Matrix[0][0]);
+
+	//printf("horizontal angle: %f, vertical angle: %f\n", this->horizontalAngle, this->verticalAngle);
 
 	/*static int v = 1;
 	static int i = 0;
@@ -670,7 +677,6 @@ int RenderEngine::Draw(SDL_Window *window, renderData rdata, bool gameStarted)
 	if (i == 2)
 		v = 1;
 	i += v;*/
-	glm::vec3 lightPos = glm::vec3((/*i*/20 / 2), 6, 5 * 2);
 
     #ifdef _WIN32
 	    //Sleep(15);
@@ -679,10 +685,9 @@ int RenderEngine::Draw(SDL_Window *window, renderData rdata, bool gameStarted)
     #endif
 
 	glEnable(GL_CULL_FACE);
-	glUseProgram(rdata.shaders);
-	glUniform3f(rdata.LightID, lightPos.x, lightPos.y, lightPos.z);
+	glUseProgram(rdata[0].shaders);
 
-	glBindTexture(GL_TEXTURE_2D, rdata.Textures[0]);
+	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[0]);
 
     glEnable(GL_MULTISAMPLE);
 
@@ -696,49 +701,49 @@ int RenderEngine::Draw(SDL_Window *window, renderData rdata, bool gameStarted)
 
 			// Send our transformation to the currently bound shader,
 			// in the "MVP" uniform
-			glUniformMatrix4fv(rdata.MatrixID, 1, GL_FALSE, &MVP[0][0]);
-			glUniformMatrix4fv(rdata.ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+			glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP[0][0]);
+			glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
 
 			// 1rst attribute buffer : vertices
 			glEnableVertexAttribArray(0);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata.VertexBuffer);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 			// 2nd attribute buffer : UVs
 			glEnableVertexAttribArray(1);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata.UVBuffer);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
 			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 			// 3rd attribute buffer : normals
 			glEnableVertexAttribArray(2);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata.NormalBuffer);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
 			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 			glEnableVertexAttribArray(3);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata.TangentBuffer);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
 			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 			glEnableVertexAttribArray(4);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata.BitangentBuffer);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
 			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 			// Index buffer
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata.ElementBuffer);
-			glDrawElements(GL_TRIANGLES, rdata.Indices.size(), GL_UNSIGNED_SHORT, (void*)0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
+			glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void*)0);
 		}
 	}
 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, rdata.Textures[1]);
-	glUniform1i(rdata.DiffuseTextureID, 1);
+	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[1]);
+	glUniform1i(rdata[0].DiffuseTextureID, 1);
 
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, rdata.Textures[2]);
-	glUniform1i(rdata.NormalTextureID, 2);
+	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[2]);
+	glUniform1i(rdata[0].NormalTextureID, 2);
 
 	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, rdata.Textures[3]);
-	glUniform1i(rdata.SpecularTextureID, 3);
+	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[3]);
+	glUniform1i(rdata[0].SpecularTextureID, 3);
 
 	for (float x = 2; x < 14; x++)
 	{
@@ -748,31 +753,31 @@ int RenderEngine::Draw(SDL_Window *window, renderData rdata, bool gameStarted)
 			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3((((x * 2) * 2)- 8), 2.0f, (((z * 2) * 2) - 8)));
 			glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
 
-			glUniformMatrix4fv(rdata.MatrixID, 1, GL_FALSE, &MVP2[0][0]);
-			glUniformMatrix4fv(rdata.ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
+			glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
+			glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
 
 			glEnableVertexAttribArray(0);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata.VertexBuffer);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 			glEnableVertexAttribArray(1);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata.UVBuffer);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
 			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 			glEnableVertexAttribArray(2);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata.NormalBuffer);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
 			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 			glEnableVertexAttribArray(3);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata.TangentBuffer);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
 			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 			glEnableVertexAttribArray(4);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata.BitangentBuffer);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
 			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata.ElementBuffer);
-			glDrawElements(GL_TRIANGLES, rdata.Indices.size(), GL_UNSIGNED_SHORT, (void*)0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
+			glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void*)0);
 		}
 	}
 	glActiveTexture(GL_TEXTURE1); glBindTexture(GL_TEXTURE_2D, 0);
@@ -784,7 +789,7 @@ int RenderEngine::Draw(SDL_Window *window, renderData rdata, bool gameStarted)
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 
-	glBindTexture(GL_TEXTURE_2D, rdata.Textures[4]);
+	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[4]);
 
 	//drawCubes(blocks);
 
@@ -797,35 +802,35 @@ int RenderEngine::Draw(SDL_Window *window, renderData rdata, bool gameStarted)
     ModelMatrix3 = glm::translate(ModelMatrix3, glm::vec3(i * 2, 2.0f, k * 2));
     glm::mat4 MVP3 = ProjectionMatrix * ViewMatrix * ModelMatrix3;
 
-    glUniformMatrix4fv(rdata.MatrixID, 1, GL_FALSE, &MVP3[0][0]);
-    glUniformMatrix4fv(rdata.ModelMatrixID, 1, GL_FALSE, &ModelMatrix3[0][0]);
+    glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP3[0][0]);
+    glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix3[0][0]);
 
     glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, rdata.VertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
     glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, rdata.UVBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
     glEnableVertexAttribArray(2);
-    glBindBuffer(GL_ARRAY_BUFFER, rdata.NormalBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	glEnableVertexAttribArray(3);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata.TangentBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	glEnableVertexAttribArray(4);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata.BitangentBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata.ElementBuffer);
-    glDrawElements(GL_TRIANGLES, rdata.Indices.size(), GL_UNSIGNED_SHORT, (void*)0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
+    glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void*)0);
 	glDisable(GL_BLEND);
 	glEnable(GL_CULL_FACE);
 
-	glBindTexture(GL_TEXTURE_2D, rdata.Textures[5]);
+	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[5]);
 	//glBindTexture(GL_TEXTURE_2D, rdata.rObjs[0].getTextureID());
 
 	int x, z;
@@ -833,35 +838,62 @@ int RenderEngine::Draw(SDL_Window *window, renderData rdata, bool gameStarted)
 	x = 5;
 	z = 7;
 
-	glm::mat4 ModelMatrix2 = glm::mat4(1.0);
-	ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(x * 2, 1.0f, z * 2));
+    glm::mat4 ModelMatrix2 = glm::mat4(1.0);
+
+    static int v = 1;
+	static float m = 0.0;
+	if (m >= 40)
+    {
+        v = -1;
+    }
+	if (m <= 2)
+    {
+        v = 1;
+    }
+    if (v == -1)
+    {
+        ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(x * 2, 1.0f, /*z*/m * 2));
+        ModelMatrix2 = glm::rotate(ModelMatrix2, 3.2f, glm::vec3(0, 1, 0));
+    }
+    else
+    {
+        ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(x * 2, 1.0f, /*z*/m * 2));
+        ModelMatrix2 = glm::rotate(ModelMatrix2, 0.0f, glm::vec3(0, 1, 0));
+    }
+	m += v / 10.0;
+	//Sleep(15);
+    usleep(15000);
+
+    glm::vec3 lightPos = glm::vec3(x * 2, 9.0f, /*z*/m * 2);
+
+    glUniform3f(rdata[0].LightID, lightPos.x, lightPos.y, lightPos.z);
 	glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
 
-	glUniformMatrix4fv(rdata.MatrixID, 1, GL_FALSE, &MVP2[0][0]);
-	glUniformMatrix4fv(rdata.ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
+	glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
+	glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
 
 	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata.rObjs[0].getVertexBuffer());
+	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].VertexBuffer);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata.rObjs[0].getUVBuffer());
+	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].UVBuffer);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	glEnableVertexAttribArray(2);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata.rObjs[0].getNormalBuffer());
+	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].NormalBuffer);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	glEnableVertexAttribArray(3);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata.rObjs[0].getTangentBuffer());
+	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].TangentBuffer);
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	glEnableVertexAttribArray(4);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata.rObjs[0].getBitangentBuffer());
+	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].BitangentBuffer);
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata.ElementBuffer);
-	glDrawArrays(GL_TRIANGLES, 0, rdata.rObjs[0].getObjVertices().size());
+	glDrawArrays(GL_TRIANGLES, 0, rdata[1].objVertices.size());
 	//glDrawElements(GL_TRIANGLES, rdata.Indices.size(), GL_UNSIGNED_SHORT, (void*)0);
 
 	glDisableVertexAttribArray(0);

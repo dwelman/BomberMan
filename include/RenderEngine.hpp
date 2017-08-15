@@ -11,6 +11,9 @@
 
 struct renderData
 {
+	float xPos;
+	float yPos;
+	float zPos;
 	GLuint shaders;
 	GLuint MatrixID;
 	GLuint ViewMatrixID;
@@ -39,7 +42,6 @@ struct renderData
 	std::vector<glm::vec3> objNormals;
 	std::vector<glm::vec3> objTangents;
 	std::vector<glm::vec3> objBitangents;
-    std::vector<RenderObject> rObjs;
 	int objRes;
 	int res;
 };
@@ -62,8 +64,8 @@ class RenderEngine
 		GLuint loadDDS(const char * imagepath, GLuint texture);
 		bool loadOBJ(const char * path, std::vector<glm::vec3> & out_vertices, std::vector<glm::vec2> & out_uvs, std::vector<glm::vec3> & out_normals);
 		void computeTangentBasis(/*Inputs*/std::vector<glm::vec3> & vertices, std::vector<glm::vec2> & uvs, std::vector<glm::vec3> & normals, /*Outputs*/std::vector<glm::vec3> & tangents, std::vector<glm::vec3> & bitangents);
-		renderData initGlew(renderData rdata);
-		int Draw(SDL_Window *window, renderData rdata, bool gameStarted);
+		std::vector<renderData> initGlew(std::vector<renderData> rdata);
+		int Draw(SDL_Window *window, std::vector<renderData> rdata, bool gameStarted);
 
 	private:
 		glm::mat4 ViewMatrix;
