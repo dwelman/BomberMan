@@ -13,8 +13,6 @@ void				populateSettingSpinners(SettingsState &s)
 	s.video.fullScreen.setIterator(s.video.fullScreen.activeValue);
 }
 
-
-
 GUIFunctionCrate::GUIFunctionCrate()
 {
     memset(this, 0, sizeof(GUIFunctionCrate));
@@ -145,6 +143,7 @@ void	captureInputForGameManager(GameManager &manager, SDL_Event &e, bool & must_
 		if (action != P_NOACTION)
 		{
 			// Feed actions  into GM
+			manager.GivePlayerAction(action);
 			std::cout << "action = " << action << std::endl;
 		}
 	}
@@ -158,14 +157,13 @@ void	captureInputForState(SDL_Event &e, bool & must_quit)
 	}
 }
 
-void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiLastTimePulse, bool &must_quit)
+void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiLastTimePulse, bool &must_quit, GUIFunctionCrate &crate)
 {
-	CEGUI::GUIContext&	context = CEGUI::System::getSingleton().getDefaultGUIContext();
 	SDL_Event			e;
 
 	while (SDL_PollEvent(&e))
 	{
-		injectInput(must_quit, context, e);
+		injectInput(must_quit, CEGUI::System::getSingleton().getDefaultGUIContext(), e);
 		captureInputForGameManager(manager, e, must_quit);
 		captureInputForState(e, must_quit);
 	}

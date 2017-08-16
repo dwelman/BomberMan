@@ -51,7 +51,7 @@ struct MenuFunction
 
 double  initGui(SDL_Window *window, GUIFunctionCrate &crate);
 
-void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiLastTimePulse, bool &must_quit);
+void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiLastTimePulse, bool &must_quit, GUIFunctionCrate &crate);
 
 void	initializeKeyMap();
 

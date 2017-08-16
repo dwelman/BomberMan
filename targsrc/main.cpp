@@ -65,7 +65,7 @@ void gameLoop(SDL_Window *window, std::vector<renderData> rdata)
         manager.GetRenderData(gameObjects);
 		rEngine.Draw(window, rdata, manager.GetGameStarted(), gameObjects);
         if (!manager.GetGameStarted())
-		    renderGUIInjectEvents(manager, window, guiLastTimePulse, mustQuit);
+		    renderGUIInjectEvents(manager, window, guiLastTimePulse, mustQuit, crate);
 		SDL_GL_SwapWindow(window);
         gameObjects.clear();
 		//SDL_Delay(10);
