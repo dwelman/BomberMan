@@ -142,6 +142,7 @@ set(SOURCE
 		${TARGSRC}Setting.cpp
 		${TARGSRC}Util.cpp
 		${TARGSRC}GameObjectRenderInfo.cpp
+		${TARGSRC}AudioManager.cpp
 		)
 
 set(COMPSRC "targsrc/components/")
@@ -186,6 +187,7 @@ set(HEADERS
 		${INCLUDE}Settings.hpp
 		${INCLUDE}Util.hpp
 		${INCLUDE}GameObjectRenderInfo.hpp
+		${INCLUDE}AudioManager.hpp
 		)
 
 set(COMP_INCL "include/components/")
