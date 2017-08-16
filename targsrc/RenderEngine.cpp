@@ -849,9 +849,9 @@ int RenderEngine::Draw(SDL_Window *window, std::vector<renderData> rdata, bool g
         v = 1;
     }
     if (v == -1)
-        gameObjects[1].SetDirection(West);
+        gameObjects[1].SetDirection(WEST);
     else
-        gameObjects[1].SetDirection(East);
+        gameObjects[1].SetDirection(EAST);
 	m += v / 10.0;
     ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(x * 2, 1.0f, /*z*/m * 2));
     ModelMatrix2 = glm::rotate(ModelMatrix2, gameObjects[1].GetDirection() * 1.575f, glm::vec3(0, 1, 0));

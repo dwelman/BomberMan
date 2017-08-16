@@ -20,10 +20,10 @@ enum ObjectType
 
 enum Direction
 {
-    East = 0,
-    North,
-    West,
-    South
+    EAST = 0,
+    NORTH,
+    WEST,
+    SOUTH
 };
 
 class GameObjectRenderInfo
