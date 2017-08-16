@@ -64,9 +64,9 @@ void		loadResources(GUICrate &crate)
 	//Setup Defaults
 	CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("AlfiskoSkin/MouseArrow");
 	CEGUI::System::getSingleton().getDefaultGUIContext().setDefaultFont("Jura-18");
-	CEGUI::FontManager::getSingleton().createFromFile("Jura-18.font");
-	CEGUI::FontManager::getSingleton().createFromFile("Jura-13.font");
-	CEGUI::FontManager::getSingleton().createFromFile("Jura-10.font");
+//	CEGUI::FontManager::getSingleton().createFromFile("Jura-18.font");
+//	CEGUI::FontManager::getSingleton().createFromFile("Jura-13.font");
+//	CEGUI::FontManager::getSingleton().createFromFile("Jura-10.font");
 
 	//Load Layouts
 	CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
@@ -177,10 +177,15 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 	if (manager.GetGameStarted() ) // && !manager.GetGamePaused())
 		crate.main->setVisible(false);
 	injectTimePulse(guiLastTimePulse);
+	//Draw Stuff 
 	glDisable(GL_DEPTH_TEST);
     glDisable(GL_TEXTURE_2D);
+	GLint activeID;
+	glGetIntegerv(GL_ACTIVE_TEXTURE, &activeID);
 	glActiveTexture(GL_TEXTURE0);
-    CEGUI::System::getSingleton().renderAllGUIContexts();
+	if (!manager.GetGameStarted())
+	 CEGUI::System::getSingleton().renderAllGUIContexts();
+	glActiveTexture(activeID);
 	glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
 

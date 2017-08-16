@@ -1,7 +1,10 @@
 <?xml version="1.0" ?>
 <GUIScheme version="5" name="AlfiskoSkin">
     <Font filename="DejaVuSans-12.font" />
-	<Font filename="Jura-18.font" />
+<Font filename="Jura-18.font" />
+<Font filename="Jura-13.font" />
+<Font filename="Jura-10.font" />
+<Font filename="Caveman.font" />
     <Imageset filename="AlfiskoSkin.imageset" />
     <LookNFeel filename="AlfiskoSkin.looknfeel" />
     <WindowRendererSet filename="CEGUICoreWindowRendererSet" />
