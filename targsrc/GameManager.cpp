@@ -291,6 +291,8 @@ void GameManager::deleteEntity(std::size_t ID)
 
 bool 	GameManager::Update()
 {
+    std::cout << m_entities.size() << std::endl;
+    std::cout << m_components.size() << std::endl;
     m_toBeDeleted.clear();
 	m_deltaTime = Clock::Instance().GetDeltaTime();
 	for (std::size_t i = 0; i < m_entities.size(); i++)
@@ -310,20 +312,40 @@ bool 	GameManager::Update()
                     {
                         std::size_t movementID = m_entities[i].GetComponentOfType(MOVEMENT);
                         Movement *movement = dynamic_cast<Movement *>(m_components[movementID]);
+                        if (m_action == P_MOVE_LEFT)
+                        {
+                            movement->SetDirection(Vec3(-1, 0, 0));
+                        }
+                        else if (m_action == P_MOVE_RIGHT)
+                        {
+                            movement->SetDirection(Vec3(1, 0, 0));
+                        }
+                        else if (m_action == P_MOVE_UP)
+                        {
+                            movement->SetDirection(Vec3(0, 1, 0));
+                        }
+                        else if (m_action == P_MOVE_DOWN)
+                        {
+                            movement->SetDirection(Vec3(0, -1, 0));
+                        }
+                        //std::cout << m_action << std::endl;
                     }
 
                     //if bomb placed
-                    std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
-                    Position *position = dynamic_cast<Position *>(m_components[positionID]);
-                    if (m_playerBombAmount > 0)
+                    if (m_action == P_PLACE_BOMB)
                     {
-                        m_playerBombAmount--;
-                        createEntityAtPosition("bomb", position->GetPosition());
+                        std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
+                        Position *position = dynamic_cast<Position *>(m_components[positionID]);
+                        if (m_playerBombAmount > 0)
+                        {
+                            m_playerBombAmount--;
+                            createEntityAtPosition("bomb", position->GetPosition());
+                        }
                     }
                 }
                 catch (std::exception &e)
                 {
-
+                    std::cout << e.what() << std::endl;
                 }
             }
         }
@@ -382,6 +404,7 @@ bool 	GameManager::Update()
                     Position *position = dynamic_cast<Position *>(m_components[positionID]);
                     Bomb *bomb = dynamic_cast<Bomb *>(m_components[bombID]);
                     BombSystem::ChangeBombTimeByDelta(*bomb, -(Clock::Instance().GetDeltaTime()));
+                    std::cout << bomb->GetBombTime() << std::endl;
                     if (bomb->GetBombTime() <= 0)
                     {
                         Explosion *explosion;
@@ -399,6 +422,7 @@ bool 	GameManager::Update()
                         explosion->SetDirection(Vec3(0, -1, 0));
                         m_playerBombAmount++;
                         m_toBeDeleted.push_back(i);
+                        std::cout << "Bomb exploded" << std::endl;
                     }
                 }
                 catch (std::exception &e)
@@ -443,6 +467,7 @@ bool 	GameManager::Update()
         {
             deleteEntity(i);
         }
+        m_action = P_NOACTION;
 		return (false);
 	}
 }
@@ -505,7 +530,7 @@ void GameManager::SetGameStarted(bool gameStarted)
     m_gameStarted = gameStarted;
 }
 
-void GameManager::GivePlayerAction(ePlayerAction const &pa)
+void GameManager::GivePlayerAction(ePlayerAction pa)
 {
     m_action = pa;
 }

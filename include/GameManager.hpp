@@ -50,5 +50,5 @@ public:
     void        GetRenderData(std::vector<GameObjectRenderInfo> &g);
     bool        GetGameStarted() const;
     void        SetGameStarted(bool gameStarted);
-	void 		GivePlayerAction(ePlayerAction const &pa);
+	void 		GivePlayerAction(ePlayerAction pa);
 };
