@@ -26,11 +26,11 @@ void main(){
 	// Light emission properties
 	// You probably want to put them as uniforms
 	vec3 LightColor = vec3(0.4,0.6,0.7);
-	float LightPower = 70.0;
+	float LightPower = 120.0;
 	
 	// Material properties
 	vec3 MaterialDiffuseColor = texture( DiffuseTextureSampler, UV ).rgb;
-	vec3 MaterialAmbientColor = vec3(0.2,0.2,0.2) * MaterialDiffuseColor;
+	vec3 MaterialAmbientColor = vec3(0.5,0.5,0.5) * MaterialDiffuseColor;
 	vec3 MaterialSpecularColor = texture( SpecularTextureSampler, UV ).rgb * 0.3;
 
 	// Local normal, in tangent space. V tex coordinate is inverted because normal map is in TGA (not in DDS) for better quality
