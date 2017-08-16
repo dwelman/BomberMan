@@ -143,6 +143,7 @@ set(SOURCE
 		${TARGSRC}Util.cpp
 		${TARGSRC}GameObjectRenderInfo.cpp
 		${TARGSRC}AudioManager.cpp
+		${TARGSRC}Keybindings.cpp
 		)
 
 set(COMPSRC "targsrc/components/")

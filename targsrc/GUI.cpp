@@ -167,6 +167,8 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 		captureInputForGameManager(manager, e, must_quit);
 		captureInputForState(e, must_quit);
 	}
+	if (manager.GetGameStarted())
+		crate.main->setVisible(false);
 	injectTimePulse(guiLastTimePulse);
 	glDisable(GL_DEPTH_TEST);
     glDisable(GL_TEXTURE_2D);
