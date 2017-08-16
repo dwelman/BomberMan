@@ -460,8 +460,31 @@ void        GameManager::GetRenderData(std::vector<GameObjectRenderInfo> &g)
                 Position *position = dynamic_cast<Position *>(m_components[positionID]);
                 std::size_t renderID = m_entities[i].GetComponentOfType(RENDER);
                 Render *render= dynamic_cast<Render *>(m_components[renderID]);
+                Direction dir = NORTH;
 
-                GameObjectRenderInfo newObj(render->GetObjectType(), position->GetPosition(), EAST);
+                if ((mask & MOVEMENT) == MOVEMENT)
+                {
+                    std::size_t movementID = m_entities[i].GetComponentOfType(MOVEMENT);
+                    Movement *movement = dynamic_cast<Movement *>(m_components[movementID]);
+                    if (movement->GetDirection().GetX() == 1)
+                    {
+                        dir = EAST;
+                    }
+                    else if (movement->GetDirection().GetX() == -1)
+                    {
+                        dir = WEST;
+                    }
+                    else if (movement->GetDirection().GetY() == 1)
+                    {
+                        dir = NORTH;
+                    }
+                    else if (movement->GetDirection().GetY() == -1)
+                    {
+                        dir = SOUTH;
+                    }
+                }
+
+                GameObjectRenderInfo newObj(render->GetObjectType(), position->GetPosition(), dir);
                 g.push_back(newObj);
             }
         }
@@ -480,4 +503,9 @@ bool GameManager::GetGameStarted() const
 void GameManager::SetGameStarted(bool gameStarted)
 {
     m_gameStarted = gameStarted;
+}
+
+void GameManager::GivePlayerAction(ePlayerAction const &pa)
+{
+    m_action = pa;
 }

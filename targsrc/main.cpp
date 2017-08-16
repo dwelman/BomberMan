@@ -53,6 +53,8 @@ void gameLoop(SDL_Window *window)
     rEngine.initGlew();
     crate.manager = &manager;
     crate.mustQuit = &mustQuit;
+	//mapKeyTextToSDLKey(crate.textToKeyCode);
+	//GetKeyCodesFromConfig(crate.textToKeyCode, crate.actionToKeyCode , g_cfg);
     do
     {
 		Clock::Instance().Tick();
@@ -64,8 +66,7 @@ void gameLoop(SDL_Window *window)
 		}
         manager.GetRenderData(gameObjects);
 		rEngine.Draw(window, manager.GetGameStarted(), gameObjects);
-        if (!manager.GetGameStarted())
-		    renderGUIInjectEvents(manager, window, guiLastTimePulse, mustQuit);
+        renderGUIInjectEvents(manager, window, guiLastTimePulse, mustQuit, crate);
 		SDL_GL_SwapWindow(window);
         gameObjects.clear();
 		//SDL_Delay(10);

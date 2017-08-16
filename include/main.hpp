@@ -37,3 +37,8 @@ enum    ePlayerAction
 
 static ConfigEditor g_cfg("resources/settings.cfg");
 
+void            mapKeyTextToSDLKey(std::map<std::string, SDL_Keycode> &textToKeyCode);
+
+SDL_Keycode     GetKeyCodesFromConfig(std::map<std::string, SDL_Keycode> &textToKeyCode, std::map<ePlayerAction, SDL_Keycode > &actionToKeyCode ,ConfigEditor &cfg);
+
+ePlayerAction   GetPlayerAction(SDL_KeyboardEvent &e);

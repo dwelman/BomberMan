@@ -34,6 +34,7 @@ private:
 	std::size_t 							m_explosionSize;
 	std::size_t 							m_lives;
 	std::size_t 							m_score;
+	ePlayerAction 							m_action;
 
 	void		handleCollisions(Collision &c, Position &p, Tag &t, std::size_t ID);
     void        handleMovement(Position &p, Movement &m);
@@ -49,4 +50,5 @@ public:
     void        GetRenderData(std::vector<GameObjectRenderInfo> &g);
     bool        GetGameStarted() const;
     void        SetGameStarted(bool gameStarted);
+	void 		GivePlayerAction(ePlayerAction const &pa);
 };
