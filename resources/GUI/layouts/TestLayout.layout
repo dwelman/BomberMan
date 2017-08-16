@@ -2,7 +2,7 @@
 
 <GUILayout version="4" >
     <Window type="DefaultWindow" name="root" >
-        <Property name="Area" value="{{0,4},{0,0},{1,4},{1,0}}" />
+        <Property name="Area" value="{{0,4},{0,1},{1,4},{1,1}}" />
         <Property name="Font" value="Jura-18" />
         <Property name="MaxSize" value="{{1,0},{1,0}}" />
         <Window type="SampleBrowserSkin/FrameWindow" name="Menu" >

@@ -167,6 +167,7 @@ void	captureInputForState(SDL_Event &e, bool & must_quit)
 void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiLastTimePulse, bool &must_quit, GUICrate &crate)
 {
 	SDL_Event			e;
+	GLint				activeID;
 
 	while (SDL_PollEvent(&e))
 	{
@@ -175,19 +176,20 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 		captureInputForState(e, must_quit);
 	}
 	if (manager.GetGameStarted() ) // && !manager.GetGamePaused())
-		crate.main->setVisible(false);
+		crate.main->getChildElementRecursive("Menu")->setProperty("Visible", "False");
 	injectTimePulse(guiLastTimePulse);
 	//Draw Stuff 
 	glDisable(GL_DEPTH_TEST);
     glDisable(GL_TEXTURE_2D);
-	GLint activeID;
 	glGetIntegerv(GL_ACTIVE_TEXTURE, &activeID);
 	glActiveTexture(GL_TEXTURE0);
-	if (!manager.GetGameStarted())
+	if (!manager.GetGameStarted()) //NEED TO FIGURE LIGHTS THE FUCK PIdasdasdads
 	 CEGUI::System::getSingleton().renderAllGUIContexts();
+
 	glActiveTexture(activeID);
 	glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 }
 
