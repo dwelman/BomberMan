@@ -22,6 +22,9 @@ struct GUIFunctionCrate
 
 	std::vector<MenuFunction*>	MenuFunctions;
 
+    std::map<ePlayerAction, SDL_Keycode >   actionToKeyCode;
+	std::map<std::string, SDL_Keycode>		textToKeyCode;
+
 	GUIFunctionCrate();
 	~GUIFunctionCrate();
 };
