@@ -2,31 +2,42 @@
 
 <GUILayout version="4" >
     <Window type="DefaultWindow" name="Settings" >
-        <Property name="Area" value="{{0,3},{0,0},{1,3},{1,0}}" />
-        <Property name="Font" value="GreatVibes-16" />
+        <Property name="Area" value="{{0,3},{0,-1},{1,3},{1,-1}}" />
         <Property name="MaxSize" value="{{1,0},{1,0}}" />
-        <Window type="AlfiskoSkin/FrameWindow" name="SettingsMenu" >
-            <Property name="Area" value="{{0.25,0},{0.1,0},{0.75,0},{0.9,0}}" />
+        <Window type="SampleBrowserSkin/FrameWindow" name="SettingsMenu" >
+            <Property name="Area" value="{{0.25,-1},{0.1,0},{0.75,-1},{0.9,0}}" />
             <Property name="Text" value=" Settings" />
+            <Property name="MaxSize" value="{{1,0},{1,0}}" />
             <Property name="AlwaysOnTop" value="true" />
-            <AutoWindow namePath="__auto_titlebar__" >
-                <Property name="AlwaysOnTop" value="false" />
+            <AutoWindow namePath="__auto_closebutton__" >
+                <Property name="NonClient" value="true" />
             </AutoWindow>
-            <Window type="AlfiskoSkin/ImageButton" name="ResolutionPrevious" >
-                <Property name="Area" value="{{0.55,-2},{0.1,0},{0.6,-2},{0.16,0}}" />
-                <Property name="HoverImage" value="AlfiskoSkin/ScrollLeftHover" />
-                <Property name="NormalImage" value="AlfiskoSkin/ScrollLeftNormal" />
-                <Property name="PushedImage" value="AlfiskoSkin/ScrollLeftPushed" />
+            <Window type="AlfiskoSkin/Button" name="Close" >
+                <Property name="Area" value="{{0.74,1},{0.92,0},{0.94,1},{0.986,0}}" />
+                <Property name="Text" value="Close" />
             </Window>
-            <Window type="AlfiskoSkin/ImageButton" name="ResolutionNext" >
-                <Property name="Area" value="{{0.89,-1},{0.1,0},{0.94,-1},{0.16,0}}" />
+            <Window type="Generic/LabelWithOutline" name="FullscreenLabel" >
+                <Property name="Area" value="{{0.05,-1},{0.2,0},{0.35,-1},{0.2,32}}" />
+                <Property name="Text" value="Full Screen" />
+                <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                <Property name="HorzFormatting" value="LeftAligned" />
+                <Property name="NormalTextColour" value="FFE1E4E8" />
+            </Window>
+            <Window type="AlfiskoSkin/ImageButton" name="FullscreenNext" >
+                <Property name="Area" value="{{0.89,0},{0.2,0},{0.94,0},{0.26,0}}" />
                 <Property name="HoverImage" value="AlfiskoSkin/ScrollRightHover" />
                 <Property name="NormalImage" value="AlfiskoSkin/ScrollRightNormal" />
                 <Property name="PushedImage" value="AlfiskoSkin/ScrollRightPushed" />
             </Window>
-            <Window type="AlfiskoSkin/Editbox" name="ResolutionValue" >
-                <Property name="Area" value="{{0.62,-1},{0.1,0},{0.87,-1},{0.16,0}}" />
-                <Property name="Text" value="1280x720" />
+            <Window type="AlfiskoSkin/ImageButton" name="FullscreenPrevious" >
+                <Property name="Area" value="{{0.55,0},{0.2,0},{0.6,0},{0.26,0}}" />
+                <Property name="HoverImage" value="AlfiskoSkin/ScrollLeftHover" />
+                <Property name="NormalImage" value="AlfiskoSkin/ScrollLeftNormal" />
+                <Property name="PushedImage" value="AlfiskoSkin/ScrollLeftPushed" />
+            </Window>
+            <Window type="AlfiskoSkin/Editbox" name="FullscreenValue" >
+                <Property name="Area" value="{{0.62,0},{0.2,0},{0.87,0},{0.26,0}}" />
+                <Property name="Text" value="No" />
                 <Property name="ReadOnly" value="true" />
                 <Property name="TextFormatting" value="CentreAligned" />
             </Window>
@@ -37,48 +48,23 @@
                 <Property name="HorzFormatting" value="LeftAligned" />
                 <Property name="NormalTextColour" value="FFE1E4E8" />
             </Window>
-            <Window type="Generic/LabelWithOutline" name="FullscreenLabel" >
-                <Property name="Area" value="{{0.05,-1},{0.2,0},{0.35,-1},{0.2,32}}" />
-                <Property name="Text" value="Full Screen" />
-                <Property name="MaxSize" value="{{1,0},{1,0}}" />
-                <Property name="HorzFormatting" value="LeftAligned" />
-                <Property name="NormalTextColour" value="FFE1E4E8" />
-            </Window>
-            <Window type="AlfiskoSkin/ImageButton" name="FullscreenPrevious" >
-                <Property name="Area" value="{{0.55,0},{0.2,0},{0.6,0},{0.26,0}}" />
-                <Property name="HoverImage" value="AlfiskoSkin/ScrollLeftHover" />
-                <Property name="NormalImage" value="AlfiskoSkin/ScrollLeftNormal" />
-                <Property name="PushedImage" value="AlfiskoSkin/ScrollLeftPushed" />
-            </Window>
-            <Window type="AlfiskoSkin/ImageButton" name="FullscreenNext" >
-                <Property name="Area" value="{{0.89,0},{0.2,0},{0.94,0},{0.26,0}}" />
+            <Window type="AlfiskoSkin/ImageButton" name="ResolutionNext" >
+                <Property name="Area" value="{{0.89,-1},{0.1,0},{0.94,-1},{0.16,0}}" />
                 <Property name="HoverImage" value="AlfiskoSkin/ScrollRightHover" />
                 <Property name="NormalImage" value="AlfiskoSkin/ScrollRightNormal" />
                 <Property name="PushedImage" value="AlfiskoSkin/ScrollRightPushed" />
             </Window>
-            <Window type="AlfiskoSkin/Editbox" name="FullscreenValue" >
-                <Property name="Area" value="{{0.62,0},{0.2,0},{0.87,0},{0.26,0}}" />
-                <Property name="Text" value="No" />
+            <Window type="AlfiskoSkin/ImageButton" name="ResolutionPrevious" >
+                <Property name="Area" value="{{0.55,-2},{0.1,0},{0.6,-2},{0.16,0}}" />
+                <Property name="HoverImage" value="AlfiskoSkin/ScrollLeftHover" />
+                <Property name="NormalImage" value="AlfiskoSkin/ScrollLeftNormal" />
+                <Property name="PushedImage" value="AlfiskoSkin/ScrollLeftPushed" />
+            </Window>
+            <Window type="AlfiskoSkin/Editbox" name="ResolutionValue" >
+                <Property name="Area" value="{{0.62,-1},{0.1,0},{0.87,-1},{0.16,0}}" />
+                <Property name="Text" value="1280x720" />
                 <Property name="ReadOnly" value="true" />
                 <Property name="TextFormatting" value="CentreAligned" />
-            </Window>
-            <Window type="Generic/LabelWithOutline" name="VideoSettingsCaption" >
-                <Property name="Area" value="{{0,0},{0,0},{1,0},{0,32}}" />
-                <Property name="Text" value="Video Settings" />
-                <Property name="MaxSize" value="{{1,0},{1,0}}" />
-                <Property name="DragDropTarget" value="false" />
-                <Property name="VertFormatting" value="TopAligned" />
-                <Property name="NormalTextColour" value="FFE1E4E8" />
-                <Property name="HorizontalAlignment" value="Centre" />
-                <Property name="AutoRenderingSurface" value="true" />
-            </Window>
-            <Window type="AlfiskoSkin/Button" name="Close" >
-                <Property name="Area" value="{{0.74,0},{0.92,0},{0.94,0},{0.986,0}}" />
-                <Property name="Text" value="Close" />
-            </Window>
-            <Window type="AlfiskoSkin/Button" name="Apply" >
-                <Property name="Area" value="{{0.5,0},{0.92,0},{0.7,0},{0.986,0}}" />
-                <Property name="Text" value="Apply" />
             </Window>
             <Window type="Generic/LabelWithOutline" name="VidRestartNotice" >
                 <Property name="Area" value="{{0,-1},{0.938,-9},{0.5,-1},{0.938,23}}" />
@@ -94,6 +80,20 @@
                 <Property name="NormalTextColour" value="FFD1191F" />
                 <Property name="AutoRenderingSurface" value="true" />
                 <Property name="MousePassThroughEnabled" value="true" />
+            </Window>
+            <Window type="Generic/LabelWithOutline" name="VideoSettingsCaption" >
+                <Property name="Area" value="{{0,-1},{0,0},{1,-1},{0,31}}" />
+                <Property name="Text" value="Video Settings" />
+                <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                <Property name="DragDropTarget" value="false" />
+                <Property name="VertFormatting" value="TopAligned" />
+                <Property name="NormalTextColour" value="FFE1E4E8" />
+                <Property name="HorizontalAlignment" value="Centre" />
+                <Property name="AutoRenderingSurface" value="true" />
+            </Window>
+            <Window type="AlfiskoSkin/Button" name="Apply" >
+                <Property name="Area" value="{{0.5,0},{0.92,0},{0.7,0},{0.986,0}}" />
+                <Property name="Text" value="Apply" />
             </Window>
         </Window>
     </Window>

@@ -4,7 +4,7 @@
 
 #include <GUI.hpp>
 
-void		setupEvents(GUIFunctionCrate &crate)
+void		setupEvents(GUICrate &crate)
 {
 	//Main menu
 	CEGUI::NamedElement *start = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("StartGame");
@@ -47,32 +47,32 @@ void	switchLayouts(CEGUI::Window *from, CEGUI::Window *to)
 	}
 }
 
-bool startGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate &var)
+bool startGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate &var)
 {
 	var.manager->SetGameStarted(true);
 	return (true);
 };
 
-bool openSettingsMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate &var)
+bool openSettingsMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate &var)
 {
 	switchLayouts(var.main, var.settings);
 	var.pendingSettings = var.activeSettings;
 	return (true);
 };
 
-bool openMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate &var)
+bool openMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate &var)
 {
 	switchLayouts(var.settings, var.main);
 	return (true);
 };
 
-bool setExit(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate	&var)
+bool setExit(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
 {
     *var.mustQuit = true;
     return (true);
 };
 
-bool resolutionNextClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate	&var)
+bool resolutionNextClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
 {
     std::string newVal = *var.pendingSettings.video.resolution.next();
     std::string xres = newVal.substr(0, newVal.find("x"));
@@ -86,7 +86,7 @@ bool resolutionNextClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_elemen
 	return (true);
 };
 
-bool resolutionPreviousClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate	&var)
+bool resolutionPreviousClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
 {
     std::string newVal = *var.pendingSettings.video.resolution.previous();
     std::string xres = newVal.substr(0, newVal.find("x"));
@@ -100,7 +100,7 @@ bool resolutionPreviousClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_el
     return (true);
 };
 
-bool fullscreenNextClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate	&var)
+bool fullscreenNextClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
 {
     std::string newVal = *var.pendingSettings.video.fullScreen.next();
 
@@ -111,7 +111,7 @@ bool fullscreenNextClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_elemen
     return (true);
 };
 
-bool fullscreenPreviousClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate	&var)
+bool fullscreenPreviousClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
 {
     std::string newVal = *var.pendingSettings.video.fullScreen.previous();
 
@@ -122,7 +122,7 @@ bool fullscreenPreviousClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_el
     return (true);
 };
 
-bool applyClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate	&var)
+bool applyClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
 {
 	if (var.pendingSettings.changed)
 	{

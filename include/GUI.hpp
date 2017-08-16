@@ -7,37 +7,44 @@
 struct MenuFunction;
 struct Setting;
 
-struct GUIFunctionCrate
+struct KeyBindings
 {
-	GameManager                 *manager;
-	CEGUI::OpenGL3Renderer		*guiRenderer;
-	bool						*mustQuit;
-	bool						displayChanged;
-	//Layouts
-	CEGUI::Window* main;
-	CEGUI::Window* settings;
-
-	SettingsState				activeSettings;
-	SettingsState				pendingSettings;
-
-	std::vector<MenuFunction*>	MenuFunctions;
-
-    std::map<ePlayerAction, SDL_Keycode >   actionToKeyCode;
-	std::map<std::string, SDL_Keycode>		textToKeyCode;
-
-	GUIFunctionCrate();
-	~GUIFunctionCrate();
+	std::map<ePlayerAction, SDL_Keycode >   *actionToKeyCode;
+	std::map<std::string, SDL_Keycode>		*textToKeyCode;
 };
 
-typedef	bool(*ccev)(const CEGUI::EventArgs &e, CEGUI::NamedElement *_element , GUIFunctionCrate &var);
+struct GUICrate
+{
+	//Variables GUI Needs to access
+	GameManager								*manager;
+	CEGUI::OpenGL3Renderer					*guiRenderer;
+	bool									*mustQuit;
+	bool									displayChanged;
+	KeyBindings								keybindings;
+	//Event Functions
+	std::vector<MenuFunction*>				MenuFunctions;
+	//Layouts
+	CEGUI::Window							*main;
+	CEGUI::Window							*settings;
+	//Setting States
+	SettingsState							activeSettings;
+	SettingsState							pendingSettings;
+
+	GUICrate();
+	~GUICrate();
+};
+
+
+
+typedef	bool(*ccev)(const CEGUI::EventArgs &e, CEGUI::NamedElement *_element , GUICrate &var);
 
 struct MenuFunction
 {
-	GUIFunctionCrate	&var;
+	GUICrate	&var;
 	ccev				customEvent;
 	CEGUI::NamedElement	*element;
 
-	MenuFunction(CEGUI::NamedElement *_element, const CEGUI::String &name, ccev eventFunction, GUIFunctionCrate	&_var) :
+	MenuFunction(CEGUI::NamedElement *_element, const CEGUI::String &name, ccev eventFunction, GUICrate	&_var) :
 		var(_var), element(_element)
 	{
 		customEvent = eventFunction;
@@ -52,9 +59,9 @@ struct MenuFunction
 	virtual ~MenuFunction() {};
 };
 
-double  initGui(SDL_Window *window, GUIFunctionCrate &crate);
+double  initGui(SDL_Window *window, GUICrate &crate);
 
-void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiLastTimePulse, bool &must_quit, GUIFunctionCrate &crate);
+void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiLastTimePulse, bool &must_quit, GUICrate &crate);
 
 void	initializeKeyMap();
 
@@ -64,30 +71,30 @@ void	injectTimePulse(double& last_time_pulse);
 
 void	loadResources();
 
-void	setupEvents(GUIFunctionCrate &crate);
+void	setupEvents(GUICrate &crate);
 
 void	loadSettingsFromDefaultConfig(SettingsState &settings);
 
-void	destroyGUI(GUIFunctionCrate &crate);
+void	destroyGUI(GUICrate &crate);
 
-void		reloadDisplayMode(SDL_Window *win, GUIFunctionCrate &crate);
+void		reloadDisplayMode(SDL_Window *win, GUICrate &crate);
 
 //Events
 
-bool setExit(const CEGUI::EventArgs& /*e*/, CEGUI::NamedElement *_element, GUIFunctionCrate	&var);
+bool setExit(const CEGUI::EventArgs& /*e*/, CEGUI::NamedElement *_element, GUICrate	&var);
 
-bool openSettingsMenu(const CEGUI::EventArgs& /*e*/, CEGUI::NamedElement *_element, GUIFunctionCrate &var);
+bool openSettingsMenu(const CEGUI::EventArgs& /*e*/, CEGUI::NamedElement *_element, GUICrate &var);
 
-bool openMainMenu(const CEGUI::EventArgs& /*e*/, CEGUI::NamedElement *_element, GUIFunctionCrate &var);
+bool openMainMenu(const CEGUI::EventArgs& /*e*/, CEGUI::NamedElement *_element, GUICrate &var);
 
-bool startGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate &var);
+bool startGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate &var);
 
-bool resolutionNextClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate &var);
+bool resolutionNextClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate &var);
 
-bool resolutionPreviousClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate &var);
+bool resolutionPreviousClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate &var);
 
-bool fullscreenNextClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate	&var);
+bool fullscreenNextClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);
 
-bool fullscreenPreviousClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate	&var);
+bool fullscreenPreviousClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);
 
-bool applyClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUIFunctionCrate	&var);
+bool applyClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);

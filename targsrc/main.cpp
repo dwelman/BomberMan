@@ -44,17 +44,17 @@ void gameLoop(SDL_Window *window)
 {
 	GameManager         manager;
 	bool				mustQuit = false;
-    GUIFunctionCrate    crate;
+    GUICrate			crate;
 	double				guiLastTimePulse = initGui(window, crate);
 	RenderEngine        rEngine;
     std::vector<GameObjectRenderInfo>   gameObjects;
 
     manager.SetGameStarted(false);
-    rEngine.initGlew();
+	rEngine.initGlew();
     crate.manager = &manager;
     crate.mustQuit = &mustQuit;
-	//mapKeyTextToSDLKey(crate.textToKeyCode);
-	//GetKeyCodesFromConfig(crate.textToKeyCode, crate.actionToKeyCode , g_cfg);
+	mapKeyTextToSDLKey(*crate.keybindings.textToKeyCode);
+	GetKeyCodesFromConfig(*crate.keybindings.textToKeyCode, *crate.keybindings.actionToKeyCode , g_cfg);
     do
     {
 		Clock::Instance().Tick();

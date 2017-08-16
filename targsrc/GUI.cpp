@@ -4,25 +4,35 @@
 
 void				populateSettingSpinners(SettingsState &s)
 {
-	s.video.resolution.push_back("1280x720");
-	s.video.resolution.push_back("1920x1080");
-	s.video.resolution.setIterator(s.video.resolution.activeValue);
+	SDL_DisplayMode	monitorDisplayMode;
 
+	SDL_GetCurrentDisplayMode(0, &monitorDisplayMode);
+		s.video.resolution.push_back("1280x720");
+	if (monitorDisplayMode.h >= 1080 && monitorDisplayMode.w >= 1920)
+		s.video.resolution.push_back("1920x1080");
+	if (monitorDisplayMode.h >= 1440 && monitorDisplayMode.w >= 2560)
+		s.video.resolution.push_back("2560x1440");
+
+	s.video.resolution.setIterator(s.video.resolution.activeValue);
 	s.video.fullScreen.push_back("Yes");
 	s.video.fullScreen.push_back("No");
 	s.video.fullScreen.setIterator(s.video.fullScreen.activeValue);
 }
 
-GUIFunctionCrate::GUIFunctionCrate()
+GUICrate::GUICrate()
 {
-    memset(this, 0, sizeof(GUIFunctionCrate));
+    memset(this, 0, sizeof(GUICrate));
 
 	loadSettingsFromDefaultConfig(this->activeSettings);
+	keybindings.actionToKeyCode = new std::map<ePlayerAction, SDL_Keycode>;
+	keybindings.textToKeyCode = new  std::map<std::string, SDL_Keycode>;
 	pendingSettings = activeSettings;
 }
 
-GUIFunctionCrate::~GUIFunctionCrate()
+GUICrate::~GUICrate()
 {
+	delete keybindings.actionToKeyCode;
+	delete keybindings.textToKeyCode;
 }
 
 inline void	  setupResourceGroups()
@@ -43,11 +53,13 @@ inline void	  setupResourceGroups()
 	//	CEGUI::ScriptModule::setDefaultResourceGroup("lua_scripts");
 }
 
-void		loadResources(GUIFunctionCrate &crate)
+void		loadResources(GUICrate &crate)
 {
 	//Load Schemes
 	CEGUI::SchemeManager::getSingleton().createFromFile("AlfiskoSkin.scheme");
 	CEGUI::SchemeManager::getSingleton().createFromFile("Generic.scheme");
+	CEGUI::SchemeManager::getSingleton().createFromFile("SampleBrowser.scheme");
+
 
 	//Setup Defaults
 	CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("AlfiskoSkin/MouseArrow");
@@ -68,9 +80,9 @@ void		loadResources(GUIFunctionCrate &crate)
 }
 
 
-//MenuFunction(CEGUI::NamedElement *_element, const CEGUI::String &name, ccev eventFunction, GUIFunctionCrate	&var)
+//MenuFunction(CEGUI::NamedElement *_element, const CEGUI::String &name, ccev eventFunction, GUICrate	&var)
 
-void        initValues(GUIFunctionCrate &crate)
+void        initValues(GUICrate &crate)
 {
     CEGUI::NamedElement *resolutionValue = crate.settings->getChildElementRecursive("ResolutionValue");
     resolutionValue->setProperty("Text", g_cfg["xres"].to_str() + "x" + g_cfg["yres"].to_str());
@@ -78,7 +90,7 @@ void        initValues(GUIFunctionCrate &crate)
     fullscreenValue->setProperty("Text", case_ins_cmp("yes", g_cfg["fullscreen"].to_str()) ? "Yes" : "No");
 }
 
-void		destroyGUI(GUIFunctionCrate &crate)
+void		destroyGUI(GUICrate &crate)
 {
 	/*
 	TODO
@@ -91,7 +103,7 @@ void		destroyGUI(GUIFunctionCrate &crate)
 	CEGUI::OpenGL3Renderer::destroy(static_cast<CEGUI::OpenGL3Renderer&>(*crate.guiRenderer));
 }
 
-double    initGui(SDL_Window *window, GUIFunctionCrate &crate)
+double    initGui(SDL_Window *window, GUICrate &crate)
 {
 	try
 	{
@@ -113,7 +125,7 @@ double    initGui(SDL_Window *window, GUIFunctionCrate &crate)
 	return (0.001 * static_cast<double>(SDL_GetTicks()));
 }
 
-void	captureInputForGameManager(GameManager &manager, SDL_Event &e, bool & must_quit)
+void	captureInputForGameManager(GameManager &manager, SDL_Event &e, bool & must_quit, KeyBindings &keybindings)
 {
 	ePlayerAction	action = P_NOACTION;
 	if (e.type == SDL_QUIT)
@@ -122,24 +134,19 @@ void	captureInputForGameManager(GameManager &manager, SDL_Event &e, bool & must_
 	//TODO game logic stoofs
 	if (e.type == SDL_KEYDOWN)
 	{
-		switch (e.key.keysym.sym)
-		{
-			case SDLK_LEFT :
-				action = P_MOVE_LEFT;
-				break;
-			case SDLK_RIGHT :
-				action = P_MOVE_RIGHT;
-				break;
-			case SDLK_UP :
-				action = P_MOVE_UP;
-				break;
-			case SDLK_DOWN :
-				action = P_MOVE_DOWN;
-				break;
-			case SDLK_SPACE :
-				action = P_PLACE_BOMB;
-				break;
-		}
+		if ((*keybindings.actionToKeyCode)[P_MOVE_LEFT] == e.key.keysym.sym)
+			action = P_MOVE_LEFT;
+		else if ((*keybindings.actionToKeyCode)[P_MOVE_RIGHT] == e.key.keysym.sym)
+			action = P_MOVE_RIGHT;
+		else if ((*keybindings.actionToKeyCode)[P_MOVE_UP] == e.key.keysym.sym)
+			action = P_MOVE_UP;
+		else if ((*keybindings.actionToKeyCode)[P_MOVE_DOWN] == e.key.keysym.sym)
+			action = P_MOVE_DOWN;
+		else if ((*keybindings.actionToKeyCode)[P_PLACE_BOMB] == e.key.keysym.sym)
+			action = P_PLACE_BOMB;
+		else if ((*keybindings.actionToKeyCode)[P_PAUSE_GAME] == e.key.keysym.sym)
+			action = P_PAUSE_GAME;
+
 		if (action != P_NOACTION)
 		{
 			// Feed actions  into GM
@@ -157,17 +164,17 @@ void	captureInputForState(SDL_Event &e, bool & must_quit)
 	}
 }
 
-void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiLastTimePulse, bool &must_quit, GUIFunctionCrate &crate)
+void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiLastTimePulse, bool &must_quit, GUICrate &crate)
 {
 	SDL_Event			e;
 
 	while (SDL_PollEvent(&e))
 	{
 		injectInput(must_quit, CEGUI::System::getSingleton().getDefaultGUIContext(), e);
-		captureInputForGameManager(manager, e, must_quit);
+		captureInputForGameManager(manager, e, must_quit, crate.keybindings);
 		captureInputForState(e, must_quit);
 	}
-	if (manager.GetGameStarted())
+	if (manager.GetGameStarted() ) // && !manager.GetGamePaused())
 		crate.main->setVisible(false);
 	injectTimePulse(guiLastTimePulse);
 	glDisable(GL_DEPTH_TEST);
@@ -179,7 +186,7 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 
 }
 
-void		reloadDisplayMode(SDL_Window *win, GUIFunctionCrate &crate)
+void		reloadDisplayMode(SDL_Window *win, GUICrate &crate)
 {
 	SDL_DisplayMode	dsp;
 	SDL_GetDesktopDisplayMode(0, &dsp);

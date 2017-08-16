@@ -4,13 +4,6 @@
 
 #include <main.hpp>
 
-struct          KeyBind
-{
-    SDL_Keycode keyCode;
-    std::string keyCodeString;
-    std::string dispName;
-};
-
 void            mapKeyTextToSDLKey(std::map<std::string, SDL_Keycode> &textToKeyCode)
 {
     textToKeyCode["SDLK_1"] = SDLK_1;
@@ -33,7 +26,7 @@ void            mapKeyTextToSDLKey(std::map<std::string, SDL_Keycode> &textToKey
     textToKeyCode["SDLK_i"] = SDLK_i;
     textToKeyCode["SDLK_o"] = SDLK_o;
     textToKeyCode["SDLK_p"] = SDLK_p;
-    textToKeyCode["SDLK_a"] = SDLK_s;
+    textToKeyCode["SDLK_a"] = SDLK_a;
     textToKeyCode["SDLK_d"] = SDLK_d;
     textToKeyCode["SDLK_f"] = SDLK_f;
     textToKeyCode["SDLK_g"] = SDLK_g;
@@ -48,8 +41,6 @@ void            mapKeyTextToSDLKey(std::map<std::string, SDL_Keycode> &textToKey
     textToKeyCode["SDLK_b"] = SDLK_b;
     textToKeyCode["SDLK_n"] = SDLK_n;
     textToKeyCode["SDLK_m"] = SDLK_m;
-
-
     textToKeyCode["SDLK_COMMA"] = SDLK_COMMA;
     textToKeyCode["SDLK_PERIOD"] = SDLK_PERIOD;
     textToKeyCode["SDLK_SLASH"] = SDLK_SLASH;
@@ -61,20 +52,16 @@ void            mapKeyTextToSDLKey(std::map<std::string, SDL_Keycode> &textToKey
     textToKeyCode["SDLK_RIGHTBRACKET"] = SDLK_RIGHTBRACKET;
     textToKeyCode["SDLK_QUOTE"] = SDLK_QUOTE;
     textToKeyCode["SDLK_BACKQUOTE"] = SDLK_BACKQUOTE;
-
     textToKeyCode["SDLK_RETURN"] = SDLK_RETURN;
     textToKeyCode["SDLK_SPACE"] = SDLK_SPACE;
     textToKeyCode["SDLK_BACKSPACE"] = SDLK_BACKSPACE;
     textToKeyCode["SDLK_TAB"] = SDLK_TAB;
-
     textToKeyCode["SDLK_ESCAPE"] = SDLK_ESCAPE;
     textToKeyCode["SDLK_PAUSE"] = SDLK_PAUSE;
     textToKeyCode["SDLK_SYSREQ"] = SDLK_SYSREQ;
     textToKeyCode["SDLK_POWER"] = SDLK_POWER;
-
     textToKeyCode["SDLK_NUMLOCKCLEAR"] = SDLK_NUMLOCKCLEAR;
     textToKeyCode["SDLK_SCROLLLOCK"] = SDLK_SCROLLLOCK;
-
     textToKeyCode["SDLK_F1"] = SDLK_F1;
     textToKeyCode["SDLK_F2"] = SDLK_F2;
     textToKeyCode["SDLK_F3"] = SDLK_F3;
@@ -90,7 +77,6 @@ void            mapKeyTextToSDLKey(std::map<std::string, SDL_Keycode> &textToKey
     textToKeyCode["SDLK_F13"] = SDLK_F13;
     textToKeyCode["SDLK_F14"] = SDLK_F14;
     textToKeyCode["SDLK_F15"] = SDLK_F15;
-
     textToKeyCode["SDLK_LCTRL"] = SDLK_LCTRL;
     textToKeyCode["SDLK_LALT"] = SDLK_LALT;
     textToKeyCode["SDLK_LSHIFT"] = SDLK_LSHIFT;
@@ -100,7 +86,6 @@ void            mapKeyTextToSDLKey(std::map<std::string, SDL_Keycode> &textToKey
     textToKeyCode["SDLK_RSHIFT"] = SDLK_RSHIFT;
     textToKeyCode["SDLK_RGUI"] = SDLK_RGUI;
     textToKeyCode["SDLK_MENU"] = SDLK_MENU;
-
     textToKeyCode["SDLK_KP_0"] = SDLK_KP_0;
     textToKeyCode["SDLK_KP_1"] = SDLK_KP_1;
     textToKeyCode["SDLK_KP_2"] = SDLK_KP_2;
@@ -111,19 +96,16 @@ void            mapKeyTextToSDLKey(std::map<std::string, SDL_Keycode> &textToKey
     textToKeyCode["SDLK_KP_7"] = SDLK_KP_7;
     textToKeyCode["SDLK_KP_8"] = SDLK_KP_8;
     textToKeyCode["SDLK_KP_9"] = SDLK_KP_9;
-
     textToKeyCode["SDLK_KP_PERIOD"] = SDLK_KP_PERIOD;
     textToKeyCode["SDLK_KP_PLUS"] = SDLK_KP_PLUS;
     textToKeyCode["SDLK_KP_MINUS"] = SDLK_KP_MINUS;
     textToKeyCode["SDLK_KP_MULTIPLY"] = SDLK_KP_MULTIPLY;
     textToKeyCode["SDLK_KP_DIVIDE"] = SDLK_KP_DIVIDE;
     textToKeyCode["SDLK_KP_ENTER"] = SDLK_KP_ENTER;
-
     textToKeyCode["SDLK_UP"] = SDLK_UP;
     textToKeyCode["SDLK_LEFT"] = SDLK_LEFT;
     textToKeyCode["SDLK_RIGHT"] = SDLK_RIGHT;
     textToKeyCode["SDLK_DOWN"] = SDLK_DOWN;
-
     textToKeyCode["SDLK_HOME"] = SDLK_HOME;
     textToKeyCode["SDLK_END"] = SDLK_END;
     textToKeyCode["SDLK_PAGEUP"] = SDLK_PAGEUP;
@@ -132,46 +114,35 @@ void            mapKeyTextToSDLKey(std::map<std::string, SDL_Keycode> &textToKey
     textToKeyCode["SDLK_DELETE"] = SDLK_DELETE;
 }
 
-SDL_Keycode     GetKeyCodesFromConfig(std::map<std::string, SDL_Keycode> &textToKeyCode, std::map<ePlayerAction, SDL_Keycode > &actionToKeyCode ,ConfigEditor &cfg)
+void	mapActionToKey(	std::map<std::string, SDL_Keycode> &textToKeyCode,
+						std::map<ePlayerAction, SDL_Keycode > &actionToKeyCode,
+						ConfigEditor &cfg, 
+						ePlayerAction action, 
+						std::string actionString, 
+						SDL_Keycode defaultKey)
 {
-    if (cfg["P_MOVE_DOWN"].ref.size() > 0)
-    {
-        SDL_Keycode key = textToKeyCode[cfg["P_MOVE_DOWN"].to_str()];
-        actionToKeyCode[P_MOVE_DOWN] = key;
-    }
-    else
-        actionToKeyCode[P_MOVE_DOWN] = SDLK_DOWN;
-    if (cfg["P_MOVE_UP"].ref.size() > 0)
-    {
-        SDL_Keycode key = textToKeyCode[cfg["P_MOVE_UP"].to_str()];
-        actionToKeyCode[P_MOVE_UP] = key;
-    }
-    else
-        actionToKeyCode[P_MOVE_UP] = SDLK_UP;
-    if (cfg["P_MOVE_LEFT"].ref.size() > 0)
-    {
-        SDL_Keycode key = textToKeyCode[cfg["P_MOVE_LEFT"].to_str()];
-        actionToKeyCode[P_MOVE_LEFT] = key;
-    }
-    else
-        actionToKeyCode[P_MOVE_LEFT] = SDLK_LEFT;
-    if (cfg["P_MOVE_RIGHT"].ref.size() > 0)
-    {
-        SDL_Keycode key = textToKeyCode[cfg["P_MOVE_RIGHT"].to_str()];
-        actionToKeyCode[P_MOVE_RIGHT] = key;
-    }
-    else
-        actionToKeyCode[P_MOVE_RIGHT] = SDLK_RIGHT;
-    if (cfg["P_PLACE_BOMB"].ref.size() > 0)
-    {
-        SDL_Keycode key = textToKeyCode[cfg["P_PLACE_BOMB"].to_str()];
-        actionToKeyCode[P_PLACE_BOMB] = key;
-    }
-    else
-        actionToKeyCode[P_PLACE_BOMB] = SDLK_SPACE;
+	if (cfg[actionString].ref.size() > 0)
+	{
+		SDL_Keycode key = textToKeyCode[cfg[actionString].to_str()];
+		actionToKeyCode[action] = key;
+	}
+	else
+		actionToKeyCode[action] = defaultKey;
+}
+
+void     GetKeyCodesFromConfig(	std::map<std::string,SDL_Keycode> &textToKeyCode, 
+								std::map<ePlayerAction, SDL_Keycode > &actionToKeyCode,
+								ConfigEditor &cfg)
+{
+	mapActionToKey(textToKeyCode, actionToKeyCode, cfg,	P_MOVE_DOWN, "P_MOVE_DOWN", SDLK_DOWN);
+	mapActionToKey(textToKeyCode, actionToKeyCode, cfg, P_MOVE_UP, "P_MOVE_UP", SDLK_UP);
+	mapActionToKey(textToKeyCode, actionToKeyCode, cfg, P_MOVE_LEFT, "P_MOVE_LEFT", SDLK_LEFT);
+	mapActionToKey(textToKeyCode, actionToKeyCode, cfg, P_MOVE_RIGHT, "P_MOVE_RIGHT", SDLK_RIGHT);
+	mapActionToKey(textToKeyCode, actionToKeyCode, cfg, P_PLACE_BOMB, "P_PLACE_BOMB", SDLK_SPACE);
+	mapActionToKey(textToKeyCode, actionToKeyCode, cfg, P_PAUSE_GAME, "P_PAUSE_GAME", SDLK_ESCAPE);
 }
 
 ePlayerAction   GetPlayerAction(SDL_KeyboardEvent &e)
 {
-
+	return (P_NOACTION);
 }
