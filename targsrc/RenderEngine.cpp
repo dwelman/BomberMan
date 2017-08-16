@@ -84,9 +84,9 @@ void RenderEngine::computeMatricesFromInputs(SDL_Window *window)
 
     int xpos, ypos;
 	SDL_GetMouseState(&xpos, &ypos);
-//    this->horizontalAngle += this->mouseSpeed * float(g_cfg["xres"].to_int() / 2 - xpos);
-//    this->verticalAngle += this->mouseSpeed * float(g_cfg["yres"].to_int() / 2 - ypos);
-//	SDL_WarpMouseInWindow(window, g_cfg["xres"].to_int() / 2, g_cfg["yres"].to_int() / 2);
+    this->horizontalAngle += this->mouseSpeed * float(g_cfg["xres"].to_int() / 2 - xpos);
+    this->verticalAngle += this->mouseSpeed * float(g_cfg["yres"].to_int() / 2 - ypos);
+	SDL_WarpMouseInWindow(window, g_cfg["xres"].to_int() / 2, g_cfg["yres"].to_int() / 2);
 
     // Direction : Spherical coordinates to Cartesian coordinates conversion
     glm::vec3 direction(
@@ -528,10 +528,15 @@ void RenderEngine::computeTangentBasis(
 	}
 }
 
-std::vector<renderData> RenderEngine::initGlew(std::vector<renderData> rdata)
+void RenderEngine::initGlew()
 {
-    rdata[0].Textures = new GLuint[6];
-    glGenTextures(6, rdata[0].Textures);
+    for (int i = 0; i < 15; i++)
+    {
+        renderData *obj = new renderData;
+        rdata.push_back(*obj);
+    }
+    rdata[0].Textures = new GLuint[7];
+    glGenTextures(7, rdata[0].Textures);
 
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();
@@ -554,6 +559,7 @@ std::vector<renderData> RenderEngine::initGlew(std::vector<renderData> rdata)
 	tx = loadDDS("textures/specular.DDS", rdata[0].Textures[3]);
     tx = loadBMP("textures/ore.bmp", rdata[0].Textures[4]);
 	tx = loadDDS("textures/DwarfAO.dds", rdata[0].Textures[5]);
+    tx = loadDDS("textures/BombAO.dds", rdata[0].Textures[6]);
     //tx = loadDDS("textures/DwarfAO.dds", rdata.rObjs[0].getTextureID());
 
     //std::vector<glm::vec3> objV, objN, objT, objBt;
@@ -566,9 +572,10 @@ std::vector<renderData> RenderEngine::initGlew(std::vector<renderData> rdata)
 	//ic = rdata.rObjs[0].getIndices();
     rdata[0].objRes = loadOBJ("obj/cube.obj", rdata[0].objVertices, rdata[0].objUVS, rdata[0].objNormals);
     rdata[1].objRes = loadOBJ("obj/dwarf.obj", rdata[1].objVertices, rdata[1].objUVS, rdata[1].objNormals);
+    rdata[2].objRes = loadOBJ("obj/bomb.obj", rdata[2].objVertices, rdata[2].objUVS, rdata[2].objNormals);
 
-	computeTangentBasis(rdata[0].objVertices, rdata[0].objUVS, rdata[0].objNormals, rdata[0].objTangents, rdata[0].objBitangents);
-    computeTangentBasis(rdata[1].objVertices, rdata[1].objUVS, rdata[1].objNormals, rdata[1].objTangents, rdata[1].objBitangents);
+
+    //computeTangentBasis(rdata[1].objVertices, rdata[1].objUVS, rdata[1].objNormals, rdata[1].objTangents, rdata[1].objBitangents);
 
 	rdata[0].MatrixID = glGetUniformLocation(rdata[0].shaders, "MVP");
 	rdata[0].ViewMatrixID = glGetUniformLocation(rdata[0].shaders, "V");
@@ -579,61 +586,71 @@ std::vector<renderData> RenderEngine::initGlew(std::vector<renderData> rdata)
 	rdata[0].SpecularTextureID = glGetUniformLocation(rdata[0].shaders, "SpecularTextureSampler");
 	rdata[0].LightID = glGetUniformLocation(rdata[0].shaders, "LightPosition_worldspace");
 
-	indexVBO_TBN(rdata[0].objVertices, rdata[0].objUVS, rdata[0].objNormals, rdata[0].objTangents, rdata[0].objBitangents,
-		rdata[0].Indices, rdata[0].indexed_vertices, rdata[0].indexed_uvs, rdata[0].indexed_normals, rdata[0].indexed_tangents, rdata[0].indexed_bitangents);
-
     //GLuint vb, uvB, nB, tB, btB;
     //vb = rdata.rObjs[0].getVertexBuffer(); uvB = rdata.rObjs[0].getUVBuffer(); nB = rdata.rObjs[0].getNormalBuffer(); tB = rdata.rObjs[0].getTangentBuffer(); btB = rdata.rObjs[0].getBitangentBuffer();
 
-    glGenBuffers(1, &rdata[0].VertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, rdata[0].indexed_vertices.size() * sizeof(glm::vec3), &rdata[0].indexed_vertices[0], GL_STATIC_DRAW);
-
-    glGenBuffers(1, &rdata[0].UVBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
-	glBufferData(GL_ARRAY_BUFFER, rdata[0].indexed_uvs.size() * sizeof(glm::vec2), &rdata[0].indexed_uvs[0], GL_STATIC_DRAW);
-
-	glGenBuffers(1, &rdata[0].NormalBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
-	glBufferData(GL_ARRAY_BUFFER, rdata[0].indexed_normals.size() * sizeof(glm::vec3), &rdata[0].indexed_normals[0], GL_STATIC_DRAW);
-
-	glGenBuffers(1, &rdata[0].TangentBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
-	glBufferData(GL_ARRAY_BUFFER, rdata[0].indexed_tangents.size() * sizeof(glm::vec3), &rdata[0].indexed_tangents[0], GL_STATIC_DRAW);
-
-	glGenBuffers(1, &rdata[0].BitangentBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
-	glBufferData(GL_ARRAY_BUFFER, rdata[0].indexed_bitangents.size() * sizeof(glm::vec3), &rdata[0].indexed_bitangents[0], GL_STATIC_DRAW);
-
-	glGenBuffers(1, &rdata[0].ElementBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, rdata[0].Indices.size() * sizeof(unsigned short), &rdata[0].Indices[0], GL_STATIC_DRAW);
-
-    for (int i = 1; i < rdata.size(); i++)
+    for (int i = 0; i < rdata.size(); i++)
     {
+        computeTangentBasis(rdata[i].objVertices, rdata[i].objUVS, rdata[i].objNormals, rdata[i].objTangents, rdata[i].objBitangents);
+
         indexVBO_TBN(rdata[i].objVertices, rdata[i].objUVS, rdata[i].objNormals, rdata[i].objTangents, rdata[i].objBitangents,
                      rdata[i].Indices, rdata[i].indexed_vertices, rdata[i].indexed_uvs, rdata[i].indexed_normals, rdata[i].indexed_tangents, rdata[i].indexed_bitangents);
 
         glGenBuffers(1, &rdata[i].VertexBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, rdata[i].VertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, rdata[i].objVertices.size() * sizeof(glm::vec3), &rdata[i].objVertices[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, rdata[i].indexed_vertices.size() * sizeof(glm::vec3),
+                     &rdata[i].indexed_vertices[0], GL_STATIC_DRAW);
 
-        glGenBuffers(1, &rdata[1].UVBuffer);
+        glGenBuffers(1, &rdata[i].UVBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, rdata[i].UVBuffer);
-        glBufferData(GL_ARRAY_BUFFER, rdata[i].objUVS.size() * sizeof(glm::vec2), &rdata[i].objUVS[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, rdata[i].indexed_uvs.size() * sizeof(glm::vec2), &rdata[i].indexed_uvs[0],
+                     GL_STATIC_DRAW);
 
-        glGenBuffers(1, &rdata[1].NormalBuffer);
+        glGenBuffers(1, &rdata[i].NormalBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, rdata[i].NormalBuffer);
-        glBufferData(GL_ARRAY_BUFFER, rdata[i].objNormals.size() * sizeof(glm::vec3), &rdata[i].objNormals[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, rdata[i].indexed_normals.size() * sizeof(glm::vec3), &rdata[i].indexed_normals[0],
+                     GL_STATIC_DRAW);
 
-        glGenBuffers(1, &rdata[1].TangentBuffer);
+        glGenBuffers(1, &rdata[i].TangentBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, rdata[i].TangentBuffer);
-        glBufferData(GL_ARRAY_BUFFER, rdata[i].objTangents.size() * sizeof(glm::vec3), &rdata[i].objTangents[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, rdata[i].indexed_tangents.size() * sizeof(glm::vec3),
+                     &rdata[i].indexed_tangents[0], GL_STATIC_DRAW);
 
-        glGenBuffers(1, &rdata[1].BitangentBuffer);
+        glGenBuffers(1, &rdata[i].BitangentBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, rdata[i].BitangentBuffer);
-        glBufferData(GL_ARRAY_BUFFER, rdata[i].objBitangents.size() * sizeof(glm::vec3), &rdata[i].objBitangents[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, rdata[i].indexed_bitangents.size() * sizeof(glm::vec3),
+                     &rdata[i].indexed_bitangents[0], GL_STATIC_DRAW);
+
+        glGenBuffers(1, &rdata[i].ElementBuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[i].ElementBuffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, rdata[i].Indices.size() * sizeof(unsigned short), &rdata[i].Indices[0],
+                     GL_STATIC_DRAW);
     }
+//    for (int i = 1; i < rdata.size(); i++)
+//    {
+//        indexVBO_TBN(rdata[i].objVertices, rdata[i].objUVS, rdata[i].objNormals, rdata[i].objTangents, rdata[i].objBitangents,
+//                     rdata[i].Indices, rdata[i].indexed_vertices, rdata[i].indexed_uvs, rdata[i].indexed_normals, rdata[i].indexed_tangents, rdata[i].indexed_bitangents);
+//
+//        glGenBuffers(1, &rdata[i].VertexBuffer);
+//        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].VertexBuffer);
+//        glBufferData(GL_ARRAY_BUFFER, rdata[i].objVertices.size() * sizeof(glm::vec3), &rdata[i].objVertices[0], GL_STATIC_DRAW);
+//
+//        glGenBuffers(1, &rdata[1].UVBuffer);
+//        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].UVBuffer);
+//        glBufferData(GL_ARRAY_BUFFER, rdata[i].objUVS.size() * sizeof(glm::vec2), &rdata[i].objUVS[0], GL_STATIC_DRAW);
+//
+//        glGenBuffers(1, &rdata[1].NormalBuffer);
+//        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].NormalBuffer);
+//        glBufferData(GL_ARRAY_BUFFER, rdata[i].objNormals.size() * sizeof(glm::vec3), &rdata[i].objNormals[0], GL_STATIC_DRAW);
+//
+//        glGenBuffers(1, &rdata[1].TangentBuffer);
+//        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].TangentBuffer);
+//        glBufferData(GL_ARRAY_BUFFER, rdata[i].objTangents.size() * sizeof(glm::vec3), &rdata[i].objTangents[0], GL_STATIC_DRAW);
+//
+//        glGenBuffers(1, &rdata[1].BitangentBuffer);
+//        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].BitangentBuffer);
+//        glBufferData(GL_ARRAY_BUFFER, rdata[i].objBitangents.size() * sizeof(glm::vec3), &rdata[i].objBitangents[0], GL_STATIC_DRAW);
+//    }
 
     //rdata.rObjs[0].setObjVertices(objV); rdata.rObjs[0].setObjUVS(objUV); rdata.rObjs[0].setObjNormals(objN); rdata.rObjs[0].setObjTangents(objT); rdata.rObjs[0].setObjBitangents(objBt);
     //rdata.rObjs[0].setIndexedVertices(iV); rdata.rObjs[0].setIndexedUVS(iUV); rdata.rObjs[0].setIndexedNormals(iN); rdata.rObjs[0].setIndexedTangents(iT); rdata.rObjs[0].setIndexedBitangents(iBt);
@@ -642,8 +659,6 @@ std::vector<renderData> RenderEngine::initGlew(std::vector<renderData> rdata)
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glShadeModel(GL_SMOOTH);
-
-    return rdata;
 }
 
 //void drawCubes(std::vector<std::vector<int>> *blocks)
@@ -654,9 +669,11 @@ std::vector<renderData> RenderEngine::initGlew(std::vector<renderData> rdata)
 //	}
 //}
 
-int RenderEngine::Draw(SDL_Window *window, std::vector<renderData> rdata, bool gameStarted, std::vector<GameObjectRenderInfo> gameObjects) {
+int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObjectRenderInfo> gameObjects)
+{
     if (gameStarted)
         this->computeMatricesFromInputs(window);
+
     glm::mat4 ProjectionMatrix = this->getProjectionMatrix();
     glm::mat4 ViewMatrix = this->getViewMatrix();
     glm::mat4 ModelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
@@ -793,68 +810,222 @@ int RenderEngine::Draw(SDL_Window *window, std::vector<renderData> rdata, bool g
 
     //drawCubes(blocks);
 
-    int i, k;
+//    int i, k;
+//
+//    i = 1;
+//    k = 5;
+//    gameObjects[0].SetObjectType(BLOCK_OT);
+//    gameObjects[0].SetPosition(Vec3(1, 1, 5));
+//    gameObjects[1].SetObjectType(BOMB_OT);
+//    gameObjects[1].SetPosition(Vec3(3, 1, 5));
 
-    i = 1;
-    k = 5;
+    int i = 0;
 
-    glm::mat4 ModelMatrix3 = glm::mat4(1.0);
-    ModelMatrix3 = glm::translate(ModelMatrix3, glm::vec3(i * 2, 2.0f, k * 2));
-    glm::mat4 MVP3 = ProjectionMatrix * ViewMatrix * ModelMatrix3;
+    for (int l = 0; l < gameObjects.size(); l++)
+    {
+        bool shouldDraw = false;
 
-    glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP3[0][0]);
-    glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix3[0][0]);
+        while (gameObjects[i].GetObjectType() != 0) {
+            i++;
+//            if (gameObjects[i].GetObjectType() == 0) {
+//                shouldDraw = true;
+//            }
+        }
+        if (i >= gameObjects.size()) {
+            shouldDraw = false;
+        } else
+            shouldDraw = true;
 
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+        glm::mat4 ModelMatrix3 = glm::mat4(1.0);
+        ModelMatrix3 = glm::translate(ModelMatrix3, glm::vec3(gameObjects[i].GetPosition().GetX() * 2, gameObjects[i].GetPosition().GetY() * 2, gameObjects[i].GetPosition().GetZ() * 2));
+        ModelMatrix3 = glm::rotate(ModelMatrix3, gameObjects[i].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
+        glm::mat4 MVP3 = ProjectionMatrix * ViewMatrix * ModelMatrix3;
 
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+        glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP3[0][0]);
+        glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix3[0][0]);
 
-    glEnableVertexAttribArray(2);
-    glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-    glEnableVertexAttribArray(3);
-    glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-    glEnableVertexAttribArray(4);
-    glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+        glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
-    glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void *) 0);
+        glEnableVertexAttribArray(3);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+        glEnableVertexAttribArray(4);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
+        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
+        if (shouldDraw)
+            glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void *) 0);
+        i++;
+    }
+
+    i = 0;
+
     glDisable(GL_BLEND);
     glEnable(GL_CULL_FACE);
 
     glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[5]);
     //glBindTexture(GL_TEXTURE_2D, rdata.rObjs[0].getTextureID());
 
-    int x, z;
+//    int x, z;
+//
+//    x = 5;
+//    z = 7;
+//    gameObjects[0].SetObjectType(BOMB_OT);
+//    gameObjects[0].SetPosition(Vec3(1, 0.5, 7));
+//    gameObjects[0].SetDirection(SOUTH);
+//    gameObjects[1].SetObjectType(PLAYER_OT);
+//    gameObjects[1].SetPosition(Vec3(5, 0.5, 7));
+//    gameObjects[1].SetDirection(SOUTH);
 
-    x = 5;
-    z = 7;
+    for (int l = 0; l < gameObjects.size(); l++)
+    {
+        bool shouldDraw = false;
 
-    glm::mat4 ModelMatrix2 = glm::mat4(1.0);
+        while (gameObjects[i].GetObjectType() != 2) {
+            i++;
+//            if (gameObjects[i].GetObjectType() == 0) {
+//                shouldDraw = true;
+//            }
+        }
+        if (i >= gameObjects.size()) {
+            shouldDraw = false;
+        } else
+            shouldDraw = true;
 
-    static int v = 1;
-    static float m = 0.0;
-    if (m >= 40) {
-        v = -1;
+        glm::mat4 ModelMatrix2 = glm::mat4(1.0);
+        ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetX() * 2, gameObjects[i].GetPosition().GetY() * 2, gameObjects[i].GetPosition().GetZ() * 2));
+        ModelMatrix2 = glm::rotate(ModelMatrix2, gameObjects[i].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
+        glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
+
+        if (shouldDraw)
+        {
+            glm::vec3 lightPos = glm::vec3(gameObjects[i].GetPosition().GetX() * 2, 9.0f, /*z*/gameObjects[i].GetPosition().GetZ() * 2);
+            glUniform3f(rdata[0].LightID, lightPos.x, lightPos.y, lightPos.z);
+        }
+
+        glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
+        glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
+
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[1].VertexBuffer);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[1].UVBuffer);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+        glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[1].NormalBuffer);
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+        glEnableVertexAttribArray(3);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[1].TangentBuffer);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+        glEnableVertexAttribArray(4);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[1].BitangentBuffer);
+        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[1].ElementBuffer);
+        if (shouldDraw)
+            glDrawElements(GL_TRIANGLES, rdata[1].Indices.size(), GL_UNSIGNED_SHORT, (void *) 0);
+        i++;
     }
-    if (m <= 2) {
-        v = 1;
+
+    i = 0;
+
+    glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[6]);
+
+//    gameObjects[0].SetObjectType(BOMB_OT);
+//    gameObjects[0].SetPosition(Vec3(4, 0.5, 7));
+//    gameObjects[0].SetDirection(SOUTH);
+
+    for (int l = 0; l < gameObjects.size(); l++)
+    {
+        bool shouldDraw = false;
+
+        while (gameObjects[i].GetObjectType() != 3) {
+            i++;
+//            if (gameObjects[i].GetObjectType() == 0) {
+//                shouldDraw = true;
+//            }
+        }
+        if (i >= gameObjects.size()) {
+            shouldDraw = false;
+        } else
+            shouldDraw = true;
+
+        glm::mat4 ModelMatrix2 = glm::mat4(1.0);
+        ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetX() * 2, gameObjects[i].GetPosition().GetY() * 2, gameObjects[i].GetPosition().GetZ() * 2));
+        ModelMatrix2 = glm::rotate(ModelMatrix2, gameObjects[i].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
+        glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
+
+//        if (shouldDraw)
+//        {
+//            glm::vec3 lightPos = glm::vec3(gameObjects[i].GetPosition().GetX() * 2, 9.0f, /*z*/gameObjects[i].GetPosition().GetZ() * 2);
+//            glUniform3f(rdata[0].LightID, lightPos.x, lightPos.y, lightPos.z);
+//        }
+
+        glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
+        glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
+
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[2].VertexBuffer);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[2].UVBuffer);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+        glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[2].NormalBuffer);
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+        glEnableVertexAttribArray(3);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[2].TangentBuffer);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+        glEnableVertexAttribArray(4);
+        glBindBuffer(GL_ARRAY_BUFFER, rdata[2].BitangentBuffer);
+        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[2].ElementBuffer);
+        if (shouldDraw)
+            glDrawElements(GL_TRIANGLES, rdata[2].Indices.size(), GL_UNSIGNED_SHORT, (void *) 0);
+        i++;
     }
-    if (v == -1)
-        gameObjects[1].SetDirection(WEST);
-    else
-        gameObjects[1].SetDirection(EAST);
-	m += v / 10.0;
-    ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(x * 2, 1.0f, /*z*/m * 2));
-    ModelMatrix2 = glm::rotate(ModelMatrix2, gameObjects[1].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
+
+    i = 0;
+//
+//    glm::mat4 ModelMatrix2 = glm::mat4(1.0);
+
+//    static int v = 1;
+//    static float m = 0.0;
+//    if (m >= 40) {
+//        v = -1;
+//    }
+//    if (m <= 2) {
+//        v = 1;
+//    }
+//    if (v == -1)
+//        gameObjects[1].SetDirection(WEST);
+//    else
+//        gameObjects[1].SetDirection(EAST);
+//	m += v / 10.0;
+//    ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(x * 2, 1.0f, /*z*/m * 2));
+//    ModelMatrix2 = glm::rotate(ModelMatrix2, gameObjects[1].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
 
     #ifdef _WIN32
 	    Sleep(15);
@@ -862,41 +1033,46 @@ int RenderEngine::Draw(SDL_Window *window, std::vector<renderData> rdata, bool g
         usleep(15000);
     #endif
 
-    glm::vec3 lightPos = glm::vec3(x * 2, 9.0f, /*z*/m * 2);
-
-    glUniform3f(rdata[0].LightID, lightPos.x, lightPos.y, lightPos.z);
-	glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
-
-	glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
-	glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
-
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].VertexBuffer);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].UVBuffer);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	glEnableVertexAttribArray(2);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].NormalBuffer);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	glEnableVertexAttribArray(3);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].TangentBuffer);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	glEnableVertexAttribArray(4);
-	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].BitangentBuffer);
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+//    glm::vec3 lightPos = glm::vec3(x * 2, 9.0f, /*z*/m * 2);
+//
+//    glUniform3f(rdata[0].LightID, lightPos.x, lightPos.y, lightPos.z);
+//	glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
+//
+//	glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
+//	glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
+//
+//	glEnableVertexAttribArray(0);
+//	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].VertexBuffer);
+//	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+//
+//	glEnableVertexAttribArray(1);
+//	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].UVBuffer);
+//	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+//
+//	glEnableVertexAttribArray(2);
+//	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].NormalBuffer);
+//	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+//
+//	glEnableVertexAttribArray(3);
+//	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].TangentBuffer);
+//	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+//
+//	glEnableVertexAttribArray(4);
+//	glBindBuffer(GL_ARRAY_BUFFER, rdata[1].BitangentBuffer);
+//	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+//
+//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[1].ElementBuffer);
+//    glDrawElements(GL_TRIANGLES, rdata[1].Indices.size(), GL_UNSIGNED_SHORT, (void *) 0);
 
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata.ElementBuffer);
-	glDrawArrays(GL_TRIANGLES, 0, rdata[1].objVertices.size());
+	//glDrawArrays(GL_TRIANGLES, 0, rdata[1].objVertices.size());
 	//glDrawElements(GL_TRIANGLES, rdata.Indices.size(), GL_UNSIGNED_SHORT, (void*)0);
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
+    glDisableVertexAttribArray(3);
+    glDisableVertexAttribArray(4);
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_MULTISAMPLE);
     return (0);

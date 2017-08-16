@@ -40,7 +40,7 @@ SDL_Window *initWindow(ConfigEditor &cfg)
 	return (window);
 }
 
-void gameLoop(SDL_Window *window, std::vector<renderData> rdata)
+void gameLoop(SDL_Window *window)
 {
 	GameManager         manager;
 	bool				mustQuit = false;
@@ -50,7 +50,7 @@ void gameLoop(SDL_Window *window, std::vector<renderData> rdata)
     std::vector<GameObjectRenderInfo>   gameObjects;
 
     manager.SetGameStarted(false);
-    rdata = rEngine.initGlew(rdata);
+    rEngine.initGlew();
     crate.manager = &manager;
     crate.mustQuit = &mustQuit;
     do
@@ -63,7 +63,7 @@ void gameLoop(SDL_Window *window, std::vector<renderData> rdata)
 //			break;
 		}
         manager.GetRenderData(gameObjects);
-		rEngine.Draw(window, rdata, manager.GetGameStarted(), gameObjects);
+		rEngine.Draw(window, manager.GetGameStarted(), gameObjects);
         if (!manager.GetGameStarted())
 		    renderGUIInjectEvents(manager, window, guiLastTimePulse, mustQuit);
 		SDL_GL_SwapWindow(window);
@@ -76,22 +76,15 @@ void gameLoop(SDL_Window *window, std::vector<renderData> rdata)
 
 int	main(int argc, char *argv[])
 {
-	std::vector<renderData> rdata;
 	//renderData rdata;
 	RenderEngine rEngine;
-	renderData *obj;
-	renderData *obj2;
-	obj = new renderData;
-	obj2 = new renderData;
 
 	SDL_Window	*window = initWindow(g_cfg);
-	rdata.push_back(*obj);
-	rdata.push_back(*obj2);
 	//rdata.rObjs.push_back(*obj);
 	if (window == nullptr)
 		return (-1);
 
-	gameLoop(window, rdata);
+	gameLoop(window);
 	SDL_Quit();
 	return (0);
 }
