@@ -2,8 +2,8 @@
 
 AudioManager::AudioManager()
 {
-    Mix_Chunk *temp = Mix_LoadWAV( "resources/high.wav" );
-    Mix_Music *muse = Mix_LoadMUS("resources/Rob_Gasser_-_Ricochet.wav");
+    Mix_Chunk *temp = Mix_LoadWAV( "resources/Sounds/high.wav" );
+    Mix_Music *muse = Mix_LoadMUS("resources/Sounds/Rob_Gasser_-_Ricochet.wav");
     Music.push_back(muse);
     SFX.push_back(temp);
 }

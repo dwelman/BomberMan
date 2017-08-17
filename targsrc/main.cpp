@@ -11,11 +11,12 @@
 #include "main.hpp"
 #include "Clock.hpp"
 #include <GUI.hpp>
+#include "AudioManager.hpp"
 #include "GameManager.hpp"
 
 SDL_Window *initWindow(ConfigEditor &cfg)
 {
-	if (SDL_Init(0) == -1)
+	if (SDL_Init(SDL_INIT_AUDIO ) == -1)
 	{
 		std::cerr << "Error : " << SDL_GetError() << std::endl;
 		return (nullptr);
@@ -26,6 +27,7 @@ SDL_Window *initWindow(ConfigEditor &cfg)
     if (case_ins_cmp(cfg["Fullscreen"].to_str(), "yes"))
         SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
+	Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 );
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -47,11 +49,13 @@ void gameLoop(SDL_Window *window)
     GUICrate			crate;
 	double				guiLastTimePulse = initGui(window, crate);
 	RenderEngine        rEngine;
+	AudioManager		Audio;
     std::vector<GameObjectRenderInfo>   gameObjects;
 
     manager.SetGameStarted(false);
 	rEngine.initGlew();
-    crate.manager = &manager;
+	crate.manager = &manager;
+	crate.audio = &Audio;
     crate.mustQuit = &mustQuit;
 	mapKeyTextToSDLKey(*crate.keybindings.textToKeyCode);
 	GetKeyCodesFromConfig(*crate.keybindings.textToKeyCode, *crate.keybindings.actionToKeyCode , g_cfg);
