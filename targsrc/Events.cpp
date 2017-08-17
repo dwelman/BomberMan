@@ -10,15 +10,15 @@ void		setupEvents(GUICrate &crate)
 	CEGUI::NamedElement *start = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("StartGame");
 	crate.MenuFunctions.push_back(new MenuFunction(start, CEGUI::PushButton::EventClicked, &startGameMainMenu, crate));
 
-	CEGUI::NamedElement *settings = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("SettingsBtn");
+	CEGUI::NamedElement *settings = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("Settings");
 	crate.MenuFunctions.push_back(new MenuFunction(settings, CEGUI::PushButton::EventClicked, &openSettingsMenu, crate));
+
+	CEGUI::NamedElement *exit = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("Exit");
+	crate.MenuFunctions.push_back(new MenuFunction(exit, CEGUI::PushButton::EventClicked, &setExit, crate));
 
 	//Settings
 	CEGUI::NamedElement *closeSettings = crate.settings->getChildElementRecursive("Close");
 	crate.MenuFunctions.push_back(new MenuFunction(closeSettings, CEGUI::PushButton::EventClicked, &openMainMenu, crate));
-
-	CEGUI::NamedElement *exit = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("Exit");
-	crate.MenuFunctions.push_back(new MenuFunction(exit, CEGUI::PushButton::EventClicked, &setExit, crate));
 
 	CEGUI::NamedElement *resolutionNext = crate.settings->getChildElementRecursive("ResolutionNext");
 	crate.MenuFunctions.push_back(new MenuFunction(resolutionNext, CEGUI::PushButton::EventClicked, &resolutionNextClick, crate));

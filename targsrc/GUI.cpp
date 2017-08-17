@@ -90,6 +90,8 @@ void		loadResources(GUICrate &crate)
 	CEGUI::SchemeManager::getSingleton().createFromFile("AlfiskoSkin.scheme");
 	CEGUI::SchemeManager::getSingleton().createFromFile("Generic.scheme");
 	CEGUI::SchemeManager::getSingleton().createFromFile("SampleBrowser.scheme");
+	CEGUI::SchemeManager::getSingleton().createFromFile("Bomberman.scheme");
+
 
 
 	//Setup Defaults
@@ -101,7 +103,7 @@ void		loadResources(GUICrate &crate)
 
 	//Load Layouts
 	CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
-	crate.main = wmgr.loadLayoutFromFile("TestLayout.layout");
+	crate.main = wmgr.loadLayoutFromFile("MainMenu.layout");
 
 	crate.settings = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("Settings.layout");
 	crate.settings->setVisible(false);

@@ -153,5 +153,11 @@
                 <Property name="Text" value="Apply" />
             </Window>
         </Window>
+        <Window type="Bomberman/ImageButton" name="ImageButton" >
+            <Property name="Area" value="{{0,63},{0,281},{0,285},{0,336}}" />
+            <Property name="HoverImage" value="BomberMainMainMenu/SimpleGreenHover" />
+            <Property name="NormalImage" value="BomberMainMainMenu/SimpleGreen" />
+            <Property name="PushedImage" value="BomberMainMainMenu/SimpleGreenClicked" />
+        </Window>
     </Window>
 </GUILayout>

@@ -1,0 +1,13 @@
+<Imageset autoScaled="vertical" imagefile="BombermanArt.png" name="BombermanMenu" nativeHorzRes="1920" nativeVertRes="600" version="2">
+    <Image height="238" name="FrontScreenLogo" width="1216" xPos="43" yPos="577" />
+    <Image height="141" name="StartGame" width="650" xPos="20" yPos="43" />
+    <Image height="141" name="SettingsHover" width="650" xPos="700" yPos="213" />
+    <Image height="141" name="StartGamePush" width="650" xPos="1380" yPos="43" />
+    <Image height="141" name="StartGameHover" width="650" xPos="700" yPos="43" />
+    <Image height="141" name="SettingsPush" width="650" xPos="1380" yPos="213" />
+    <Image height="141" name="Settings" width="650" xPos="22" yPos="213" />
+    <Image height="141" name="ExitGameHover" width="650" xPos="700" yPos="375" />
+    <Image height="141" name="ExitGamePush" width="650" xPos="1380" yPos="375" />
+    <Image height="141" name="ExitGame" width="650" xPos="20" yPos="375" />
+    <Image height="1080" name="Backdrop" width="1920" xPos="47" yPos="815" />
+</Imageset>
