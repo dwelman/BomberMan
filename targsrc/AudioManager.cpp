@@ -3,6 +3,8 @@
 AudioManager::AudioManager()
 {
     Mix_Chunk *temp = Mix_LoadWAV( "resources/high.wav" );
+    Mix_Music *muse = Mix_LoadMUS("resources/Rob_Gasser_-_Ricochet.wav");
+    Music.push_back(muse);
     SFX.push_back(temp);
 }
 
@@ -35,7 +37,14 @@ void    AudioManager::setSFX(std::vector<Mix_Chunk*> S)
 
 void    AudioManager::PlayMusic(int i)
 {
-
+    //if( Mix_PausedMusic() == 1 )
+    //{
+    //    Mix_ResumeMusic();
+   // }
+    //else
+    //{
+        Mix_PlayMusic( Music[i], -1 );
+   // }
 }
 
 std::vector<Mix_Chunk*> AudioManager::getSFX() const
@@ -50,7 +59,8 @@ std::vector<Mix_Music*> AudioManager::getMusic() const
 
 void    AudioManager::PauseMusic(int i)
 {
-
+    if (Mix_PausedMusic() == 0)
+    Mix_PauseMusic();
 }
 
 void    AudioManager::PlaySFX(int i)
