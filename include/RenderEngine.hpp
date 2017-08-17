@@ -58,6 +58,7 @@ class RenderEngine
 		RenderEngine &operator = (const RenderEngine &rhs);
 		~RenderEngine();
 
+        void handleResize(int w, int h);
 		void setViewMatrix(glm::mat4 viewMatrix);
 		void setProjectionMatrix(glm::mat4 projectionMatrix);
 		glm::mat4 getViewMatrix();

@@ -11,16 +11,12 @@ Movement::Movement(Movement const &src) : Movement()
     *this = src;
 }
 
-Movement::Movement(Vec3 direction, float speed) : Movement()
+Movement::Movement(Vec3 direction, float speed, Vec3 destination) : Movement()
 {
     m_direction = direction;
     m_speed = speed;
-}
-
-Movement::Movement(float x, float y, float z, float speed) : Movement()
-{
-    m_direction = Vec3(x, y, z);
-    m_speed = speed;
+    m_destination = destination;
+    m_canChangeDirection = true;
 }
 
 Movement::~Movement()
@@ -32,6 +28,8 @@ Movement &Movement::operator=(Movement const &cp)
 {
     m_direction = cp.m_direction;
     m_speed = cp.m_speed;
+    m_destination = cp.m_destination;
+    m_canChangeDirection = cp.m_canChangeDirection;
     return(*this);
 }
 
@@ -50,12 +48,27 @@ void Movement::SetDirection(Vec3 vel)
     m_direction = vel;
 }
 
-void Movement::SetDirection(float x, float y, float z)
-{
-    m_direction = Vec3(x, y, z);
-}
-
 void Movement::SetSpeed(float speed)
 {
     m_speed = speed;
+}
+
+void Movement::SetCanChangeDirection(bool b)
+{
+    m_canChangeDirection = b;
+}
+
+Vec3 Movement::GetDestination() const
+{
+    return (m_destination);
+}
+
+void Movement::SetDestination(Vec3 dest)
+{
+    m_destination = dest;
+}
+
+bool Movement::GetCanChangeDirection() const
+{
+    return (m_canChangeDirection);
 }

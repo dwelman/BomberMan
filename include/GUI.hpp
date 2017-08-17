@@ -1,6 +1,7 @@
 #pragma once
 #include <main.hpp>
 #include <CEGUI/RendererModules/OpenGL/GL3Renderer.h>
+#include <AudioManager.hpp>
 #include <GameManager.hpp>
 #include <Settings.hpp>
 
@@ -18,6 +19,8 @@ struct GUICrate
 	//Variables GUI Needs to access
 	GameManager								*manager;
 	CEGUI::OpenGL3Renderer					*guiRenderer;
+	AudioManager							*audio;
+    SDL_Window                              *window;
 	bool									*mustQuit;
 	bool									displayChanged;
 	KeyBindings								keybindings;
@@ -77,7 +80,9 @@ void	loadSettingsFromDefaultConfig(SettingsState &settings);
 
 void	destroyGUI(GUICrate &crate);
 
-void		reloadDisplayMode(SDL_Window *win, GUICrate &crate);
+void	reloadDisplayMode(SDL_Window *win, GUICrate &crate);
+
+void	captureWindowEvents(SDL_Event &e, bool & must_quit);
 
 //Events
 

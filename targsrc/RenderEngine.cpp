@@ -44,6 +44,15 @@ RenderEngine::~RenderEngine()
 
 }
 
+void RenderEngine::handleResize(int w, int h)
+{
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+
+    glLoadIdentity();
+    gluPerspective(45.0, static_cast<double>(w) / static_cast<double>(h), 1.0, 200.0);
+}
+
 void RenderEngine::setViewMatrix(glm::mat4 viewMatrix)
 {
 	this->ViewMatrix = viewMatrix;
@@ -84,9 +93,9 @@ void RenderEngine::computeMatricesFromInputs(SDL_Window *window)
 
     int xpos, ypos;
 	SDL_GetMouseState(&xpos, &ypos);
-    this->horizontalAngle += this->mouseSpeed * float(g_cfg["xres"].to_int() / 2 - xpos);
-    this->verticalAngle += this->mouseSpeed * float(g_cfg["yres"].to_int() / 2 - ypos);
-	SDL_WarpMouseInWindow(window, g_cfg["xres"].to_int() / 2, g_cfg["yres"].to_int() / 2);
+ //   this->horizontalAngle += this->mouseSpeed * float(g_cfg["xres"].to_int() / 2 - xpos);
+ //   this->verticalAngle += this->mouseSpeed * float(g_cfg["yres"].to_int() / 2 - ypos);
+	//SDL_WarpMouseInWindow(window, g_cfg["xres"].to_int() / 2, g_cfg["yres"].to_int() / 2);
 
     // Direction : Spherical coordinates to Cartesian coordinates conversion
     glm::vec3 direction(
@@ -199,7 +208,6 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
         std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
         glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
 		std::cerr << &VertexShaderErrorMessage[0] << std::endl;
-        //printf("%s\n", &VertexShaderErrorMessage[0]);
     }
 
     // Compile Fragment Shader
@@ -217,7 +225,6 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
         std::vector<char> FragmentShaderErrorMessage(InfoLogLength+1);
         glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
 		std::cerr << &FragmentShaderErrorMessage[0] << std::endl;
-        //printf("%s\n", &FragmentShaderErrorMessage[0]);
     }
 
     // Link the program
@@ -236,7 +243,6 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
         std::vector<char> ProgramErrorMessage(InfoLogLength+1);
         glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
 		std::cerr << &ProgramErrorMessage[0] << std::endl;
-        //printf("%s\n", &ProgramErrorMessage[0]);
     }
 
     glDetachShader(ProgramID, VertexShaderID);
@@ -530,7 +536,7 @@ void RenderEngine::computeTangentBasis(
 
 void RenderEngine::initGlew()
 {
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 15; i++)
     {
         renderData *obj = new renderData;
         rdata.push_back(*obj);
@@ -686,8 +692,6 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
     glUniformMatrix4fv(rdata[0].ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
     glUniformMatrix3fv(rdata[0].ModelView3x3MatrixID, 1, GL_FALSE, &ModelView3x3Matrix[0][0]);
 
-    //printf("horizontal angle: %f, vertical angle: %f\n", this->horizontalAngle, this->verticalAngle);
-
     /*static int v = 1;
     static int i = 0;
     if (i == 100)
@@ -826,6 +830,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
         bool shouldDraw = false;
 
         while (gameObjects[i].GetObjectType() != 0) {
+			l++;
             i++;
 			if (i == gameObjects.size())
 				break;
@@ -898,6 +903,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
         bool shouldDraw = false;
 
         while (gameObjects[i].GetObjectType() != 2) {
+			l++;
             i++;
 			if (i == gameObjects.size())
 				break;
@@ -913,11 +919,11 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 		if (shouldDraw)
 		{
 			glm::mat4 ModelMatrix2 = glm::mat4(1.0);
-			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetX() * 2, gameObjects[i].GetPosition().GetY() * 2, gameObjects[i].GetPosition().GetZ() * 2));
+			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) + 1, gameObjects[i].GetPosition().GetX() * 2));
 			ModelMatrix2 = glm::rotate(ModelMatrix2, gameObjects[i].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
 			glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
 
-			glm::vec3 lightPos = glm::vec3(gameObjects[i].GetPosition().GetX() * 2, 9.0f, /*z*/gameObjects[i].GetPosition().GetZ() * 2);
+			glm::vec3 lightPos = glm::vec3(gameObjects[i].GetPosition().GetY() * 2, gameObjects[i].GetPosition().GetZ() + 9.0f, /*z*/gameObjects[i].GetPosition().GetX() * 2);
 			glUniform3f(rdata[0].LightID, lightPos.x, lightPos.y, lightPos.z);
 
 			glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
@@ -957,11 +963,15 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 //    gameObjects[0].SetPosition(Vec3(4, 0.5, 7));
 //    gameObjects[0].SetDirection(SOUTH);
 
+    static float scale = 1.0f;
+    static bool scaleUp = false;
+    glScalef(scale, scale, scale);
     for (int l = 0; l < gameObjects.size(); l++)
     {
         bool shouldDraw = false;
 
         while (gameObjects[i].GetObjectType() != 3) {
+			l++;
             i++;
 			if (i == gameObjects.size())
 				break;
@@ -976,9 +986,19 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 
 		if (shouldDraw)
 		{
+            if (scale >= 1.3f)
+                scaleUp = false;
+            if (scale <= 1.0f)
+                scaleUp = true;
+            if (scaleUp)
+                scale += 0.05f;
+            else
+                scale -= 0.05f;
+            std::cout << scale << std::endl;
 			glm::mat4 ModelMatrix2 = glm::mat4(1.0);
-			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetX() * 2, gameObjects[i].GetPosition().GetY() * 2, gameObjects[i].GetPosition().GetZ() * 2));
+			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) + 1, gameObjects[i].GetPosition().GetX() * 2));
 			ModelMatrix2 = glm::rotate(ModelMatrix2, gameObjects[i].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
+            ModelMatrix2 = glm::scale_slow(ModelMatrix2, glm::vec3(scale, scale, scale));
 			glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
 
 			//        if (shouldDraw)

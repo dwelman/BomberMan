@@ -7,5 +7,6 @@
 
 namespace MovementSystem
 {
-    //bool CheckCollision(Position const &aPos, Collision const &aCol, Position const &bPos, Collision const &bCol);
+    void    SetMovement(Movement &m, Position &p, Vec3 dir);
+    void    CheckSnapMovement(Movement &m, Position &p);
 };

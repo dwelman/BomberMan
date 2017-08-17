@@ -8,7 +8,7 @@ GameManager::GameManager()
 {
 	m_currentComponentID = 0;
     m_gameStarted = false;
-    m_playerMoveSpeed = 2;
+    m_playerMoveSpeed = 4.5f;
     m_playerBombAmount = 1;
     m_explosionSize = 1;
     m_lives = 3;
@@ -148,6 +148,7 @@ void GameManager::handleMovement(Position &p, Movement &m)
 	newY += m.GetDirection().GetY() * m.GetSpeed() * m_deltaTime;
 	newZ += m.GetDirection().GetZ() * m.GetSpeed() * m_deltaTime;
 	p.SetPosition(Vec3(newX, newY, newZ));
+    MovementSystem::CheckSnapMovement(m, p);
 }
 
 void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos)
@@ -161,7 +162,7 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
         entity.RegisterComponent(m_currentComponentID, COLLISION);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
         entity.RegisterComponent(m_currentComponentID, MOVEMENT);
-        m_components.emplace(std::make_pair(m_currentComponentID++, new Movement(0, 0, 0, m_playerMoveSpeed)));
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Movement(Vec3(0, 0, 0), m_playerMoveSpeed, Vec3(0, 0, 0))));
         entity.RegisterComponent(m_currentComponentID, PLAYERCONTROLLER);
         m_components.emplace(std::make_pair(m_currentComponentID++, new PlayerController()));
         entity.RegisterComponent(m_currentComponentID, TAG);
@@ -179,6 +180,7 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
         m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(WALL_TAG | INDESTRUCTIBLE_TAG)));
         entity.RegisterComponent(m_currentComponentID, RENDER);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Render(IND_BLOCK_OT, true)));
+        entity.SetCanTick(false);
     }
     else if (entityType == "destructible_wall")
     {
@@ -190,6 +192,7 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
         m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(WALL_TAG)));
         entity.RegisterComponent(m_currentComponentID, RENDER);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BLOCK_OT, true)));
+        entity.SetCanTick(false);
     }
     else if (entityType == "enemy_1")
     {
@@ -239,6 +242,7 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
         m_components.emplace(std::make_pair(m_currentComponentID++, new Powerup(LIFE)));
         entity.RegisterComponent(m_currentComponentID, RENDER);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Render(LIFE_POWERUP_OT, true)));
+        entity.SetCanTick(false);
     }
     else if (entityType == "powerup_bomb_amount")
     {
@@ -252,6 +256,7 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
         m_components.emplace(std::make_pair(m_currentComponentID++, new Powerup(BOMB_AMOUNT_UP)));
         entity.RegisterComponent(m_currentComponentID, RENDER);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BOMB_AMOUNT_POWERUP_OT, true)));
+        entity.SetCanTick(false);
     }
     else if (entityType == "powerup_bomb_strength")
     {
@@ -265,6 +270,7 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
         m_components.emplace(std::make_pair(m_currentComponentID++, new Powerup(BOMB_STRENGTH_UP)));
         entity.RegisterComponent(m_currentComponentID, RENDER);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BOMB_STRENGTH_POWERUP_OT, true)));
+        entity.SetCanTick(false);
     }
     else
     {
@@ -275,28 +281,38 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
 
 void GameManager::deleteEntity(std::size_t ID)
 {
-    std::vector<std::size_t>    components;
-
-    components = m_entities[ID].GetChildrenIDs();
-    for (std::size_t i = 0; i < components.size(); i++)
+    try
     {
-        auto iter = m_components.find(components[i]);
-        if (iter != m_components.end())
+        std::cout << "ID: " << ID << " | ";
+        std::cout << "Size: " << m_entities.size() << std::endl;
+        std::vector<std::size_t> components;
+
+        components = m_entities[ID].GetChildrenIDs();
+        for (std::size_t i = 0; i < components.size(); i++)
         {
-            m_components.erase(iter);
+            auto iter = m_components.find(components[i]);
+            if (iter != m_components.end())
+            {
+                m_components.erase(iter);
+            }
         }
+        m_entities.erase(m_entities.begin() + ID);
     }
-    m_entities.erase(m_entities.begin() + ID);
+    catch (std::exception &e)
+    {
+        std::cout << e.what() << std::endl;
+    }
 }
 
 bool 	GameManager::Update()
 {
-    std::cout << m_entities.size() << std::endl;
-    std::cout << m_components.size() << std::endl;
-    m_toBeDeleted.clear();
 	m_deltaTime = Clock::Instance().GetDeltaTime();
 	for (std::size_t i = 0; i < m_entities.size(); i++)
 	{
+        if (!m_entities[i].GetCanTick())
+        {
+            continue ;
+        }
         //Check each component for the relevant flags
         COMPONENT_MASK_TYPE bitmask = m_entities[i].GetComponentFlags();
         //Player control system
@@ -305,34 +321,36 @@ bool 	GameManager::Update()
             {
                 try
                 {
+                    bool canDoAction = true;
                     std::size_t playerControllerID = m_entities[i].GetComponentOfType(PLAYERCONTROLLER);
                     PlayerController *playerController = dynamic_cast<PlayerController *>(m_components[playerControllerID]);
-                    //Do something with movement
                     if ((bitmask & MOVEMENT) == MOVEMENT)
                     {
                         std::size_t movementID = m_entities[i].GetComponentOfType(MOVEMENT);
                         Movement *movement = dynamic_cast<Movement *>(m_components[movementID]);
+                        std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
+                        Position *position = dynamic_cast<Position *>(m_components[positionID]);
+                        canDoAction = movement->GetCanChangeDirection();
                         if (m_action == P_MOVE_LEFT)
                         {
-                            movement->SetDirection(Vec3(-1, 0, 0));
+                            MovementSystem::SetMovement(*movement, *position, Vec3(-1, 0, 0));
                         }
                         else if (m_action == P_MOVE_RIGHT)
                         {
-                            movement->SetDirection(Vec3(1, 0, 0));
+                            MovementSystem::SetMovement(*movement, *position, Vec3(1, 0, 0));
                         }
                         else if (m_action == P_MOVE_UP)
                         {
-                            movement->SetDirection(Vec3(0, 1, 0));
+                            MovementSystem::SetMovement(*movement, *position, Vec3(0, 1, 0));
                         }
                         else if (m_action == P_MOVE_DOWN)
                         {
-                            movement->SetDirection(Vec3(0, -1, 0));
+                            MovementSystem::SetMovement(*movement, *position, Vec3(0, -1, 0));
                         }
-                        //std::cout << m_action << std::endl;
                     }
 
                     //if bomb placed
-                    if (m_action == P_PLACE_BOMB)
+                    if (m_action == P_PLACE_BOMB && canDoAction)
                     {
                         std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
                         Position *position = dynamic_cast<Position *>(m_components[positionID]);
@@ -404,7 +422,6 @@ bool 	GameManager::Update()
                     Position *position = dynamic_cast<Position *>(m_components[positionID]);
                     Bomb *bomb = dynamic_cast<Bomb *>(m_components[bombID]);
                     BombSystem::ChangeBombTimeByDelta(*bomb, -(Clock::Instance().GetDeltaTime()));
-                    std::cout << bomb->GetBombTime() << std::endl;
                     if (bomb->GetBombTime() <= 0)
                     {
                         Explosion *explosion;
@@ -422,7 +439,6 @@ bool 	GameManager::Update()
                         explosion->SetDirection(Vec3(0, -1, 0));
                         m_playerBombAmount++;
                         m_toBeDeleted.push_back(i);
-                        std::cout << "Bomb exploded" << std::endl;
                     }
                 }
                 catch (std::exception &e)
@@ -450,11 +466,11 @@ bool 	GameManager::Update()
                         newExplosion->SetChildExplosions(explosion->GetChildExplosions() - 1);
                         explosion->SetChildExplosions(0);
                     }
-                    explosion->SetDuration(explosion->GetDuration() - Clock::Instance().GetDeltaTime());
-                    if (explosion->GetDuration() <= 0)
-                    {
+                    //explosion->SetDuration(explosion->GetDuration() - Clock::Instance().GetDeltaTime());
+                    //if (explosion->GetDuration() <= 0)
+                    //{
                         m_toBeDeleted.push_back(i);
-                    }
+                    //}
                 }
                 catch (std::exception &e)
                 {
@@ -463,13 +479,14 @@ bool 	GameManager::Update()
             }
         }
 
-        for (std::size_t i = 0; i < m_toBeDeleted.size(); i++)
-        {
-            deleteEntity(i);
-        }
         m_action = P_NOACTION;
-		return (false);
 	}
+    for (std::size_t i = 0; i < m_toBeDeleted.size(); i++)
+    {
+        deleteEntity(i);
+    }
+    m_toBeDeleted.clear();
+    return (false);
 }
 
 void        GameManager::GetRenderData(std::vector<GameObjectRenderInfo> &g)

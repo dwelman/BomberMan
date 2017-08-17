@@ -1,17 +1,48 @@
 
 #include <main.hpp>
 #include <GUI.hpp>
+#include <SDL_video.h>
+
+void 				tryAddResolution(int w, int h, SettingsState &s)
+{
+	SDL_DisplayMode	dspAttempt, dspClosest;
+	std::string		str;
+
+	dspAttempt.w = w;
+	dspAttempt.h = h;
+	SDL_GetClosestDisplayMode(0, &dspAttempt, &dspClosest);
+
+	if (dspAttempt.w == dspClosest.w && dspAttempt.h == dspClosest.h)
+	{
+		str = std::to_string(dspAttempt.w ) + "x" + std::to_string(dspAttempt.h);
+		s.video.resolution.push_back(str.c_str());
+	}
+	else
+	{
+		if (dspClosest.w / dspAttempt.h != 1.77777777778f)
+		{
+			return;
+		}
+		else
+		{
+			str = std::to_string(dspClosest.w ) + "x" + std::to_string(dspClosest.h);
+		}
+	}
+}
 
 void				populateSettingSpinners(SettingsState &s)
 {
 	SDL_DisplayMode	monitorDisplayMode;
 
 	SDL_GetCurrentDisplayMode(0, &monitorDisplayMode);
-		s.video.resolution.push_back("1280x720");
-	if (monitorDisplayMode.h >= 1080 && monitorDisplayMode.w >= 1920)
-		s.video.resolution.push_back("1920x1080");
-	if (monitorDisplayMode.h >= 1440 && monitorDisplayMode.w >= 2560)
-		s.video.resolution.push_back("2560x1440");
+
+	tryAddResolution(1024,576, s);
+	tryAddResolution(1280,720, s);
+	tryAddResolution(1366,768, s);
+	tryAddResolution(1600,900, s);
+	tryAddResolution(1920,1080, s);
+	tryAddResolution(2560,1440, s);
+	tryAddResolution(3840,2160, s);
 
 	s.video.resolution.setIterator(s.video.resolution.activeValue);
 	s.video.fullScreen.push_back("Yes");
@@ -156,11 +187,45 @@ void	captureInputForGameManager(GameManager &manager, SDL_Event &e, bool & must_
 	}
 }
 
-void	captureInputForState(SDL_Event &e, bool & must_quit)
+void	captureWindowEvents(SDL_Event &e, GUICrate &crate)
 {
-	if (e.type == SDL_KEYDOWN)
+	SDL_Event	*event = &e;
+
+	if (e.type == SDL_WINDOWEVENT)
 	{
-		
+		if (event->type == SDL_WINDOWEVENT)
+		{
+			switch (event->window.event)
+			{
+				case SDL_WINDOWEVENT_SHOWN:
+					SDL_Log("Window %d shown", event->window.windowID); //TODO Unpause
+					break;
+				case SDL_WINDOWEVENT_HIDDEN:
+					SDL_Log("Window %d hidden", event->window.windowID); //TODO Pause
+					break;
+				case SDL_WINDOWEVENT_SIZE_CHANGED:
+					SDL_Log("Window %d size changed to %dx%d",
+							event->window.windowID, event->window.data1,
+							event->window.data2);
+					break;
+				case SDL_WINDOWEVENT_MINIMIZED:
+					SDL_Log("Window %d minimized", event->window.windowID); //TODO Pause
+					break;
+				case SDL_WINDOWEVENT_MAXIMIZED:
+					SDL_Log("Window %d maximized", event->window.windowID); //TODO Unpause
+					break;
+				case SDL_WINDOWEVENT_CLOSE:
+					SDL_Log("Window %d closed", event->window.windowID);
+					break;
+#if SDL_VERSION_ATLEAST(2, 0, 5)
+				case SDL_WINDOWEVENT_TAKE_FOCUS:
+					SDL_Log("Window %d is offered a focus", event->window.windowID);
+					break;
+#endif
+				default:
+					break;
+			}
+		}
 	}
 }
 
@@ -173,10 +238,10 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 	{
 		injectInput(must_quit, CEGUI::System::getSingleton().getDefaultGUIContext(), e);
 		captureInputForGameManager(manager, e, must_quit, crate.keybindings);
-		captureInputForState(e, must_quit);
+		captureWindowEvents(e, crate);
 	}
-	if (manager.GetGameStarted() ) // && !manager.GetGamePaused())
-		crate.main->getChildElementRecursive("Menu")->setProperty("Visible", "False");
+//	if (manager.GetGameStarted()) // && !manager.GetGamePaused())
+//		crate.main->setVisible(false);
 	injectTimePulse(guiLastTimePulse);
 	//Draw Stuff 
 	glDisable(GL_DEPTH_TEST);
@@ -202,12 +267,17 @@ void		reloadDisplayMode(SDL_Window *win, GUICrate &crate)
 	dsp.w = g_cfg["xres"].to_int();
 	dsp.h = g_cfg["yres"].to_int();
 
-	destroyGUI(crate);
-	//crate.guiRenderer->setDisplaySize(CEGUI::Sizef(dsp.w, dsp.h));
-
 	SDL_SetWindowSize(win, g_cfg["xres"].to_int(), g_cfg["yres"].to_int());
 	SDL_SetWindowDisplayMode(win, &dsp);
-	//const SDL_DisplayMode* mode)
-	initGui(win, crate);
+	CEGUI::Size<float> NewWindowSize((float)g_cfg["xres"].to_int(), (float)g_cfg["yres"].to_int());
+	CEGUI::System::getSingleton().notifyDisplaySizeChanged(NewWindowSize);
+	CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().notifyDisplaySizeChanged(NewWindowSize);
+	crate.guiRenderer->setDisplaySize(NewWindowSize);
+	std::cout << "setting to " << g_cfg["xres"].to_str() << 'x' << g_cfg["yres"].to_str() << std::endl;
+	SDL_GetDisplayMode(0,0, &dsp);
+	if (case_ins_cmp(g_cfg["Fullscreen"].to_str(), "yes"))
+		SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
+	else
+		SDL_SetWindowFullscreen(win, SDL_WINDOW_OPENGL);
 	crate.displayChanged = false;
 }
