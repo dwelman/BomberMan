@@ -49,6 +49,7 @@ void	switchLayouts(CEGUI::Window *from, CEGUI::Window *to)
 
 bool startGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate &var)
 {
+	var.audio->PlaySFX(0);
 	var.manager->SetGameStarted(true);
 	return (true);
 };

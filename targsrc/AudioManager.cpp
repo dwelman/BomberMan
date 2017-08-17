@@ -2,7 +2,8 @@
 
 AudioManager::AudioManager()
 {
-
+    Mix_Chunk *temp = Mix_LoadWAV( "resources/high.wav" );
+    SFX.push_back(temp);
 }
 
 AudioManager::AudioManager(AudioManager const & src)
@@ -54,5 +55,6 @@ void    AudioManager::PauseMusic(int i)
 
 void    AudioManager::PlaySFX(int i)
 {
-
+    if (i < SFX.size())
+        Mix_PlayChannel( -1, SFX[i], 0 );
 }
