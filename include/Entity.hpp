@@ -11,10 +11,11 @@ class Entity
 private:
     COMPONENT_MASK_TYPE 					m_componentFlags;
 	std::map<std::size_t, ComponentMask>	m_childComponents;
+	bool									m_canTick;
 
 public:
     Entity();
-    Entity(COMPONENT_MASK_TYPE flags);
+    Entity(COMPONENT_MASK_TYPE flags, bool canTick);
     Entity(Entity const &e);
     ~Entity();
 
@@ -26,6 +27,8 @@ public:
 	void						DeregisterComponent(std::size_t componentID);
 	std::size_t 				GetComponentOfType(COMPONENT_MASK_TYPE flag);
 	std::vector<std::size_t>	GetChildrenIDs() const;
+	bool 						GetCanTick() const;
+	void						SetCanTick(bool canTick);
 
 	class ChildComponentNotFoundException : public std::exception
 	{
