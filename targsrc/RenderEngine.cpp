@@ -44,6 +44,15 @@ RenderEngine::~RenderEngine()
 
 }
 
+void RenderEngine::handleResize(int w, int h)
+{
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+
+    glLoadIdentity();
+    gluPerspective(45.0, static_cast<double>(w) / static_cast<double>(h), 1.0, 200.0);
+}
+
 void RenderEngine::setViewMatrix(glm::mat4 viewMatrix)
 {
 	this->ViewMatrix = viewMatrix;
@@ -530,7 +539,7 @@ void RenderEngine::computeTangentBasis(
 
 void RenderEngine::initGlew()
 {
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 15; i++)
     {
         renderData *obj = new renderData;
         rdata.push_back(*obj);
@@ -959,6 +968,9 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 //    gameObjects[0].SetPosition(Vec3(4, 0.5, 7));
 //    gameObjects[0].SetDirection(SOUTH);
 
+    static float scale = 1.0f;
+    static bool scaleUp = false;
+    glScalef(scale, scale, scale);
     for (int l = 0; l < gameObjects.size(); l++)
     {
         bool shouldDraw = false;
@@ -979,9 +991,19 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 
 		if (shouldDraw)
 		{
+            if (scale >= 1.3f)
+                scaleUp = false;
+            if (scale <= 1.0f)
+                scaleUp = true;
+            if (scaleUp)
+                scale += 0.05f;
+            else
+                scale -= 0.05f;
+            std::cout << scale << std::endl;
 			glm::mat4 ModelMatrix2 = glm::mat4(1.0);
 			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) + 1, gameObjects[i].GetPosition().GetX() * 2));
 			ModelMatrix2 = glm::rotate(ModelMatrix2, gameObjects[i].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
+            ModelMatrix2 = glm::scale_slow(ModelMatrix2, glm::vec3(scale, scale, scale));
 			glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
 
 			//        if (shouldDraw)
