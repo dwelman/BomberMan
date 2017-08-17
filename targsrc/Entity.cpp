@@ -3,11 +3,13 @@
 Entity::Entity()
 {
     m_componentFlags = 0;
+    m_canTick = true;
 }
 
-Entity::Entity(COMPONENT_MASK_TYPE flags) : Entity()
+Entity::Entity(COMPONENT_MASK_TYPE flags, bool canTick)
 {
     m_componentFlags = flags;
+    m_canTick = canTick;
 }
 
 Entity::Entity(Entity const &e)
@@ -22,8 +24,9 @@ Entity::~Entity()
 
 Entity &Entity::operator=(Entity const &e)
 {
-    this->m_componentFlags = e.m_componentFlags;
-    this->m_childComponents = e.m_childComponents;
+    m_componentFlags = e.m_componentFlags;
+    m_childComponents = e.m_childComponents;
+    m_canTick = e.m_canTick;
     return (*this);
 }
 
@@ -87,7 +90,19 @@ std::vector<std::size_t> Entity::GetChildrenIDs() const
     return (ret);
 }
 
+bool Entity::GetCanTick() const
+{
+    return (m_canTick);
+}
+
+void Entity::SetCanTick(bool canTick)
+{
+    m_canTick = canTick;
+}
+
 const char *Entity::ChildComponentNotFoundException::what() const throw()
 {
     return ("Child component not found in entity");
 }
+
+

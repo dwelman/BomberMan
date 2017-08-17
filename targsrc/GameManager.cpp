@@ -180,6 +180,7 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
         m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(WALL_TAG | INDESTRUCTIBLE_TAG)));
         entity.RegisterComponent(m_currentComponentID, RENDER);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Render(IND_BLOCK_OT, true)));
+        entity.SetCanTick(false);
     }
     else if (entityType == "destructible_wall")
     {
@@ -191,6 +192,7 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
         m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(WALL_TAG)));
         entity.RegisterComponent(m_currentComponentID, RENDER);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BLOCK_OT, true)));
+        entity.SetCanTick(false);
     }
     else if (entityType == "enemy_1")
     {
@@ -240,6 +242,7 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
         m_components.emplace(std::make_pair(m_currentComponentID++, new Powerup(LIFE)));
         entity.RegisterComponent(m_currentComponentID, RENDER);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Render(LIFE_POWERUP_OT, true)));
+        entity.SetCanTick(false);
     }
     else if (entityType == "powerup_bomb_amount")
     {
@@ -253,6 +256,7 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
         m_components.emplace(std::make_pair(m_currentComponentID++, new Powerup(BOMB_AMOUNT_UP)));
         entity.RegisterComponent(m_currentComponentID, RENDER);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BOMB_AMOUNT_POWERUP_OT, true)));
+        entity.SetCanTick(false);
     }
     else if (entityType == "powerup_bomb_strength")
     {
@@ -266,6 +270,7 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
         m_components.emplace(std::make_pair(m_currentComponentID++, new Powerup(BOMB_STRENGTH_UP)));
         entity.RegisterComponent(m_currentComponentID, RENDER);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BOMB_STRENGTH_POWERUP_OT, true)));
+        entity.SetCanTick(false);
     }
     else
     {
@@ -304,6 +309,10 @@ bool 	GameManager::Update()
 	m_deltaTime = Clock::Instance().GetDeltaTime();
 	for (std::size_t i = 0; i < m_entities.size(); i++)
 	{
+        if (!m_entities[i].GetCanTick())
+        {
+            continue ;
+        }
         //Check each component for the relevant flags
         COMPONENT_MASK_TYPE bitmask = m_entities[i].GetComponentFlags();
         //Player control system
