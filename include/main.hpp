@@ -19,12 +19,14 @@
 
 //Standard
 #include <iostream>
+#include <atomic>
 
 //Internal
 #include "MenuStateMachine.hpp"
 #include <RenderEngine.hpp>
 #include <ConfigEditor.hpp>
 #include <Util.hpp>
+#include <AudioManager.hpp>
 #include "GameObjectRenderInfo.hpp"
 
 enum    ePlayerAction
@@ -45,3 +47,5 @@ void            mapKeyTextToSDLKey(std::map<std::string, SDL_Keycode> &textToKey
 void			GetKeyCodesFromConfig(std::map<std::string, SDL_Keycode> &textToKeyCode, std::map<ePlayerAction, SDL_Keycode > &actionToKeyCode ,ConfigEditor &cfg);
 
 ePlayerAction   GetPlayerAction(SDL_KeyboardEvent &e);
+
+int				AudioThread(void *ptr);

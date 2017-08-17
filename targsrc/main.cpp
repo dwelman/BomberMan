@@ -11,7 +11,6 @@
 #include "main.hpp"
 #include "Clock.hpp"
 #include <GUI.hpp>
-#include "AudioManager.hpp"
 #include "GameManager.hpp"
 
 SDL_Window *initWindow(ConfigEditor &cfg)
@@ -50,6 +49,8 @@ void gameLoop(SDL_Window *window)
 	double				guiLastTimePulse = initGui(window, crate);
 	RenderEngine        rEngine;
 	AudioManager		Audio;
+	SDL_Thread			*audioThread;
+	int					audioThreadStatus;
     std::vector<GameObjectRenderInfo>   gameObjects;
 
     manager.SetGameStarted(false);
@@ -60,6 +61,8 @@ void gameLoop(SDL_Window *window)
 	crate.window = window;
 	mapKeyTextToSDLKey(*crate.keybindings.textToKeyCode);
 	GetKeyCodesFromConfig(*crate.keybindings.textToKeyCode, *crate.keybindings.actionToKeyCode , g_cfg);
+	rEngine.computeMatricesFromInputs(window);
+	audioThread = SDL_CreateThread(&AudioThread, "AudioThread", reinterpret_cast<void*>(&Audio));
     do
     {
 		Clock::Instance().Tick();
@@ -80,6 +83,7 @@ void gameLoop(SDL_Window *window)
 		//SDL_Delay(10);
     }
 	while (mustQuit == false);
+	SDL_WaitThread(audioThread, &audioThreadStatus);
 	destroyGUI(crate);
 }
 
