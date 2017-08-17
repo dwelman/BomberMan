@@ -90,31 +90,31 @@ void    Vec3::SetZ(float z)
 Vec3    operator+(Vec3 lhs, Vec3 const &rhs)
 {
     lhs.SetX(lhs.GetX() + rhs.GetX());
-    lhs.SetX(lhs.GetY() + rhs.GetY());
-    lhs.SetX(lhs.GetZ() + rhs.GetZ());
+    lhs.SetY(lhs.GetY() + rhs.GetY());
+    lhs.SetZ(lhs.GetZ() + rhs.GetZ());
     return (lhs);
 }
 
 Vec3    operator-(Vec3 lhs, Vec3 const &rhs)
 {
     lhs.SetX(lhs.GetX() - rhs.GetX());
-    lhs.SetX(lhs.GetY() - rhs.GetY());
-    lhs.SetX(lhs.GetZ() - rhs.GetZ());
+    lhs.SetY(lhs.GetY() - rhs.GetY());
+    lhs.SetZ(lhs.GetZ() - rhs.GetZ());
     return (lhs);
 }
 
 Vec3    operator*(Vec3 lhs, Vec3 const &rhs)
 {
     lhs.SetX(lhs.GetX() * rhs.GetX());
-    lhs.SetX(lhs.GetY() * rhs.GetY());
-    lhs.SetX(lhs.GetZ() * rhs.GetZ());
+    lhs.SetY(lhs.GetY() * rhs.GetY());
+    lhs.SetZ(lhs.GetZ() * rhs.GetZ());
     return (lhs);
 }
 
 Vec3    operator/(Vec3 lhs, Vec3 const &rhs)
 {
     lhs.SetX(lhs.GetX() / rhs.GetX());
-    lhs.SetX(lhs.GetY() / rhs.GetY());
-    lhs.SetX(lhs.GetZ() / rhs.GetZ());
+    lhs.SetY(lhs.GetY() / rhs.GetY());
+    lhs.SetZ(lhs.GetZ() / rhs.GetZ());
     return (lhs);
 }
