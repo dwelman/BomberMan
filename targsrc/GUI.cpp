@@ -44,15 +44,6 @@ void				populateSettingSpinners(SettingsState &s)
 	tryAddResolution(2560,1440, s);
 	tryAddResolution(3840,2160, s);
 
-/*	s.video.resolution.push_back("1024x576");
-	s.video.resolution.push_back("1280x720");
-	s.video.resolution.push_back("1366x768");
-	s.video.resolution.push_back("1600x900");
-//	if (monitorDisplayMode.h >= 1080 && monitorDisplayMode.w >= 1920)
-		s.video.resolution.push_back("1920x1080");
-	if (monitorDisplayMode.h >= 1440 && monitorDisplayMode.w >= 2560)
-		s.video.resolution.push_back("2560x1440");
-*/
 	s.video.resolution.setIterator(s.video.resolution.activeValue);
 	s.video.fullScreen.push_back("Yes");
 	s.video.fullScreen.push_back("No");
