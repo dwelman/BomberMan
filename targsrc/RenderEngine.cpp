@@ -208,7 +208,6 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
         std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
         glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
 		std::cerr << &VertexShaderErrorMessage[0] << std::endl;
-        //printf("%s\n", &VertexShaderErrorMessage[0]);
     }
 
     // Compile Fragment Shader
@@ -226,7 +225,6 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
         std::vector<char> FragmentShaderErrorMessage(InfoLogLength+1);
         glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
 		std::cerr << &FragmentShaderErrorMessage[0] << std::endl;
-        //printf("%s\n", &FragmentShaderErrorMessage[0]);
     }
 
     // Link the program
@@ -245,7 +243,6 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
         std::vector<char> ProgramErrorMessage(InfoLogLength+1);
         glGetProgramInfoLog(ProgramID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
 		std::cerr << &ProgramErrorMessage[0] << std::endl;
-        //printf("%s\n", &ProgramErrorMessage[0]);
     }
 
     glDetachShader(ProgramID, VertexShaderID);
@@ -694,8 +691,6 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
     glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
     glUniformMatrix4fv(rdata[0].ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
     glUniformMatrix3fv(rdata[0].ModelView3x3MatrixID, 1, GL_FALSE, &ModelView3x3Matrix[0][0]);
-
-    //printf("horizontal angle: %f, vertical angle: %f\n", this->horizontalAngle, this->verticalAngle);
 
     /*static int v = 1;
     static int i = 0;
