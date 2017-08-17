@@ -291,9 +291,6 @@ void GameManager::deleteEntity(std::size_t ID)
 
 bool 	GameManager::Update()
 {
-    std::cout << m_entities.size() << std::endl;
-    std::cout << m_components.size() << std::endl;
-    m_toBeDeleted.clear();
 	m_deltaTime = Clock::Instance().GetDeltaTime();
 	for (std::size_t i = 0; i < m_entities.size(); i++)
 	{
@@ -307,7 +304,6 @@ bool 	GameManager::Update()
                 {
                     std::size_t playerControllerID = m_entities[i].GetComponentOfType(PLAYERCONTROLLER);
                     PlayerController *playerController = dynamic_cast<PlayerController *>(m_components[playerControllerID]);
-                    //Do something with movement
                     if ((bitmask & MOVEMENT) == MOVEMENT)
                     {
                         std::size_t movementID = m_entities[i].GetComponentOfType(MOVEMENT);
@@ -328,7 +324,6 @@ bool 	GameManager::Update()
                         {
                             movement->SetDirection(Vec3(0, -1, 0));
                         }
-                        //std::cout << m_action << std::endl;
                     }
 
                     //if bomb placed
@@ -404,7 +399,6 @@ bool 	GameManager::Update()
                     Position *position = dynamic_cast<Position *>(m_components[positionID]);
                     Bomb *bomb = dynamic_cast<Bomb *>(m_components[bombID]);
                     BombSystem::ChangeBombTimeByDelta(*bomb, -(Clock::Instance().GetDeltaTime()));
-                    std::cout << bomb->GetBombTime() << std::endl;
                     if (bomb->GetBombTime() <= 0)
                     {
                         Explosion *explosion;
@@ -422,7 +416,6 @@ bool 	GameManager::Update()
                         explosion->SetDirection(Vec3(0, -1, 0));
                         m_playerBombAmount++;
                         m_toBeDeleted.push_back(i);
-                        std::cout << "Bomb exploded" << std::endl;
                     }
                 }
                 catch (std::exception &e)
@@ -463,13 +456,14 @@ bool 	GameManager::Update()
             }
         }
 
-        for (std::size_t i = 0; i < m_toBeDeleted.size(); i++)
-        {
-            deleteEntity(i);
-        }
         m_action = P_NOACTION;
-		return (false);
 	}
+    for (std::size_t i = 0; i < m_toBeDeleted.size(); i++)
+    {
+        deleteEntity(i);
+    }
+    m_toBeDeleted.clear();
+    return (false);
 }
 
 void        GameManager::GetRenderData(std::vector<GameObjectRenderInfo> &g)
