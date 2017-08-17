@@ -57,6 +57,7 @@ void gameLoop(SDL_Window *window)
 	crate.manager = &manager;
 	crate.audio = &Audio;
     crate.mustQuit = &mustQuit;
+	crate.window = window;
 	mapKeyTextToSDLKey(*crate.keybindings.textToKeyCode);
 	GetKeyCodesFromConfig(*crate.keybindings.textToKeyCode, *crate.keybindings.actionToKeyCode , g_cfg);
     do
@@ -73,6 +74,9 @@ void gameLoop(SDL_Window *window)
         renderGUIInjectEvents(manager, window, guiLastTimePulse, mustQuit, crate);
 		SDL_GL_SwapWindow(window);
         gameObjects.clear();
+		if (crate.displayChanged)
+			reloadDisplayMode(crate.window, crate);
+
 		//SDL_Delay(10);
     }
 	while (mustQuit == false);
