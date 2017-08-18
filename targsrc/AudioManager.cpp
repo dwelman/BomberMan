@@ -13,6 +13,16 @@ AudioManager::AudioManager(AudioManager const & src)
     *this = src;
 }
 
+AudioManager::AudioManager(ConfigEditor &cfg)
+{
+    Mix_Chunk *temp = Mix_LoadWAV( "resources/Sounds/high.wav" );
+    Mix_Music *muse = Mix_LoadMUS("resources/Sounds/Rob_Gasser_-_Ricochet.wav");
+    Music.push_back(muse);
+    SFX.push_back(temp);
+    SFXVolume(std::stoi(cfg["MasterVolume"].to_str()));
+    MusicVolume(std::stoi(cfg["MasterVolume"].to_str()));
+}
+
 AudioManager::~AudioManager()
 {
 
@@ -67,4 +77,16 @@ void    AudioManager::PlaySFX(int i)
 {
     if (i < SFX.size())
         Mix_PlayChannel( -1, SFX[i], 0 );
+}
+
+void    AudioManager::MusicVolume(int vol)
+{
+    if (vol >= 0 && vol <= 100)
+        Mix_VolumeMusic(vol);
+}
+
+void    AudioManager::SFXVolume(int vol)
+{
+    if (vol >= 0 && vol <= 100)
+        Mix_Volume(-1, vol);
 }
