@@ -15,6 +15,14 @@ GameManager::GameManager()
     m_score = 0;
     createEntityAtPosition("player", Vec3(0, 0, 0));
     srand(time(NULL));
+
+    for (float x = 2; x < 25; x++)
+    {
+        for (int z = 2; z < 48; z++)
+        {
+            createEntityAtPosition("indestructible_wall", Vec3(x, z, 0));
+        }
+    }
 }
 
 GameManager::GameManager(GameManager const & gm)
@@ -296,7 +304,8 @@ void GameManager::deleteEntity(std::size_t ID)
                 m_components.erase(iter);
             }
         }
-        m_entities.erase(m_entities.begin() + ID);
+        m_entities[ID] = m_entities.back();
+        m_entities.pop_back();
     }
     catch (std::exception &e)
     {
@@ -466,11 +475,11 @@ bool 	GameManager::Update()
                         newExplosion->SetChildExplosions(explosion->GetChildExplosions() - 1);
                         explosion->SetChildExplosions(0);
                     }
-                    //explosion->SetDuration(explosion->GetDuration() - Clock::Instance().GetDeltaTime());
-                    //if (explosion->GetDuration() <= 0)
-                    //{
+                    explosion->SetDuration(explosion->GetDuration() - Clock::Instance().GetDeltaTime());
+                    if (explosion->GetDuration() <= 0)
+                    {
                         m_toBeDeleted.push_back(i);
-                    //}
+                    }
                 }
                 catch (std::exception &e)
                 {
