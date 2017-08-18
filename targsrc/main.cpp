@@ -48,7 +48,7 @@ void gameLoop(SDL_Window *window)
     GUICrate			crate;
 	double				guiLastTimePulse = initGui(window, crate);
 	RenderEngine        rEngine;
-	AudioManager		Audio;
+	AudioManager		*Audio = new AudioManager(g_cfg);
 	SDL_Thread			*audioThread;
 	int					audioThreadStatus;
     std::vector<GameObjectRenderInfo>   gameObjects;
@@ -56,7 +56,7 @@ void gameLoop(SDL_Window *window)
     manager.SetGameStarted(false);
 	rEngine.initGlew();
 	crate.manager = &manager;
-	crate.audio = &Audio;
+	crate.audio = Audio;
     crate.mustQuit = &mustQuit;
 	crate.window = window;
 	mapKeyTextToSDLKey(*crate.keybindings.textToKeyCode);

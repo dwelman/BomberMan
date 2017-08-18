@@ -1,6 +1,8 @@
 #pragma once
 
 #include <SDL_mixer.h>
+#include <ConfigEditor.hpp>
+#include <string>
 #include <vector>
 #include <queue>
 
@@ -19,6 +21,7 @@ class AudioManager
     public:
         AudioManager();
         AudioManager(AudioManager const & src);
+        AudioManager(ConfigEditor &cfg);
         ~AudioManager();
 
         AudioManager &operator=(AudioManager const & src);
@@ -28,6 +31,9 @@ class AudioManager
         void PlayMusic(int i);
         void PauseMusic(int i);
         void PlaySFX(int i);
+
+        void MusicVolume(int vol);
+        void SFXVolume(int vol);
 		/*
 			pushEvent() ?
 			execQueue() ?
