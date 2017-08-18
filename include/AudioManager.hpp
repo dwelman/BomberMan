@@ -6,9 +6,24 @@
 #include <vector>
 #include <queue>
 
+enum SFXs
+{
+    EXPLODE = 0,
+    WALK,
+    CRUMBLING
+};
+
+enum Musics
+{
+    START = 0,
+    COBBLE
+
+};
+
 struct AudioEvent
 {
-	//IDK ? 
+    bool    type;
+    int     pos; 
 };
 
 class AudioManager
@@ -16,7 +31,10 @@ class AudioManager
     private:
         std::vector<Mix_Chunk*> SFX;
         std::vector<Mix_Music*> Music;
-		std::queue<AudioEvent*> queue;
+        std::queue<AudioEvent*> queue;
+        int                     SFXVol;
+        int                     MusicVol;
+        int                     MasterVol;
 
     public:
         AudioManager();
@@ -34,9 +52,9 @@ class AudioManager
 
         void MusicVolume(int vol);
         void SFXVolume(int vol);
-		/*
-			pushEvent() ?
-			execQueue() ?
-			setVolume() 
-		*/
+		void MasterVolume(int vol); 
+		
+		void PushEvent(bool type, int);
+		void execQueue();
+		
 };

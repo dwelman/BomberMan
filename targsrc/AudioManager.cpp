@@ -4,6 +4,8 @@ AudioManager::AudioManager()
 {
     Mix_Chunk *temp = Mix_LoadWAV( "resources/Sounds/high.wav" );
     Mix_Music *muse = Mix_LoadMUS("resources/Sounds/Rob_Gasser_-_Ricochet.wav");
+    std::queue<AudioEvent*> empty;
+    std::swap( queue, empty );
     Music.push_back(muse);
     SFX.push_back(temp);
 }
@@ -19,8 +21,12 @@ AudioManager::AudioManager(ConfigEditor &cfg)
     Mix_Music *muse = Mix_LoadMUS("resources/Sounds/Rob_Gasser_-_Ricochet.wav");
     Music.push_back(muse);
     SFX.push_back(temp);
-    SFXVolume(std::stoi(cfg["MasterVolume"].to_str()));
-    MusicVolume(std::stoi(cfg["MasterVolume"].to_str()));
+    int vol = std::stoi(cfg["MasterVolume"].to_str());
+    SFXVol = vol;
+    MasterVol = vol;
+    SFXVolume(vol);
+    MusicVolume(vol);
+
 }
 
 AudioManager::~AudioManager()
@@ -89,4 +95,38 @@ void    AudioManager::SFXVolume(int vol)
 {
     if (vol >= 0 && vol <= 100)
         Mix_Volume(-1, vol);
+}
+
+void    AudioManager::MasterVolume(int vol)
+{
+    if (vol >= 0 && vol <= 100)
+    {
+        Mix_VolumeMusic(vol);
+        Mix_Volume(-1, vol);
+    }
+}
+
+void    AudioManager::PushEvent(bool sound, int position)
+{
+    AudioEvent event = {sound, position};
+    queue.push(&event);
+}
+
+void    AudioManager::execQueue()
+{
+    AudioEvent *temp;
+
+    while(!queue.empty())
+    {
+       temp = queue.front();
+       queue.pop();
+        if (temp->type)
+        {
+           PlayMusic(temp->pos);
+        }
+        else
+        {
+            PlaySFX(temp->pos);
+        }
+    }
 }

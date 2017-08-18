@@ -62,7 +62,7 @@ void gameLoop(SDL_Window *window)
 	mapKeyTextToSDLKey(*crate.keybindings.textToKeyCode);
 	GetKeyCodesFromConfig(*crate.keybindings.textToKeyCode, *crate.keybindings.actionToKeyCode , g_cfg);
 	rEngine.computeMatricesFromInputs(window);
-	audioThread = SDL_CreateThread(&AudioThread, "AudioThread", reinterpret_cast<void*>(&Audio));
+	audioThread = SDL_CreateThread(&AudioThread, "AudioThread", reinterpret_cast<void*>(Audio));
     do
     {
 		Clock::Instance().Tick();
