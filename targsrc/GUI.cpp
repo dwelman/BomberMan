@@ -251,7 +251,7 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 	glGetIntegerv(GL_ACTIVE_TEXTURE, &activeID);
 	glActiveTexture(GL_TEXTURE0);
 	if (!manager.GetGameStarted()) //NEED TO FIGURE LIGHTS THE FUCK PIdasdasdads
-	 CEGUI::System::getSingleton().renderAllGUIContexts();
+        CEGUI::System::getSingleton().renderAllGUIContexts();
 
 	glActiveTexture(activeID);
 	glEnable(GL_DEPTH_TEST);
@@ -270,7 +270,7 @@ void		reloadDisplayMode(SDL_Window *win, GUICrate &crate)
 	dsp.h = g_cfg["yres"].to_int();
 
 	SDL_SetWindowSize(win, g_cfg["xres"].to_int(), g_cfg["yres"].to_int());
-	SDL_SetWindowDisplayMode(win, &dsp);
+	//SDL_SetWindowDisplayMode(win, &dsp);
 	CEGUI::Size<float> NewWindowSize((float)g_cfg["xres"].to_int(), (float)g_cfg["yres"].to_int());
 	CEGUI::System::getSingleton().notifyDisplaySizeChanged(NewWindowSize);
 	CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().notifyDisplaySizeChanged(NewWindowSize);
