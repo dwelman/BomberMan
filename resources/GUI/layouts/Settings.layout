@@ -4,25 +4,34 @@
     <Window type="DefaultWindow" name="Settings" >
         <Property name="Area" value="{{0,3},{0,-1},{1,3},{1,102}}" />
         <Property name="MaxSize" value="{{1,0},{1,0}}" />
-        <Window type="SampleBrowserSkin/FrameWindow" name="SettingsMenu" >
-            <Property name="Area" value="{{0.25,-1},{0.1,0},{0.75,-1},{0.9,0}}" />
-            <Property name="Text" value=" Settings" />
+        <Window type="Generic/Image" name="Backdrop" >
+            <Property name="Area" value="{{0,0},{0,0},{1,0},{1,0}}" />
+            <Property name="Alpha" value="0.9" />
+            <Property name="Image" value="BombermanMenu/Backdrop" />
             <Property name="MaxSize" value="{{1,0},{1,0}}" />
-            <Property name="AlwaysOnTop" value="true" />
-            <AutoWindow namePath="__auto_closebutton__" >
-                <Property name="NonClient" value="true" />
-            </AutoWindow>
-            <Window type="SampleBrowserSkin/ScrollablePane" name="ScrollablePane" >
-                <Property name="Area" value="{{0,0},{0,0},{1,0},{0.9,0}}" />
+            <Property name="InheritsAlpha" value="false" />
+            <Property name="MousePassThroughEnabled" value="true" />
+            <Window type="AlfiskoSkin/Button" name="Apply" >
+                <Property name="Area" value="{{0.55,-1},{0.92,0},{0.75,-1},{0.986,0}}" />
+                <Property name="Text" value="Apply" />
+            </Window>
+            <Window type="AlfiskoSkin/Button" name="Close" >
+                <Property name="Area" value="{{0.76,1},{0.92,0},{0.96,1},{0.986,0}}" />
+                <Property name="Text" value="Close" />
+            </Window>
+            <Window type="SampleBrowserSkin/ScrollablePane" name="VideoSettingsPane" >
+                <Property name="Area" value="{{0.260417,0},{0,0},{0.999997,0},{0.9,0}}" />
                 <Property name="Text" value=" Settings" />
                 <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                <Property name="Visible" value="false" />
                 <Property name="AlwaysOnTop" value="true" />
-                <Property name="ContentArea" value="l:-1 t:-1 r:593 b:471" />
+                <Property name="ContentArea" value="l:0 t:-1 r:884.5 b:164" />
                 <AutoWindow namePath="__auto_container__" >
-                    <Property name="ContentArea" value="l:-1 t:-1 r:593 b:471" />
+                    <Property name="ContentArea" value="l:0 t:-1 r:884.5 b:164" />
+                    <Property name="AutoRenderingSurface" value="true" />
                     <Property name="MouseInputPropagationEnabled" value="true" />
                     <Window type="Generic/LabelWithOutline" name="FullscreenLabel" >
-                        <Property name="Area" value="{{0.05,-2},{0.2,-4},{0.35,-2},{0.2,28}}" />
+                        <Property name="Area" value="{{0.05,0},{0.2,0},{0.35,0},{0.2,32}}" />
                         <Property name="Text" value="Full Screen" />
                         <Property name="MaxSize" value="{{1,0},{1,0}}" />
                         <Property name="HorzFormatting" value="LeftAligned" />
@@ -71,31 +80,6 @@
                         <Property name="NormalImage" value="AlfiskoSkin/ScrollLeftNormal" />
                         <Property name="PushedImage" value="AlfiskoSkin/ScrollLeftPushed" />
                     </Window>
-                    <Window type="Generic/LabelWithOutline" name="SoundSettingsCaption" >
-                        <Property name="Area" value="{{0,-1},{0.3,-1},{0.9,-1},{0.3,30}}" />
-                        <Property name="Text" value="Sound Settings" />
-                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
-                        <Property name="DragDropTarget" value="false" />
-                        <Property name="VertFormatting" value="TopAligned" />
-                        <Property name="NormalTextColour" value="FFE1E4E8" />
-                        <Property name="HorizontalAlignment" value="Centre" />
-                        <Property name="AutoRenderingSurface" value="true" />
-                    </Window>
-                    <Window type="Generic/LabelWithOutline" name="VidRestartNotice" >
-                        <Property name="Area" value="{{0,-1},{0.938,-9},{0.5,-1},{0.938,23}}" />
-                        <Property name="Font" value="Jura-10" />
-                        <Property name="Text" value=" *Restart the game to apply video changes" />
-                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
-                        <Property name="Visible" value="false" />
-                        <Property name="AspectRatio" value="1.7" />
-                        <Property name="PixelAligned" value="false" />
-                        <Property name="DragDropTarget" value="false" />
-                        <Property name="HorzFormatting" value="LeftAligned" />
-                        <Property name="VertFormatting" value="TopAligned" />
-                        <Property name="NormalTextColour" value="FFD1191F" />
-                        <Property name="AutoRenderingSurface" value="true" />
-                        <Property name="MousePassThroughEnabled" value="true" />
-                    </Window>
                     <Window type="Generic/LabelWithOutline" name="VideoSettingsCaption" >
                         <Property name="Area" value="{{0,0},{0,-1},{0.9,0},{0,30}}" />
                         <Property name="Text" value="Video Settings" />
@@ -105,16 +89,6 @@
                         <Property name="NormalTextColour" value="FFE1E4E8" />
                         <Property name="HorizontalAlignment" value="Centre" />
                         <Property name="AutoRenderingSurface" value="true" />
-                    </Window>
-                    <Window type="AlfiskoSkin/HorizontalSlider" name="Volume Slider" >
-                        <Property name="Area" value="{{0.55,0},{0.4,0},{0.94,0},{0.4,32}}" />
-                    </Window>
-                    <Window type="Generic/LabelWithOutline" name="VolumeLabel" >
-                        <Property name="Area" value="{{0.05,0},{0.4,0},{0.35,0},{0.4,32}}" />
-                        <Property name="Text" value="Master Volume" />
-                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
-                        <Property name="HorzFormatting" value="LeftAligned" />
-                        <Property name="NormalTextColour" value="FFE1E4E8" />
                     </Window>
                     <Window type="SampleBrowserSkin/VerticalScrollbar" name="VerticalScrollbar" >
                         <AutoWindow namePath="__auto_incbtn__" >
@@ -144,13 +118,175 @@
                     </AutoWindow>
                 </AutoWindow>
             </Window>
-            <Window type="AlfiskoSkin/Button" name="Close" >
-                <Property name="Area" value="{{0.74,1},{0.92,0},{0.94,1},{0.986,0}}" />
-                <Property name="Text" value="Close" />
+            <Window type="SampleBrowserSkin/ScrollablePane" name="AudioSettingsPane" >
+                <Property name="Area" value="{{0.260417,0},{0,0},{0.999997,0},{0.9,0}}" />
+                <Property name="Text" value=" Settings" />
+                <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                <Property name="Visible" value="false" />
+                <Property name="AlwaysOnTop" value="true" />
+                <Property name="ContentArea" value="l:0 t:-1 r:884.5 b:222" />
+                <AutoWindow namePath="__auto_container__" >
+                    <Property name="ContentArea" value="l:0 t:-1 r:884.5 b:222" />
+                    <Property name="AutoRenderingSurface" value="true" />
+                    <Property name="MouseInputPropagationEnabled" value="true" />
+                    <Window type="Generic/LabelWithOutline" name="FullscreenLabel" >
+                        <Property name="Area" value="{{0.05,0},{0.2,-4},{0.35,0},{0.2,28}}" />
+                        <Property name="Text" value="SFX Volume" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                        <Property name="HorzFormatting" value="LeftAligned" />
+                        <Property name="NormalTextColour" value="FFE1E4E8" />
+                    </Window>
+                    <Window type="Generic/LabelWithOutline" name="ResolutionLabel" >
+                        <Property name="Area" value="{{0.05,0},{0.1,0},{0.35,0},{0.1,32}}" />
+                        <Property name="Text" value="Master  Volume" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                        <Property name="HorzFormatting" value="LeftAligned" />
+                        <Property name="NormalTextColour" value="FFE1E4E8" />
+                    </Window>
+                    <Window type="Generic/LabelWithOutline" name="VideoSettingsCaption" >
+                        <Property name="Area" value="{{0,0},{0,-1},{0.9,0},{0,30}}" />
+                        <Property name="Text" value="Audio Settings" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                        <Property name="DragDropTarget" value="false" />
+                        <Property name="VertFormatting" value="TopAligned" />
+                        <Property name="NormalTextColour" value="FFE1E4E8" />
+                        <Property name="HorizontalAlignment" value="Centre" />
+                        <Property name="AutoRenderingSurface" value="true" />
+                    </Window>
+                    <Window type="Generic/LabelWithOutline" name="VolumeLabel" >
+                        <Property name="Area" value="{{0.05,-1},{0.3,0},{0.35,-1},{0.3,32}}" />
+                        <Property name="Text" value="Music Volume" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                        <Property name="HorzFormatting" value="LeftAligned" />
+                        <Property name="NormalTextColour" value="FFE1E4E8" />
+                    </Window>
+                    <Window type="SampleBrowserSkin/VerticalScrollbar" name="VerticalScrollbar" >
+                        <AutoWindow namePath="__auto_incbtn__" >
+                            <Property name="Visible" value="false" />
+                        </AutoWindow>
+                        <AutoWindow namePath="__auto_decbtn__" >
+                            <Property name="Visible" value="false" />
+                        </AutoWindow>
+                    </Window>
+                    <Window type="AlfiskoSkin/HorizontalSlider" name="MasterVolSlider" >
+                        <Property name="Area" value="{{0.55,0},{0.1,0},{0.94,0},{0.1,32}}" />
+                    </Window>
+                    <Window type="AlfiskoSkin/HorizontalSlider" name="SFXVolSlider" >
+                        <Property name="Area" value="{{0.55,0},{0.2,0},{0.94,0},{0.2,32}}" />
+                    </Window>
+                    <Window type="AlfiskoSkin/HorizontalSlider" name="MusicVolSlider" >
+                        <Property name="Area" value="{{0.55,0},{0.3,0},{0.94,0},{0.3,32}}" />
+                    </Window>
+                </AutoWindow>
+                <AutoWindow namePath="__auto_hscrollbar__" >
+                    <Property name="AlwaysOnTop" value="true" />
+                    <AutoWindow namePath="__auto_incbtn__" >
+                        <Property name="Visible" value="false" />
+                    </AutoWindow>
+                    <AutoWindow namePath="__auto_decbtn__" >
+                        <Property name="Visible" value="false" />
+                    </AutoWindow>
+                </AutoWindow>
+                <AutoWindow namePath="__auto_vscrollbar__" >
+                    <Property name="AlwaysOnTop" value="true" />
+                    <AutoWindow namePath="__auto_incbtn__" >
+                        <Property name="Visible" value="false" />
+                    </AutoWindow>
+                    <AutoWindow namePath="__auto_decbtn__" >
+                        <Property name="Visible" value="false" />
+                    </AutoWindow>
+                </AutoWindow>
             </Window>
-            <Window type="AlfiskoSkin/Button" name="Apply" >
-                <Property name="Area" value="{{0.5,0},{0.92,0},{0.7,0},{0.986,0}}" />
-                <Property name="Text" value="Apply" />
+            <Window type="SampleBrowserSkin/ScrollablePane" name="ControlsPane" >
+                <Property name="Area" value="{{0.260417,0},{0,0},{0.999997,0},{0.9,0}}" />
+                <Property name="Text" value=" Settings" />
+                <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                <Property name="AlwaysOnTop" value="true" />
+                <Property name="ContentArea" value="l:0 t:0 r:809 b:101" />
+                <AutoWindow namePath="__auto_container__" >
+                    <Property name="ContentArea" value="l:0 t:0 r:809 b:101" />
+                    <Property name="AutoRenderingSurface" value="true" />
+                    <Property name="MouseInputPropagationEnabled" value="true" />
+                    <Window type="Generic/LabelWithOutline" name="FullscreenLabel" >
+                        <Property name="Area" value="{{0.05,0},{0.1,0},{0.35,0},{0.1,32}}" />
+                        <Property name="Text" value="Move Up" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                        <Property name="HorzFormatting" value="LeftAligned" />
+                        <Property name="NormalTextColour" value="FFE1E4E8" />
+                    </Window>
+                    <Window type="AlfiskoSkin/Editbox" name="FullscreenValue" >
+                        <Property name="Area" value="{{0.62,-1},{0.1,0},{0.87,-1},{0.16,0}}" />
+                        <Property name="Text" value="UPARROW" />
+                        <Property name="MaxTextLength" value="5" />
+                        <Property name="TextFormatting" value="CentreAligned" />
+                    </Window>
+                </AutoWindow>
+                <AutoWindow namePath="__auto_hscrollbar__" >
+                    <Property name="AlwaysOnTop" value="true" />
+                    <AutoWindow namePath="__auto_incbtn__" >
+                        <Property name="Visible" value="false" />
+                    </AutoWindow>
+                    <AutoWindow namePath="__auto_decbtn__" >
+                        <Property name="Visible" value="false" />
+                    </AutoWindow>
+                </AutoWindow>
+                <AutoWindow namePath="__auto_vscrollbar__" >
+                    <Property name="AlwaysOnTop" value="true" />
+                    <AutoWindow namePath="__auto_incbtn__" >
+                        <Property name="Visible" value="false" />
+                    </AutoWindow>
+                    <AutoWindow namePath="__auto_decbtn__" >
+                        <Property name="Visible" value="false" />
+                    </AutoWindow>
+                </AutoWindow>
+            </Window>
+        </Window>
+        <Window type="Generic/Image" name="Sidebar" >
+            <Property name="Area" value="{{0,0},{0,1},{0.260417,0},{1,1}}" />
+            <Property name="Alpha" value="0.9" />
+            <Property name="Image" value="BombermanSettings/SidebarBck" />
+            <Property name="MaxSize" value="{{1,0},{1,0}}" />
+            <Property name="AlwaysOnTop" value="true" />
+            <Property name="InheritsAlpha" value="false" />
+            <Property name="MousePassThroughEnabled" value="true" />
+            <Window type="Bomberman/ImageButton" name="VideoSettingsBtn" >
+                <Property name="Area" value="{{0.01,0},{0.02,0},{0.99,0},{0.095,0}}" />
+                <Property name="HoverImage" value="BombermanSettings/SideBarBtnHover" />
+                <Property name="NormalImage" value="BombermanSettings/SideBarBtn" />
+                <Property name="PushedImage" value="BombermanSettings/SideBarBtnPush" />
+                <Window type="Generic/Label" name="Label" >
+                    <Property name="Area" value="{{0,0},{0,0},{1,0},{1,0}}" />
+                    <Property name="Font" value="Jura-18" />
+                    <Property name="Text" value="Video Settings" />
+                    <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    <Property name="MousePassThroughEnabled" value="true" />
+                </Window>
+            </Window>
+            <Window type="Bomberman/ImageButton" name="ControlsBtn" >
+                <Property name="Area" value="{{0.01,0},{0.18,0},{0.99,0},{0.255,0}}" />
+                <Property name="HoverImage" value="BombermanSettings/SideBarBtnHover" />
+                <Property name="NormalImage" value="BombermanSettings/SideBarBtn" />
+                <Property name="PushedImage" value="BombermanSettings/SideBarBtnPush" />
+                <Window type="Generic/Label" name="Label" >
+                    <Property name="Area" value="{{0,0},{0,0},{1,0},{1,0}}" />
+                    <Property name="Font" value="Jura-18" />
+                    <Property name="Text" value="Controls" />
+                    <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    <Property name="MousePassThroughEnabled" value="true" />
+                </Window>
+            </Window>
+            <Window type="Bomberman/ImageButton" name="AudioSettingsBtn" >
+                <Property name="Area" value="{{0.01,0},{0.1,0},{0.99,0},{0.175,0}}" />
+                <Property name="HoverImage" value="BombermanSettings/SideBarBtnHover" />
+                <Property name="NormalImage" value="BombermanSettings/SideBarBtn" />
+                <Property name="PushedImage" value="BombermanSettings/SideBarBtnPush" />
+                <Window type="Generic/Label" name="Label" >
+                    <Property name="Area" value="{{0,0},{0,0},{1,0},{1,0}}" />
+                    <Property name="Font" value="Jura-18" />
+                    <Property name="Text" value="Audio Settings" />
+                    <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                    <Property name="MousePassThroughEnabled" value="true" />
+                </Window>
             </Window>
         </Window>
     </Window>

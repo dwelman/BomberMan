@@ -7,6 +7,7 @@
 
 struct MenuFunction;
 struct Setting;
+class PaneGroup;
 
 struct KeyBindings
 {
@@ -24,11 +25,15 @@ struct GUICrate
 	bool									*mustQuit;
 	bool									displayChanged;
 	KeyBindings								keybindings;
+
 	//Event Functions
 	std::vector<MenuFunction*>				MenuFunctions;
+
 	//Layouts
 	CEGUI::Window							*main;
 	CEGUI::Window							*settings;
+	PaneGroup								*settingPanes;
+
 	//Setting States
 	SettingsState							activeSettings;
 	SettingsState							pendingSettings;
@@ -37,6 +42,24 @@ struct GUICrate
 	~GUICrate();
 };
 
+class PaneGroup
+{
+
+private:
+	std::string										active;
+	std::map<std::string, CEGUI::NamedElement*>		panes;
+
+public:
+	PaneGroup();
+	PaneGroup(PaneGroup &src);
+	~PaneGroup();
+
+	PaneGroup							&operator=(PaneGroup const &c);
+	void								Add(CEGUI::NamedElement *elem, std::string const & name);
+	std::string const					&GetActiveName();
+	void								SetActive(std::string const & name);
+
+};
 
 
 typedef	bool(*ccev)(const CEGUI::EventArgs &e, CEGUI::NamedElement *_element , GUICrate &var);
@@ -103,3 +126,9 @@ bool fullscreenNextClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_elemen
 bool fullscreenPreviousClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);
 
 bool applyClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);
+
+bool showVideoSettingsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);
+
+bool showAudioSettingsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);
+
+bool showControlsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);

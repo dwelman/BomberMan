@@ -57,6 +57,7 @@ GUICrate::GUICrate()
 	loadSettingsFromDefaultConfig(this->activeSettings);
 	keybindings.actionToKeyCode = new std::map<ePlayerAction, SDL_Keycode>;
 	keybindings.textToKeyCode = new  std::map<std::string, SDL_Keycode>;
+	settingPanes = new PaneGroup();
 	pendingSettings = activeSettings;
 }
 
@@ -64,6 +65,7 @@ GUICrate::~GUICrate()
 {
 	delete keybindings.actionToKeyCode;
 	delete keybindings.textToKeyCode;
+	delete settingPanes;
 }
 
 inline void	  setupResourceGroups()
@@ -92,8 +94,6 @@ void		loadResources(GUICrate &crate)
 	CEGUI::SchemeManager::getSingleton().createFromFile("SampleBrowser.scheme");
 	CEGUI::SchemeManager::getSingleton().createFromFile("Bomberman.scheme");
 
-
-
 	//Setup Defaults
 	CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("AlfiskoSkin/MouseArrow");
 	CEGUI::System::getSingleton().getDefaultGUIContext().setDefaultFont("Jura-18");
@@ -121,6 +121,7 @@ void        initValues(GUICrate &crate)
     resolutionValue->setProperty("Text", g_cfg["xres"].to_str() + "x" + g_cfg["yres"].to_str());
     CEGUI::NamedElement *fullscreenValue = crate.settings->getChildElementRecursive("FullscreenValue");
     fullscreenValue->setProperty("Text", case_ins_cmp("yes", g_cfg["fullscreen"].to_str()) ? "Yes" : "No");
+
 }
 
 void		destroyGUI(GUICrate &crate)
