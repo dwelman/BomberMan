@@ -3,7 +3,8 @@
 <Font filename="Caveman.font" />
 <Font filename="FasterOne.font" />
     <Imageset filename="Bomberman_1.imageset" />
-	    <LookNFeel filename="Bomberman.looknfeel" />
+	<Imageset filename="BombermanSettings.imageset" />
+	<LookNFeel filename="Bomberman.looknfeel" />
     <WindowRendererSet filename="CEGUICoreWindowRendererSet" />
 	
 

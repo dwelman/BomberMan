@@ -145,6 +145,7 @@ set(SOURCE
 		${TARGSRC}AudioManager.cpp
 		${TARGSRC}Keybindings.cpp
 		${TARGSRC}AudioThread.cpp
+		${TARGSRC}PaneGroup.cpp
 		)
 
 set(COMPSRC "targsrc/components/")

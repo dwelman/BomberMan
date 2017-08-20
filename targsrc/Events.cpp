@@ -17,6 +17,18 @@ void		setupEvents(GUICrate &crate)
 	crate.MenuFunctions.push_back(new MenuFunction(exit, CEGUI::PushButton::EventClicked, &setExit, crate));
 
 	//Settings
+	CEGUI::NamedElement *videoSettingsBtn = crate.settings->getChildElementRecursive("VideoSettingsBtn");
+	crate.MenuFunctions.push_back(new MenuFunction(videoSettingsBtn, CEGUI::PushButton::EventClicked, &showVideoSettingsPane, crate));
+	crate.settingPanes->Add(crate.settings->getChildElementRecursive("VideoSettingsPane"), "VideoSettings");
+
+	CEGUI::NamedElement *audioSettingsBtn = crate.settings->getChildElementRecursive("AudioSettingsBtn");
+	crate.MenuFunctions.push_back(new MenuFunction(audioSettingsBtn, CEGUI::PushButton::EventClicked, &showAudioSettingsPane, crate));
+	crate.settingPanes->Add(crate.settings->getChildElementRecursive("AudioSettingsPane"), "AudioSettings");
+
+	CEGUI::NamedElement *controlsBtn = crate.settings->getChildElementRecursive("ControlsBtn");
+	crate.MenuFunctions.push_back(new MenuFunction(controlsBtn, CEGUI::PushButton::EventClicked, &showControlsPane, crate));
+	crate.settingPanes->Add(crate.settings->getChildElementRecursive("ControlsPane"), "Controls");
+
 	CEGUI::NamedElement *closeSettings = crate.settings->getChildElementRecursive("Close");
 	crate.MenuFunctions.push_back(new MenuFunction(closeSettings, CEGUI::PushButton::EventClicked, &openMainMenu, crate));
 
@@ -139,10 +151,27 @@ bool applyClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICra
 			g_cfg["xres"] = xres;
 			g_cfg["yres"] = yres;
 			var.displayChanged = true;
-			var.settings->getChildElementRecursive("VidRestartNotice")->setProperty("Visible", "True");
 		}
 		var.activeSettings = var.pendingSettings;
 		g_cfg.saveConfig();
 	}
     return (true);
 };
+
+bool showVideoSettingsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
+{
+	var.settingPanes->SetActive("VideoSettings");
+	return (true);
+}
+
+bool showAudioSettingsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
+{
+	var.settingPanes->SetActive("AudioSettings");
+	return (true);
+}
+
+bool showControlsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
+{
+	var.settingPanes->SetActive("Controls");
+	return (true);
+}

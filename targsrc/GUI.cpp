@@ -57,6 +57,7 @@ GUICrate::GUICrate()
 	loadSettingsFromDefaultConfig(this->activeSettings);
 	keybindings.actionToKeyCode = new std::map<ePlayerAction, SDL_Keycode>;
 	keybindings.textToKeyCode = new  std::map<std::string, SDL_Keycode>;
+	settingPanes = new PaneGroup();
 	pendingSettings = activeSettings;
 }
 
@@ -64,6 +65,7 @@ GUICrate::~GUICrate()
 {
 	delete keybindings.actionToKeyCode;
 	delete keybindings.textToKeyCode;
+	delete settingPanes;
 }
 
 inline void	  setupResourceGroups()
@@ -92,8 +94,6 @@ void		loadResources(GUICrate &crate)
 	CEGUI::SchemeManager::getSingleton().createFromFile("SampleBrowser.scheme");
 	CEGUI::SchemeManager::getSingleton().createFromFile("Bomberman.scheme");
 
-
-
 	//Setup Defaults
 	CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("AlfiskoSkin/MouseArrow");
 	CEGUI::System::getSingleton().getDefaultGUIContext().setDefaultFont("Jura-18");
@@ -121,6 +121,7 @@ void        initValues(GUICrate &crate)
     resolutionValue->setProperty("Text", g_cfg["xres"].to_str() + "x" + g_cfg["yres"].to_str());
     CEGUI::NamedElement *fullscreenValue = crate.settings->getChildElementRecursive("FullscreenValue");
     fullscreenValue->setProperty("Text", case_ins_cmp("yes", g_cfg["fullscreen"].to_str()) ? "Yes" : "No");
+
 }
 
 void		destroyGUI(GUICrate &crate)
@@ -251,7 +252,7 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 	glGetIntegerv(GL_ACTIVE_TEXTURE, &activeID);
 	glActiveTexture(GL_TEXTURE0);
 	if (!manager.GetGameStarted()) //NEED TO FIGURE LIGHTS THE FUCK PIdasdasdads
-	 CEGUI::System::getSingleton().renderAllGUIContexts();
+        CEGUI::System::getSingleton().renderAllGUIContexts();
 
 	glActiveTexture(activeID);
 	glEnable(GL_DEPTH_TEST);
@@ -270,7 +271,7 @@ void		reloadDisplayMode(SDL_Window *win, GUICrate &crate)
 	dsp.h = g_cfg["yres"].to_int();
 
 	SDL_SetWindowSize(win, g_cfg["xres"].to_int(), g_cfg["yres"].to_int());
-	SDL_SetWindowDisplayMode(win, &dsp);
+	//SDL_SetWindowDisplayMode(win, &dsp);
 	CEGUI::Size<float> NewWindowSize((float)g_cfg["xres"].to_int(), (float)g_cfg["yres"].to_int());
 	CEGUI::System::getSingleton().notifyDisplaySizeChanged(NewWindowSize);
 	CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().notifyDisplaySizeChanged(NewWindowSize);

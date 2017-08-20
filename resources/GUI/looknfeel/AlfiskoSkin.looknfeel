@@ -64,6 +64,7 @@
                 <HorzFormatProperty name="HorzLabelFormatting"/>
             </TextComponent>
         </ImagerySection>
+		
         <ImagerySection name="normal">
             <FrameComponent>
                 <Image component="TopLeftCorner" name="AlfiskoSkin/ButtonNormalTL"/>
