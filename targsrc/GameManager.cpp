@@ -6,15 +6,24 @@
 
 GameManager::GameManager()
 {
+	m_currentEntityID = 0;
 	m_currentComponentID = 0;
     m_gameStarted = false;
     m_playerMoveSpeed = 4.5f;
     m_playerBombAmount = 1;
-    m_explosionSize = 1;
+    m_explosionSize = 0;
     m_lives = 3;
     m_score = 0;
     createEntityAtPosition("player", Vec3(0, 0, 0));
     srand(time(NULL));
+
+    /*for (float x = 2; x < 25; x++)
+    {
+        for (int z = 2; z < 48; z++)
+        {
+            createEntityAtPosition("indestructible_wall", Vec3(x, z, 0));
+        }
+    }*/
 }
 
 GameManager::GameManager(GameManager const & gm)
@@ -276,7 +285,7 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
     {
         return ;
     }
-    m_entities.push_back(Entity(entity));
+    m_entities.emplace(std::make_pair(m_currentEntityID++, Entity(entity)));
 }
 
 void GameManager::deleteEntity(std::size_t ID)
@@ -296,7 +305,11 @@ void GameManager::deleteEntity(std::size_t ID)
                 m_components.erase(iter);
             }
         }
-        m_entities.erase(m_entities.begin() + ID);
+		auto iter = m_entities.find(ID);
+		if (iter != m_entities.end())
+		{
+			m_entities.erase(iter);
+		}
     }
     catch (std::exception &e)
     {
@@ -307,8 +320,9 @@ void GameManager::deleteEntity(std::size_t ID)
 bool 	GameManager::Update()
 {
 	m_deltaTime = Clock::Instance().GetDeltaTime();
-	for (std::size_t i = 0; i < m_entities.size(); i++)
+	for (auto iter = m_entities.begin(); iter != m_entities.end(); iter++)
 	{
+		std::size_t i = iter->first;
         if (!m_entities[i].GetCanTick())
         {
             continue ;
@@ -426,16 +440,16 @@ bool 	GameManager::Update()
                     {
                         Explosion *explosion;
                         createEntityAtPosition("explosion", position->GetPosition());
-                        explosion = dynamic_cast<Explosion *>(m_components[m_entities.back().GetComponentOfType(EXPLOSION)]);
+                        explosion = dynamic_cast<Explosion *>(m_components[m_entities[m_currentEntityID - 1].GetComponentOfType(EXPLOSION)]);
                         explosion->SetDirection(Vec3(1, 0, 0));
                         createEntityAtPosition("explosion", position->GetPosition());
-                        explosion = dynamic_cast<Explosion *>(m_components[m_entities.back().GetComponentOfType(EXPLOSION)]);
+                        explosion = dynamic_cast<Explosion *>(m_components[m_entities[m_currentEntityID - 1].GetComponentOfType(EXPLOSION)]);
                         explosion->SetDirection(Vec3(-1, 0, 0));
                         createEntityAtPosition("explosion", position->GetPosition());
-                        explosion = dynamic_cast<Explosion *>(m_components[m_entities.back().GetComponentOfType(EXPLOSION)]);
+                        explosion = dynamic_cast<Explosion *>(m_components[m_entities[m_currentEntityID - 1].GetComponentOfType(EXPLOSION)]);
                         explosion->SetDirection(Vec3(0, 1, 0));
                         createEntityAtPosition("explosion", position->GetPosition());
-                        explosion = dynamic_cast<Explosion *>(m_components[m_entities.back().GetComponentOfType(EXPLOSION)]);
+                        explosion = dynamic_cast<Explosion *>(m_components[m_entities[m_currentEntityID - 1].GetComponentOfType(EXPLOSION)]);
                         explosion->SetDirection(Vec3(0, -1, 0));
                         m_playerBombAmount++;
                         m_toBeDeleted.push_back(i);
@@ -462,15 +476,15 @@ bool 	GameManager::Update()
                     {
                         Vec3 newPos = position->GetPosition() + explosion->GetDirection();
                         createEntityAtPosition("explosion", newPos);
-                        Explosion *newExplosion = dynamic_cast<Explosion *>(m_components[m_entities.back().GetComponentOfType(EXPLOSION)]);
+                        Explosion *newExplosion = dynamic_cast<Explosion *>(m_components[m_entities[m_currentEntityID - 1].GetComponentOfType(EXPLOSION)]);
                         newExplosion->SetChildExplosions(explosion->GetChildExplosions() - 1);
                         explosion->SetChildExplosions(0);
                     }
-                    //explosion->SetDuration(explosion->GetDuration() - Clock::Instance().GetDeltaTime());
-                    //if (explosion->GetDuration() <= 0)
-                    //{
+                    explosion->SetDuration(explosion->GetDuration() - Clock::Instance().GetDeltaTime());
+                    if (explosion->GetDuration() <= 0)
+                    {
                         m_toBeDeleted.push_back(i);
-                    //}
+                    }
                 }
                 catch (std::exception &e)
                 {
@@ -483,7 +497,7 @@ bool 	GameManager::Update()
 	}
     for (std::size_t i = 0; i < m_toBeDeleted.size(); i++)
     {
-        deleteEntity(i);
+        deleteEntity(m_toBeDeleted[i]);
     }
     m_toBeDeleted.clear();
     return (false);

@@ -23,9 +23,10 @@ class RenderEngine;
 class GameManager
 {
 private:
-	std::vector<Entity>			            m_entities;
+	std::map<std::size_t, Entity>			m_entities;
 	std::map<std::size_t, BaseComponent*>	m_components;
 	std::size_t 				            m_currentComponentID;
+	std::size_t								m_currentEntityID;
     double                                  m_deltaTime;
     std::vector<std::size_t>                m_toBeDeleted;
     bool                                    m_gameStarted;
