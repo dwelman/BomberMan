@@ -50,7 +50,7 @@ void RenderEngine::handleResize(int w, int h)
     glMatrixMode(GL_PROJECTION);
 
     glLoadIdentity();
-    gluPerspective(45.0, static_cast<double>(w) / static_cast<double>(h), 1.0, 200.0);
+    //gluPerspective(45.0, static_cast<double>(w) / static_cast<double>(h), 1.0, 200.0);
 }
 
 void RenderEngine::setViewMatrix(glm::mat4 viewMatrix)
@@ -536,7 +536,7 @@ void RenderEngine::computeTangentBasis(
 
 void RenderEngine::initGlew()
 {
-    for (int i = 0; i < 15; i++)
+    for (int i = 0; i < 3; i++)
     {
         renderData *obj = new renderData;
         rdata.push_back(*obj);
@@ -713,45 +713,104 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 
     glEnable(GL_MULTISAMPLE);
 
-    for (float x = 2; x < 25; x++) {
-        for (int z = 2; z < 45; z++) {
-            glm::mat4 ModelMatrix = glm::mat4(1.0);
-            ModelMatrix = glm::translate(ModelMatrix, glm::vec3(((x * 2) - 4), 0.0f, ((z * 2) - 4)));
-            glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+	int i = 0;
 
-            // Send our transformation to the currently bound shader,
-            // in the "MVP" uniform
-            glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP[0][0]);
-            glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+	for (int l = 0; l < gameObjects.size(); l++)
+	{
+		bool shouldDraw = false;
 
-            // 1rst attribute buffer : vertices
-            glEnableVertexAttribArray(0);
-            glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+		while (gameObjects[i].GetObjectType() != 1) {
+			l++;
+			i++;
+			if (i == gameObjects.size())
+				break;
+			//            if (gameObjects[i].GetObjectType() == 0) {
+			//                shouldDraw = true;
+			//            }
+		}
+		if (i >= gameObjects.size()) {
+			shouldDraw = false;
+		}
+		else
+			shouldDraw = true;
 
-            // 2nd attribute buffer : UVs
-            glEnableVertexAttribArray(1);
-            glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
-            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+		if (shouldDraw)
+		{
+			glm::mat4 ModelMatrix3 = glm::mat4(1.0);
+			ModelMatrix3 = glm::translate(ModelMatrix3, glm::vec3((gameObjects[i].GetPosition().GetX() * 2) - 4, gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) - 4));
+			ModelMatrix3 = glm::rotate(ModelMatrix3, gameObjects[i].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
+			glm::mat4 MVP3 = ProjectionMatrix * ViewMatrix * ModelMatrix3;
 
-            // 3rd attribute buffer : normals
-            glEnableVertexAttribArray(2);
-            glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
-            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+			glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP3[0][0]);
+			glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix3[0][0]);
 
-            glEnableVertexAttribArray(3);
-            glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
-            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+			glEnableVertexAttribArray(0);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
-            glEnableVertexAttribArray(4);
-            glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
-            glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+			glEnableVertexAttribArray(1);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
-            // Index buffer
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
-            glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void *) 0);
-        }
-    }
+			glEnableVertexAttribArray(2);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
+			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+
+			glEnableVertexAttribArray(3);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
+			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+
+			glEnableVertexAttribArray(4);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
+			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
+			glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void *)0);
+		}
+		i++;
+	}
+
+	i = 0;
+
+    //for (float x = 2; x < 25; x++) {
+    //    for (int z = 2; z < 45; z++) {
+    //        glm::mat4 ModelMatrix = glm::mat4(1.0);
+    //        ModelMatrix = glm::translate(ModelMatrix, glm::vec3(((x * 2) - 4), 0.0f, ((z * 2) - 4)));
+    //        glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+
+    //        // Send our transformation to the currently bound shader,
+    //        // in the "MVP" uniform
+    //        glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP[0][0]);
+    //        glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+
+    //        // 1rst attribute buffer : vertices
+    //        glEnableVertexAttribArray(0);
+    //        glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
+    //        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+    //        // 2nd attribute buffer : UVs
+    //        glEnableVertexAttribArray(1);
+    //        glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
+    //        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+    //        // 3rd attribute buffer : normals
+    //        glEnableVertexAttribArray(2);
+    //        glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
+    //        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+    //        glEnableVertexAttribArray(3);
+    //        glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
+    //        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+    //        glEnableVertexAttribArray(4);
+    //        glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
+    //        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void *) 0);
+
+    //        // Index buffer
+    //        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
+    //        glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void *) 0);
+    //    }
+    //}
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[1]);
@@ -765,7 +824,64 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
     glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[3]);
     glUniform1i(rdata[0].SpecularTextureID, 3);
 
-    for (float x = 2; x < 14; x++) {
+	for (int l = 0; l < gameObjects.size(); l++)
+	{
+		bool shouldDraw = false;
+
+		while (gameObjects[i].GetObjectType() != 0) {
+			l++;
+			i++;
+			if (i == gameObjects.size())
+				break;
+			//            if (gameObjects[i].GetObjectType() == 0) {
+			//                shouldDraw = true;
+			//            }
+		}
+		if (i >= gameObjects.size()) {
+			shouldDraw = false;
+		}
+		else
+			shouldDraw = true;
+
+		if (shouldDraw)
+		{
+			glm::mat4 ModelMatrix3 = glm::mat4(1.0);
+			ModelMatrix3 = glm::translate(ModelMatrix3, glm::vec3((gameObjects[i].GetPosition().GetX() * 2) - 4, gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) - 4));
+			ModelMatrix3 = glm::rotate(ModelMatrix3, gameObjects[i].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
+			glm::mat4 MVP3 = ProjectionMatrix * ViewMatrix * ModelMatrix3;
+
+			glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP3[0][0]);
+			glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix3[0][0]);
+
+			glEnableVertexAttribArray(0);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+
+			glEnableVertexAttribArray(1);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
+
+			glEnableVertexAttribArray(2);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
+			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+
+			glEnableVertexAttribArray(3);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
+			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+
+			glEnableVertexAttribArray(4);
+			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
+			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
+			glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void *)0);
+		}
+		i++;
+	}
+
+	i = 0;
+
+    /*for (float x = 2; x < 14; x++) {
         for (int z = 2; z < 24; z++) {
             glm::mat4 ModelMatrix2 = glm::mat4(1.0);
             ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3((((x * 2) * 2) - 8), 2.0f, (((z * 2) * 2) - 8)));
@@ -797,7 +913,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
             glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void *) 0);
         }
-    }
+    }*/
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE2);
@@ -823,63 +939,61 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 //    gameObjects[1].SetObjectType(BOMB_OT);
 //    gameObjects[1].SetPosition(Vec3(3, 1, 5));
 
-    int i = 0;
-
-    for (int l = 0; l < gameObjects.size(); l++)
-    {
-        bool shouldDraw = false;
-
-        while (gameObjects[i].GetObjectType() != 0) {
-			l++;
-            i++;
-			if (i == gameObjects.size())
-				break;
-//            if (gameObjects[i].GetObjectType() == 0) {
-//                shouldDraw = true;
-//            }
-        }
-        if (i >= gameObjects.size()) {
-            shouldDraw = false;
-        } else
-            shouldDraw = true;
-
-		if (shouldDraw)
-		{
-			glm::mat4 ModelMatrix3 = glm::mat4(1.0);
-			ModelMatrix3 = glm::translate(ModelMatrix3, glm::vec3(gameObjects[i].GetPosition().GetX() * 2, gameObjects[i].GetPosition().GetY() * 2, gameObjects[i].GetPosition().GetZ() * 2));
-			ModelMatrix3 = glm::rotate(ModelMatrix3, gameObjects[i].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
-			glm::mat4 MVP3 = ProjectionMatrix * ViewMatrix * ModelMatrix3;
-
-			glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP3[0][0]);
-			glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix3[0][0]);
-
-			glEnableVertexAttribArray(0);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
-
-			glEnableVertexAttribArray(1);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
-			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
-
-			glEnableVertexAttribArray(2);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
-			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
-
-			glEnableVertexAttribArray(3);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
-			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
-
-			glEnableVertexAttribArray(4);
-			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
-			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
-
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
-			glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void *)0);
-		}
-        i++;
-    }
-
-    i = 0;
+//    for (int l = 0; l < gameObjects.size(); l++)
+//    {
+//        bool shouldDraw = false;
+//
+//        while (gameObjects[i].GetObjectType() != 0) {
+//			l++;
+//            i++;
+//			if (i == gameObjects.size())
+//				break;
+////            if (gameObjects[i].GetObjectType() == 0) {
+////                shouldDraw = true;
+////            }
+//        }
+//        if (i >= gameObjects.size()) {
+//            shouldDraw = false;
+//        } else
+//            shouldDraw = true;
+//
+//		if (shouldDraw)
+//		{
+//			glm::mat4 ModelMatrix3 = glm::mat4(1.0);
+//			ModelMatrix3 = glm::translate(ModelMatrix3, glm::vec3(gameObjects[i].GetPosition().GetX() * 2, gameObjects[i].GetPosition().GetY() * 2, gameObjects[i].GetPosition().GetZ() * 2));
+//			ModelMatrix3 = glm::rotate(ModelMatrix3, gameObjects[i].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
+//			glm::mat4 MVP3 = ProjectionMatrix * ViewMatrix * ModelMatrix3;
+//
+//			glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP3[0][0]);
+//			glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix3[0][0]);
+//
+//			glEnableVertexAttribArray(0);
+//			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].VertexBuffer);
+//			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+//
+//			glEnableVertexAttribArray(1);
+//			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].UVBuffer);
+//			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
+//
+//			glEnableVertexAttribArray(2);
+//			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].NormalBuffer);
+//			glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+//
+//			glEnableVertexAttribArray(3);
+//			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].TangentBuffer);
+//			glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+//
+//			glEnableVertexAttribArray(4);
+//			glBindBuffer(GL_ARRAY_BUFFER, rdata[0].BitangentBuffer);
+//			glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+//
+//			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[0].ElementBuffer);
+//			glDrawElements(GL_TRIANGLES, rdata[0].Indices.size(), GL_UNSIGNED_SHORT, (void *)0);
+//		}
+//        i++;
+//    }
+//
+//    i = 0;
 
     glDisable(GL_BLEND);
     glEnable(GL_CULL_FACE);
@@ -994,7 +1108,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
                 scale += 0.05f;
             else
                 scale -= 0.05f;
-            std::cout << scale << std::endl;
+            //std::cout << scale << std::endl;
 			glm::mat4 ModelMatrix2 = glm::mat4(1.0);
 			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) + 1, gameObjects[i].GetPosition().GetX() * 2));
 			ModelMatrix2 = glm::rotate(ModelMatrix2, gameObjects[i].GetDirection() * 1.575f, glm::vec3(0, 1, 0));

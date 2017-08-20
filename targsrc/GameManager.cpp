@@ -17,11 +17,21 @@ GameManager::GameManager()
 	createEntityAtPosition("player", Vec3(0, 0, 0));
 	srand(time(NULL));
 
+	//This is way too expensive, slows down game to an unplayable state
+
 	/*for (float x = 2; x < 25; x++)
 	{
-	for (int z = 2; z < 48; z++)
+	for (int z = 2; z < 45; z++)
 	{
-	createEntityAtPosition("indestructible_wall", Vec3(x, z, 0));
+	createEntityAtPosition("indestructible_wall", Vec3(x, 0.0f, z));
+	}
+	}
+
+	for (float x = 2; x < 26; x += 2)
+	{
+	for (int z = 2; z < 46; z += 2)
+	{
+	createEntityAtPosition("indestructible_wall", Vec3(x, 1.0f,z));
 	}
 	}*/
 }
