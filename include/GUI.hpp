@@ -9,6 +9,14 @@ struct MenuFunction;
 struct Setting;
 class PaneGroup;
 
+struct KeyBindChange
+{
+	std::string		cfgKey;
+	std::string		cfgVal;
+	ePlayerAction	action;
+	SDL_Keycode		key;
+};
+
 struct KeyBindings
 {
 	std::map<ePlayerAction, SDL_Keycode >   *actionToKeyCode;
@@ -18,9 +26,10 @@ struct KeyBindings
 	bool 									catchNext;
 	ePlayerAction							actionToMap;
 	std::string								actionToMapKey;
-	std::vector<std::string>				keyMapChanges;
-	std::vector<std::string>				keyMapVals;
-	std::vector<ePlayerAction>				keyMapAction;
+	std::vector<KeyBindChange*>				keyBindChanges;
+	//std::vector<std::string>				keyMapChanges;
+	//std::vector<std::string>				keyMapVals;
+	//std::vector<ePlayerAction>				keyMapAction;
 
 };
 
@@ -97,6 +106,8 @@ struct MenuFunction
 
 double  initGui(SDL_Window *window, GUICrate &crate);
 
+void    initMenuValues(GUICrate &crate);
+
 void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiLastTimePulse, bool &must_quit, GUICrate &crate);
 
 void	initializeKeyMap();
@@ -117,7 +128,7 @@ void	reloadDisplayMode(SDL_Window *win, GUICrate &crate);
 
 void	captureWindowEvents(SDL_Event &e, bool & must_quit);
 
-void       SetupKeybindings (KeyBindings &keyBindings);
+void    SetupKeybindings (KeyBindings &keyBindings);
 
 //Events
 

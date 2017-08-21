@@ -158,14 +158,17 @@ bool applyClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICra
 			var.displayChanged = true;
 		}
 		var.activeSettings = var.pendingSettings;
-		auto vals = var.keybindings.keyMapVals.begin();
-		for  (auto it = var.keybindings.keyMapChanges.begin(); it != var.keybindings.keyMapChanges.end(); it++, vals++)
+	//	auto vals = var.keybindings.keyMapVals.begin();
+		KeyBindChange	*kb;
+		for  (int i = 0; i < var.keybindings.keyBindChanges.size(); i++)
 		{
-			g_cfg[(*it).c_str()] = *vals;
-			//var.keybindings.actionToKeyCode[var.keybindings.]
-			//(*keybindings.actionToKeyCode)[keybindings.actionToMap] = e.key.keysym.sym;
-			vals++;
+			kb = var.keybindings.keyBindChanges[i];
+			(*var.keybindings.actionToKeyCode)[kb->action] = kb->key;
+			g_cfg[kb->cfgKey] = kb->cfgVal;
+			delete (var.keybindings.keyBindChanges[i]);
+
 		}
+		var.keybindings.keyBindChanges.clear();
 		g_cfg.saveConfig();
 	}
     return (true);
@@ -174,18 +177,21 @@ bool applyClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICra
 bool showVideoSettingsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
 {
 	var.settingPanes->SetActive("VideoSettings");
+	initMenuValues(var);
 	return (true);
 }
 
 bool showAudioSettingsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
 {
 	var.settingPanes->SetActive("AudioSettings");
+	initMenuValues(var);
 	return (true);
 }
 
 bool showControlsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
 {
 	var.settingPanes->SetActive("Controls");
+	initMenuValues(var);
 	return (true);
 }
 
@@ -195,4 +201,5 @@ bool keyBindActiveUp(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, G
 	var.keybindings.actionToMap = P_MOVE_UP;
 	var.keybindings.actionToMapKey = "P_MOVE_UP";
 	var.pendingSettings.changed = true;
+	return (true);
 }

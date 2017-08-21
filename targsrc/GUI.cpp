@@ -115,7 +115,7 @@ void		loadResources(GUICrate &crate)
 
 //MenuFunction(CEGUI::NamedElement *_element, const CEGUI::String &name, ccev eventFunction, GUICrate	&var)
 
-void        initValues(GUICrate &crate)
+void        initMenuValues(GUICrate &crate)
 {
     //Video Settings
     CEGUI::NamedElement *resolutionValue = crate.settings->getChildElementRecursive("ResolutionValue");
@@ -152,7 +152,7 @@ double    initGui(SDL_Window *window, GUICrate &crate)
 		setupResourceGroups();
 		loadResources(crate);
 		setupEvents(crate);
-        initValues(crate);
+		initMenuValues(crate);
 		populateSettingSpinners(crate.activeSettings);
 	}
 	catch (...)
@@ -168,11 +168,18 @@ void	captureInputForSettingMenu(SDL_Event &e, KeyBindings &keybindings, CEGUI::W
 		//std::string configKey = (*keybindings.keyCodeToText)[e.key.keysym.sym];
 		if (g_cfg[keybindings.actionToMapKey].to_str().size() > 0)
 		{
-			CEGUI::NamedElement *moveUpVal = settings->getChildElementRecursive("MoveUpVal");
+			CEGUI::NamedElement		*moveUpVal = settings->getChildElementRecursive("MoveUpVal");
+			KeyBindChange			*kb = new KeyBindChange();
+
 			moveUpVal->setProperty("Text", (*keybindings.keyName)[e.key.keysym.sym]);
 			//g_cfg[keybindings.actionToMapKey] = (*keybindings.keyCodeToText)[e.key.keysym.sym];
-			keybindings.keyMapChanges.push_back(keybindings.actionToMapKey);
-			keybindings.keyMapVals.push_back((*keybindings.keyCodeToText)[e.key.keysym.sym]);
+			kb->action = keybindings.actionToMap;
+			kb->cfgKey = keybindings.actionToMapKey;
+			kb->cfgVal = (*keybindings.keyCodeToText)[e.key.keysym.sym];
+			kb->key = e.key.keysym.sym;
+			keybindings.keyBindChanges.push_back(kb);
+	//		keybindings.keyMapChanges.push_back(keybindings.actionToMapKey);
+	//		keybindings.keyMapVals.push_back((*keybindings.keyCodeToText)[e.key.keysym.sym]);
 
 		}
 		keybindings.actionToMapKey = P_NOACTION;
