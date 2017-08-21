@@ -9,10 +9,8 @@ void		setupEvents(GUICrate &crate)
 	//Main menu
 	CEGUI::NamedElement *start = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("StartGame");
 	crate.MenuFunctions.push_back(new MenuFunction(start, CEGUI::PushButton::EventClicked, &startGameMainMenu, crate));
-
 	CEGUI::NamedElement *settings = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("Settings");
 	crate.MenuFunctions.push_back(new MenuFunction(settings, CEGUI::PushButton::EventClicked, &openSettingsMenu, crate));
-
 	CEGUI::NamedElement *exit = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("Exit");
 	crate.MenuFunctions.push_back(new MenuFunction(exit, CEGUI::PushButton::EventClicked, &setExit, crate));
 
@@ -20,42 +18,36 @@ void		setupEvents(GUICrate &crate)
 	CEGUI::NamedElement *videoSettingsBtn = crate.settings->getChildElementRecursive("VideoSettingsBtn");
 	crate.MenuFunctions.push_back(new MenuFunction(videoSettingsBtn, CEGUI::PushButton::EventClicked, &showVideoSettingsPane, crate));
 	crate.settingPanes->Add(crate.settings->getChildElementRecursive("VideoSettingsPane"), "VideoSettings");
-
 	CEGUI::NamedElement *audioSettingsBtn = crate.settings->getChildElementRecursive("AudioSettingsBtn");
 	crate.MenuFunctions.push_back(new MenuFunction(audioSettingsBtn, CEGUI::PushButton::EventClicked, &showAudioSettingsPane, crate));
 	crate.settingPanes->Add(crate.settings->getChildElementRecursive("AudioSettingsPane"), "AudioSettings");
-
 	CEGUI::NamedElement *controlsBtn = crate.settings->getChildElementRecursive("ControlsBtn");
 	crate.MenuFunctions.push_back(new MenuFunction(controlsBtn, CEGUI::PushButton::EventClicked, &showControlsPane, crate));
 	crate.settingPanes->Add(crate.settings->getChildElementRecursive("ControlsPane"), "Controls");
-
 	CEGUI::NamedElement *closeSettings = crate.settings->getChildElementRecursive("Close");
 	crate.MenuFunctions.push_back(new MenuFunction(closeSettings, CEGUI::PushButton::EventClicked, &openMainMenu, crate));
-
 	CEGUI::NamedElement *resolutionNext = crate.settings->getChildElementRecursive("ResolutionNext");
 	crate.MenuFunctions.push_back(new MenuFunction(resolutionNext, CEGUI::PushButton::EventClicked, &resolutionNextClick, crate));
-
 	CEGUI::NamedElement *resolutionPrev = crate.settings->getChildElementRecursive("ResolutionPrevious");
 	crate.MenuFunctions.push_back(new MenuFunction(resolutionPrev, CEGUI::PushButton::EventClicked, &resolutionPreviousClick, crate));
-
 	CEGUI::NamedElement *fullscreenNext = crate.settings->getChildElementRecursive("FullscreenNext");
 	crate.MenuFunctions.push_back(new MenuFunction(fullscreenNext, CEGUI::PushButton::EventClicked, &fullscreenNextClick, crate));
-
 	CEGUI::NamedElement *fullscreenPrev = crate.settings->getChildElementRecursive("FullscreenPrevious");
 	crate.MenuFunctions.push_back(new MenuFunction(fullscreenPrev, CEGUI::PushButton::EventClicked, &fullscreenPreviousClick, crate));
-
 	CEGUI::NamedElement *apply = crate.settings->getChildElementRecursive("Apply");
 	crate.MenuFunctions.push_back(new MenuFunction(apply, CEGUI::PushButton::EventClicked, &applyClick, crate));
-
 	CEGUI::NamedElement *moveUpVal = crate.settings->getChildElementRecursive("MoveUpVal");
-	crate.MenuFunctions.push_back(new MenuFunction(moveUpVal, CEGUI::Editbox::EventTextSelectionChanged, &keyBindActiveUp, crate));
-	crate.MenuFunctions.push_back(new MenuFunction(moveUpVal, CEGUI::Editbox::EventCaretMoved, &keyBindActiveUp, crate));
-	crate.MenuFunctions.push_back(new MenuFunction(moveUpVal, CEGUI::Editbox::EventTextAccepted, &keyBindActiveUp, crate));
 	crate.MenuFunctions.push_back(new MenuFunction(moveUpVal, CEGUI::Editbox::EventKeyDown, &keyBindActiveUp, crate));
-
-
-
-
+	CEGUI::NamedElement *moveDownVal = crate.settings->getChildElementRecursive("MoveDownVal");
+	crate.MenuFunctions.push_back(new MenuFunction(moveDownVal, CEGUI::Editbox::EventKeyDown, &keyBindActiveDown, crate));
+	CEGUI::NamedElement *moveLeftVal = crate.settings->getChildElementRecursive("MoveLeftVal");
+	crate.MenuFunctions.push_back(new MenuFunction(moveLeftVal, CEGUI::Editbox::EventKeyDown, &keyBindActiveLeft, crate));
+	CEGUI::NamedElement *moveRightVal = crate.settings->getChildElementRecursive("MoveRightVal");
+	crate.MenuFunctions.push_back(new MenuFunction(moveRightVal, CEGUI::Editbox::EventKeyDown, &keyBindActiveRight, crate));
+	CEGUI::NamedElement *placeBombVal = crate.settings->getChildElementRecursive("PlaceBombVal");
+	crate.MenuFunctions.push_back(new MenuFunction(placeBombVal, CEGUI::Editbox::EventKeyDown, &keyBindActivePlaceBomb, crate));
+	CEGUI::NamedElement *pauseGameVal = crate.settings->getChildElementRecursive("PauseGameVal");
+	crate.MenuFunctions.push_back(new MenuFunction(pauseGameVal, CEGUI::Editbox::EventKeyDown, &keyBindActivePauseGame, crate));
 }
 
 void	switchLayouts(CEGUI::Window *from, CEGUI::Window *to)
@@ -158,7 +150,6 @@ bool applyClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICra
 			var.displayChanged = true;
 		}
 		var.activeSettings = var.pendingSettings;
-	//	auto vals = var.keybindings.keyMapVals.begin();
 		KeyBindChange	*kb;
 		for  (int i = 0; i < var.keybindings.keyBindChanges.size(); i++)
 		{
@@ -197,9 +188,60 @@ bool showControlsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, 
 
 bool keyBindActiveUp(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
 {
+	var.keybindings.boundElementName = "MoveUpVal";
 	var.keybindings.catchNext = true;
 	var.keybindings.actionToMap = P_MOVE_UP;
 	var.keybindings.actionToMapKey = "P_MOVE_UP";
+	var.pendingSettings.changed = true;
+	return (true);
+}
+
+bool keyBindActiveDown(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
+{
+	var.keybindings.boundElementName = "MoveDownVal";
+	var.keybindings.catchNext = true;
+	var.keybindings.actionToMap = P_MOVE_DOWN;
+	var.keybindings.actionToMapKey = "P_MOVE_DOWN";
+	var.pendingSettings.changed = true;
+	return (true);
+}
+
+bool keyBindActiveLeft(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
+{
+	var.keybindings.boundElementName = "MoveLeftVal";
+	var.keybindings.catchNext = true;
+	var.keybindings.actionToMap = P_MOVE_LEFT;
+	var.keybindings.actionToMapKey = "P_MOVE_LEFT";
+	var.pendingSettings.changed = true;
+	return (true);
+}
+
+bool keyBindActiveRight(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
+{
+	var.keybindings.boundElementName = "MoveRightVal";
+	var.keybindings.catchNext = true;
+	var.keybindings.actionToMap = P_MOVE_RIGHT;
+	var.keybindings.actionToMapKey = "P_MOVE_RIGHT";
+	var.pendingSettings.changed = true;
+	return (true);
+}
+
+bool keyBindActivePlaceBomb(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
+{
+	var.keybindings.boundElementName = "PlaceBombVal";
+	var.keybindings.catchNext = true;
+	var.keybindings.actionToMap = P_PLACE_BOMB;
+	var.keybindings.actionToMapKey = "P_PLACE_BOMB";
+	var.pendingSettings.changed = true;
+	return (true);
+}
+
+bool keyBindActivePauseGame(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
+{
+	var.keybindings.boundElementName = "PauseGameVal";
+	var.keybindings.catchNext = true;
+	var.keybindings.actionToMap = P_PAUSE_GAME;
+	var.keybindings.actionToMapKey = "P_PAUSE_GAME";
 	var.pendingSettings.changed = true;
 	return (true);
 }

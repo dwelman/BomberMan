@@ -202,13 +202,13 @@
                 <Property name="Text" value=" Settings" />
                 <Property name="MaxSize" value="{{1,0},{1,0}}" />
                 <Property name="AlwaysOnTop" value="true" />
-                <Property name="ContentArea" value="l:0 t:0 r:809 b:101" />
+                <Property name="ContentArea" value="l:0 t:-2 r:883.5 b:417" />
                 <AutoWindow namePath="__auto_container__" >
-                    <Property name="ContentArea" value="l:0 t:0 r:809 b:101" />
+                    <Property name="ContentArea" value="l:0 t:-2 r:883.5 b:417" />
                     <Property name="AutoRenderingSurface" value="true" />
                     <Property name="MouseInputPropagationEnabled" value="true" />
-                    <Window type="Generic/LabelWithOutline" name="FullscreenLabel" >
-                        <Property name="Area" value="{{0.05,0},{0.1,0},{0.35,0},{0.1,32}}" />
+                    <Window type="Generic/LabelWithOutline" name="MoveUpLabel" >
+                        <Property name="Area" value="{{0.05,-1},{0.1,0},{0.35,-1},{0.1,32}}" />
                         <Property name="Text" value="Move Up" />
                         <Property name="MaxSize" value="{{1,0},{1,0}}" />
                         <Property name="HorzFormatting" value="LeftAligned" />
@@ -216,9 +216,78 @@
                     </Window>
                     <Window type="AlfiskoSkin/Editbox" name="MoveUpVal" >
                         <Property name="Area" value="{{0.62,-1},{0.1,0},{0.87,-1},{0.16,0}}" />
-                        <Property name="Text" value="UPARROW" />
                         <Property name="MaxTextLength" value="5" />
                         <Property name="TextFormatting" value="CentreAligned" />
+                    </Window>
+                    <Window type="Generic/LabelWithOutline" name="MoveDownLabel" >
+                        <Property name="Area" value="{{0.05,-1},{0.2,0},{0.35,-1},{0.2,32}}" />
+                        <Property name="Text" value="Move Down" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                        <Property name="HorzFormatting" value="LeftAligned" />
+                        <Property name="NormalTextColour" value="FFE1E4E8" />
+                    </Window>
+                    <Window type="AlfiskoSkin/Editbox" name="MoveDownVal" >
+                        <Property name="Area" value="{{0.62,-1},{0.2,0},{0.87,-1},{0.26,0}}" />
+                        <Property name="MaxTextLength" value="5" />
+                        <Property name="TextFormatting" value="CentreAligned" />
+                    </Window>
+                    <Window type="Generic/LabelWithOutline" name="MoveLeftLabel" >
+                        <Property name="Area" value="{{0.05,-1},{0.3,0},{0.35,-1},{0.3,32}}" />
+                        <Property name="Text" value="Move Left" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                        <Property name="HorzFormatting" value="LeftAligned" />
+                        <Property name="NormalTextColour" value="FFE1E4E8" />
+                    </Window>
+                    <Window type="AlfiskoSkin/Editbox" name="MoveLeftVal" >
+                        <Property name="Area" value="{{0.62,-1},{0.3,0},{0.87,-1},{0.36,0}}" />
+                        <Property name="MaxTextLength" value="5" />
+                        <Property name="TextFormatting" value="CentreAligned" />
+                    </Window>
+                    <Window type="AlfiskoSkin/Editbox" name="MoveRightVal" >
+                        <Property name="Area" value="{{0.62,-1},{0.4,0},{0.87,-1},{0.46,0}}" />
+                        <Property name="MaxTextLength" value="5" />
+                        <Property name="TextFormatting" value="CentreAligned" />
+                    </Window>
+                    <Window type="Generic/LabelWithOutline" name="MoveRightLabel" >
+                        <Property name="Area" value="{{0.05,-1},{0.4,0},{0.35,-1},{0.4,32}}" />
+                        <Property name="Text" value="Move Right" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                        <Property name="HorzFormatting" value="LeftAligned" />
+                        <Property name="NormalTextColour" value="FFE1E4E8" />
+                    </Window>
+                    <Window type="Generic/LabelWithOutline" name="PlaceBombLabel" >
+                        <Property name="Area" value="{{0.05,-1},{0.5,0},{0.35,-1},{0.5,32}}" />
+                        <Property name="Text" value="Place Bomb" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                        <Property name="HorzFormatting" value="LeftAligned" />
+                        <Property name="NormalTextColour" value="FFE1E4E8" />
+                    </Window>
+                    <Window type="AlfiskoSkin/Editbox" name="PlaceBombVal" >
+                        <Property name="Area" value="{{0.62,-1},{0.5,0},{0.87,-1},{0.56,0}}" />
+                        <Property name="MaxTextLength" value="5" />
+                        <Property name="TextFormatting" value="CentreAligned" />
+                    </Window>
+                    <Window type="Generic/LabelWithOutline" name="PauseGameLabel" >
+                        <Property name="Area" value="{{0.05,-1},{0.6,0},{0.35,-1},{0.6,32}}" />
+                        <Property name="Text" value="Pause Game" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                        <Property name="HorzFormatting" value="LeftAligned" />
+                        <Property name="NormalTextColour" value="FFE1E4E8" />
+                    </Window>
+                    <Window type="AlfiskoSkin/Editbox" name="PauseGameVal" >
+                        <Property name="Area" value="{{0.62,-1},{0.6,0},{0.87,-1},{0.66,0}}" />
+                        <Property name="MaxTextLength" value="5" />
+                        <Property name="TextFormatting" value="CentreAligned" />
+                    </Window>
+                    <Window type="Generic/LabelWithOutline" name="ControlsCaption" >
+                        <Property name="Area" value="{{0,-1},{0,-2},{0.9,-1},{0,29}}" />
+                        <Property name="Text" value="Controls" />
+                        <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                        <Property name="DragDropTarget" value="false" />
+                        <Property name="VertFormatting" value="TopAligned" />
+                        <Property name="NormalTextColour" value="FFE1E4E8" />
+                        <Property name="HorizontalAlignment" value="Centre" />
+                        <Property name="AutoRenderingSurface" value="true" />
                     </Window>
                 </AutoWindow>
                 <AutoWindow namePath="__auto_hscrollbar__" >

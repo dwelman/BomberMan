@@ -175,20 +175,14 @@ void injectInput(bool & must_quit, CEGUI::GUIContext& context, SDL_Event &e)
 	switch (e.type)
 	{
 	case SDL_MOUSEMOTION:
-		/* we inject the mouse position directly. */
-		//				CEGUI::System::getSingleton().injectMousePosition(static_cast<float>(e.motion.x),static_cast<float>(e.motion.y));
 			context.injectMousePosition(static_cast<float>(e.motion.x), static_cast<float>(e.motion.y));
 		break;
 	case SDL_MOUSEBUTTONDOWN:
 		handle_mouse_down(e.button.button, context);
 		break;
-
-		/* mouse up handler */
 	case SDL_MOUSEBUTTONUP:
 		handle_mouse_up(e.button.button, context);
 		break;
-
-		/* key down */
 	case SDL_KEYDOWN:
 		context.injectKeyDown(m_keymap[e.key.keysym.sym]);
 		if ((e.key.keysym.sym & 0xFF80) == 0)
@@ -198,9 +192,6 @@ void injectInput(bool & must_quit, CEGUI::GUIContext& context, SDL_Event &e)
 		break;
 	case SDL_KEYUP:
 		context.injectKeyUp(m_keymap[e.key.keysym.sym]);
-		break;
-	case SDL_QUIT:
-		must_quit = true;
 		break;
 	case SDL_WINDOWEVENT_RESIZED:
 		CEGUI::System::getSingleton().notifyDisplaySizeChanged(CEGUI::Sizef(e.window.data1, e.window.data2));

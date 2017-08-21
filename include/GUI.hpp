@@ -26,11 +26,8 @@ struct KeyBindings
 	bool 									catchNext;
 	ePlayerAction							actionToMap;
 	std::string								actionToMapKey;
+	std::string								boundElementName;
 	std::vector<KeyBindChange*>				keyBindChanges;
-	//std::vector<std::string>				keyMapChanges;
-	//std::vector<std::string>				keyMapVals;
-	//std::vector<ePlayerAction>				keyMapAction;
-
 };
 
 struct GUICrate
@@ -157,3 +154,13 @@ bool showAudioSettingsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_elem
 bool showControlsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);
 
 bool keyBindActiveUp(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);
+
+bool keyBindActiveDown(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);
+
+bool keyBindActiveLeft(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);
+
+bool keyBindActiveRight(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);
+
+bool keyBindActivePlaceBomb(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);
+
+bool keyBindActivePauseGame(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);

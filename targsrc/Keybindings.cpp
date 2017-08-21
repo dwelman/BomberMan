@@ -222,10 +222,10 @@ void            mapKeyName(std::map<SDL_Keycode, std::string> &keyName)
     keyName[SDLK_KP_MULTIPLY] = "KP_MULTIPLY";
     keyName[SDLK_KP_DIVIDE] = "KP_DIVIDE";
     keyName[SDLK_KP_ENTER] = "KP_ENTER";
-    keyName[SDLK_UP] = "UP";
-    keyName[SDLK_LEFT] = "LEFT";
-    keyName[SDLK_RIGHT] = "RIGHT";
-    keyName[SDLK_DOWN] = "DOWN";
+    keyName[SDLK_UP] = "UP ARROW";
+    keyName[SDLK_LEFT] = "LEFT ARROW";
+    keyName[SDLK_RIGHT] = "RIGHT ARROW";
+    keyName[SDLK_DOWN] = "DOWN ARROW";
     keyName[SDLK_HOME] = "HOME";
     keyName[SDLK_END] = "END";
     keyName[SDLK_PAGEUP] = "PAGEUP";
@@ -237,6 +237,7 @@ void            mapKeyName(std::map<SDL_Keycode, std::string> &keyName)
 
 void	mapActionToKey(	std::map<std::string, SDL_Keycode> &textToKeyCode,
 						std::map<ePlayerAction, SDL_Keycode > &actionToKeyCode,
+						std::map<SDL_Keycode, std::string> &keyCodeToText,
 						ConfigEditor &cfg, 
 						ePlayerAction action, 
 						std::string actionString, 
@@ -248,32 +249,31 @@ void	mapActionToKey(	std::map<std::string, SDL_Keycode> &textToKeyCode,
 		actionToKeyCode[action] = key;
 	}
 	else
+	{
 		actionToKeyCode[action] = defaultKey;
+		g_cfg[actionString] = keyCodeToText[defaultKey];
+		g_cfg.saveConfig();
+	}
 }
 
 void     GetKeyCodesFromConfig(	std::map<std::string,SDL_Keycode> &textToKeyCode, 
 								std::map<ePlayerAction, SDL_Keycode > &actionToKeyCode,
+								std::map<SDL_Keycode, std::string> &keyCodeToText,
 								ConfigEditor &cfg)
 {
-	mapActionToKey(textToKeyCode, actionToKeyCode, cfg,	P_MOVE_DOWN, "P_MOVE_DOWN", SDLK_DOWN);
-	mapActionToKey(textToKeyCode, actionToKeyCode, cfg, P_MOVE_UP, "P_MOVE_UP", SDLK_UP);
-	mapActionToKey(textToKeyCode, actionToKeyCode, cfg, P_MOVE_LEFT, "P_MOVE_LEFT", SDLK_LEFT);
-	mapActionToKey(textToKeyCode, actionToKeyCode, cfg, P_MOVE_RIGHT, "P_MOVE_RIGHT", SDLK_RIGHT);
-	mapActionToKey(textToKeyCode, actionToKeyCode, cfg, P_PLACE_BOMB, "P_PLACE_BOMB", SDLK_SPACE);
-	mapActionToKey(textToKeyCode, actionToKeyCode, cfg, P_PAUSE_GAME, "P_PAUSE_GAME", SDLK_ESCAPE);
+	mapActionToKey(textToKeyCode, actionToKeyCode, keyCodeToText, cfg,	P_MOVE_DOWN, "P_MOVE_DOWN", SDLK_DOWN);
+	mapActionToKey(textToKeyCode, actionToKeyCode, keyCodeToText, cfg, P_MOVE_UP, "P_MOVE_UP", SDLK_UP);
+	mapActionToKey(textToKeyCode, actionToKeyCode, keyCodeToText, cfg, P_MOVE_LEFT, "P_MOVE_LEFT", SDLK_LEFT);
+	mapActionToKey(textToKeyCode, actionToKeyCode, keyCodeToText, cfg, P_MOVE_RIGHT, "P_MOVE_RIGHT", SDLK_RIGHT);
+	mapActionToKey(textToKeyCode, actionToKeyCode, keyCodeToText, cfg, P_PLACE_BOMB, "P_PLACE_BOMB", SDLK_SPACE);
+	mapActionToKey(textToKeyCode, actionToKeyCode, keyCodeToText, cfg, P_PAUSE_GAME, "P_PAUSE_GAME", SDLK_ESCAPE);
 }
 
-/*void     SetupKeybindings(  std::map<std::string,SDL_Keycode> &textToKeyCode,
-                            std::map<ePlayerAction, SDL_Keycode > &actionToKeyCode,
-                            std::map<SDL_Keycode&, std::string&>	&keyCodeToText,
-                            std::map<SDL_Keycode, std::string> &keyName,
-                            ConfigEditor &cfg)
-*/
 void       SetupKeybindings (KeyBindings &keyBindings)
 {
     mapKeyTextToSDLKey(*keyBindings.textToKeyCode);
     mapSDLKeyToText(*keyBindings.keyCodeToText, *keyBindings.textToKeyCode);
-    GetKeyCodesFromConfig(*keyBindings.textToKeyCode, *keyBindings.actionToKeyCode, g_cfg);
+    GetKeyCodesFromConfig(*keyBindings.textToKeyCode, *keyBindings.actionToKeyCode, *keyBindings.keyCodeToText, g_cfg);
     mapKeyName(*keyBindings.keyName);
 }
 

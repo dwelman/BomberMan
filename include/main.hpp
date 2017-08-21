@@ -42,7 +42,6 @@ enum    ePlayerAction
 
 static ConfigEditor g_cfg("resources/settings.cfg");
 
-
 ePlayerAction   GetPlayerAction(SDL_KeyboardEvent &e);
 
 int				AudioThread(void *ptr);

@@ -1,7 +1,4 @@
-
-#include <main.hpp>
 #include <GUI.hpp>
-#include <SDL_video.h>
 
 void 				tryAddResolution(int w, int h, SettingsState &s)
 {
@@ -117,6 +114,7 @@ void		loadResources(GUICrate &crate)
 
 void        initMenuValues(GUICrate &crate)
 {
+	g_cfg.reload();
     //Video Settings
     CEGUI::NamedElement *resolutionValue = crate.settings->getChildElementRecursive("ResolutionValue");
     resolutionValue->setProperty("Text", g_cfg["xres"].to_str() + "x" + g_cfg["yres"].to_str());
@@ -125,6 +123,16 @@ void        initMenuValues(GUICrate &crate)
     //Controls
     CEGUI::NamedElement *moveUpVal = crate.settings->getChildElementRecursive("MoveUpVal");
     moveUpVal->setProperty("Text", (*crate.keybindings.keyName)[(*crate.keybindings.textToKeyCode)[g_cfg["P_MOVE_UP"].to_str()]]);
+	CEGUI::NamedElement *moveDownVal = crate.settings->getChildElementRecursive("MoveDownVal");
+	moveDownVal->setProperty("Text", (*crate.keybindings.keyName)[(*crate.keybindings.textToKeyCode)[g_cfg["P_MOVE_DOWN"].to_str()]]);
+	CEGUI::NamedElement *moveLeftVal = crate.settings->getChildElementRecursive("MoveLeftVal");
+	moveLeftVal->setProperty("Text", (*crate.keybindings.keyName)[(*crate.keybindings.textToKeyCode)[g_cfg["P_MOVE_LEFT"].to_str()]]);
+	CEGUI::NamedElement *moveRightVal = crate.settings->getChildElementRecursive("MoveRightVal");
+	moveRightVal->setProperty("Text", (*crate.keybindings.keyName)[(*crate.keybindings.textToKeyCode)[g_cfg["P_MOVE_RIGHT"].to_str()]]);
+	CEGUI::NamedElement *placeBombVal = crate.settings->getChildElementRecursive("PlaceBombVal");
+	placeBombVal->setProperty("Text", (*crate.keybindings.keyName)[(*crate.keybindings.textToKeyCode)[g_cfg["P_PLACE_BOMB"].to_str()]]);
+	CEGUI::NamedElement *pauseGameVal = crate.settings->getChildElementRecursive("PauseGameVal");
+	pauseGameVal->setProperty("Text", (*crate.keybindings.keyName)[(*crate.keybindings.textToKeyCode)[g_cfg["P_PAUSE_GAME"].to_str()]]);
 }
 
 void		destroyGUI(GUICrate &crate)
@@ -147,7 +155,7 @@ double    initGui(SDL_Window *window, GUICrate &crate)
 		initializeKeyMap();
 		CEGUI::OpenGL3Renderer::bootstrapSystem();
 		crate.guiRenderer = &CEGUI::OpenGL3Renderer::create();
-
+		SDL_WarpMouseInWindow(window, g_cfg["xres"].to_int() / 4 * 3, g_cfg["yres"].to_int() / 2);
 		SDL_ShowCursor(SDL_ENABLE);
 		setupResourceGroups();
 		loadResources(crate);
@@ -165,22 +173,16 @@ void	captureInputForSettingMenu(SDL_Event &e, KeyBindings &keybindings, CEGUI::W
 {
 	if (keybindings.catchNext && e.type == SDL_KEYDOWN)
 	{
-		//std::string configKey = (*keybindings.keyCodeToText)[e.key.keysym.sym];
 		if (g_cfg[keybindings.actionToMapKey].to_str().size() > 0)
 		{
-			CEGUI::NamedElement		*moveUpVal = settings->getChildElementRecursive("MoveUpVal");
 			KeyBindChange			*kb = new KeyBindChange();
 
-			moveUpVal->setProperty("Text", (*keybindings.keyName)[e.key.keysym.sym]);
-			//g_cfg[keybindings.actionToMapKey] = (*keybindings.keyCodeToText)[e.key.keysym.sym];
+			settings->getChildElementRecursive(keybindings.boundElementName)->setProperty("Text", (*keybindings.keyName)[e.key.keysym.sym]);
 			kb->action = keybindings.actionToMap;
 			kb->cfgKey = keybindings.actionToMapKey;
 			kb->cfgVal = (*keybindings.keyCodeToText)[e.key.keysym.sym];
 			kb->key = e.key.keysym.sym;
 			keybindings.keyBindChanges.push_back(kb);
-	//		keybindings.keyMapChanges.push_back(keybindings.actionToMapKey);
-	//		keybindings.keyMapVals.push_back((*keybindings.keyCodeToText)[e.key.keysym.sym]);
-
 		}
 		keybindings.actionToMapKey = P_NOACTION;
 		keybindings.catchNext = false;
