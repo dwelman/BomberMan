@@ -25,14 +25,19 @@ struct VideoSettings
 {
 	Setting			resolution;
 	Setting			fullScreen;
-	bool			changed;
 
 	VideoSettings();
 };
 
+struct Controls
+{
+
+};
+
 struct SettingsState
 {
-	VideoSettings	video;
-	bool			changed;
+	VideoSettings				video;
+	bool						changed;
+
 	SettingsState();
 };

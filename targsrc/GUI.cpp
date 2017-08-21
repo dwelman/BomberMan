@@ -57,6 +57,8 @@ GUICrate::GUICrate()
 	loadSettingsFromDefaultConfig(this->activeSettings);
 	keybindings.actionToKeyCode = new std::map<ePlayerAction, SDL_Keycode>;
 	keybindings.textToKeyCode = new  std::map<std::string, SDL_Keycode>;
+	keybindings.keyCodeToText = new std::map<SDL_Keycode, std::string>;
+    keybindings.keyName = new std::map<SDL_Keycode, std::string>;
 	settingPanes = new PaneGroup();
 	pendingSettings = activeSettings;
 }
@@ -65,6 +67,7 @@ GUICrate::~GUICrate()
 {
 	delete keybindings.actionToKeyCode;
 	delete keybindings.textToKeyCode;
+    delete keybindings.keyName;
 	delete settingPanes;
 }
 
@@ -97,9 +100,6 @@ void		loadResources(GUICrate &crate)
 	//Setup Defaults
 	CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("AlfiskoSkin/MouseArrow");
 	CEGUI::System::getSingleton().getDefaultGUIContext().setDefaultFont("Jura-18");
-//	CEGUI::FontManager::getSingleton().createFromFile("Jura-18.font");
-//	CEGUI::FontManager::getSingleton().createFromFile("Jura-13.font");
-//	CEGUI::FontManager::getSingleton().createFromFile("Jura-10.font");
 
 	//Load Layouts
 	CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
@@ -117,11 +117,14 @@ void		loadResources(GUICrate &crate)
 
 void        initValues(GUICrate &crate)
 {
+    //Video Settings
     CEGUI::NamedElement *resolutionValue = crate.settings->getChildElementRecursive("ResolutionValue");
     resolutionValue->setProperty("Text", g_cfg["xres"].to_str() + "x" + g_cfg["yres"].to_str());
     CEGUI::NamedElement *fullscreenValue = crate.settings->getChildElementRecursive("FullscreenValue");
     fullscreenValue->setProperty("Text", case_ins_cmp("yes", g_cfg["fullscreen"].to_str()) ? "Yes" : "No");
-
+    //Controls
+    CEGUI::NamedElement *moveUpVal = crate.settings->getChildElementRecursive("MoveUpVal");
+    moveUpVal->setProperty("Text", (*crate.keybindings.keyName)[(*crate.keybindings.textToKeyCode)[g_cfg["P_MOVE_UP"].to_str()]]);
 }
 
 void		destroyGUI(GUICrate &crate)
@@ -141,7 +144,6 @@ double    initGui(SDL_Window *window, GUICrate &crate)
 {
 	try
 	{
-
 		initializeKeyMap();
 		CEGUI::OpenGL3Renderer::bootstrapSystem();
 		crate.guiRenderer = &CEGUI::OpenGL3Renderer::create();
@@ -159,13 +161,31 @@ double    initGui(SDL_Window *window, GUICrate &crate)
 	return (0.001 * static_cast<double>(SDL_GetTicks()));
 }
 
+void	captureInputForSettingMenu(SDL_Event &e, KeyBindings &keybindings, CEGUI::Window *settings)
+{
+	if (keybindings.catchNext && e.type == SDL_KEYDOWN)
+	{
+		//std::string configKey = (*keybindings.keyCodeToText)[e.key.keysym.sym];
+		if (g_cfg[keybindings.actionToMapKey].to_str().size() > 0)
+		{
+			CEGUI::NamedElement *moveUpVal = settings->getChildElementRecursive("MoveUpVal");
+			moveUpVal->setProperty("Text", (*keybindings.keyName)[e.key.keysym.sym]);
+			//g_cfg[keybindings.actionToMapKey] = (*keybindings.keyCodeToText)[e.key.keysym.sym];
+			keybindings.keyMapChanges.push_back(keybindings.actionToMapKey);
+			keybindings.keyMapVals.push_back((*keybindings.keyCodeToText)[e.key.keysym.sym]);
+
+		}
+		keybindings.actionToMapKey = P_NOACTION;
+		keybindings.catchNext = false;
+	}
+}
+
 void	captureInputForGameManager(GameManager &manager, SDL_Event &e, bool & must_quit, KeyBindings &keybindings)
 {
 	ePlayerAction	action = P_NOACTION;
 	if (e.type == SDL_QUIT)
 		must_quit = true;
 
-	//TODO game logic stoofs
 	if (e.type == SDL_KEYDOWN)
 	{
 		if ((*keybindings.actionToKeyCode)[P_MOVE_LEFT] == e.key.keysym.sym)
@@ -242,6 +262,7 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 		injectInput(must_quit, CEGUI::System::getSingleton().getDefaultGUIContext(), e);
 		captureInputForGameManager(manager, e, must_quit, crate.keybindings);
 		captureWindowEvents(e, crate);
+		captureInputForSettingMenu(e, crate.keybindings, crate.settings);
 	}
     crate.engine->computeMatricesFromInputs(window, e);
 

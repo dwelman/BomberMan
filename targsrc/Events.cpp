@@ -47,6 +47,15 @@ void		setupEvents(GUICrate &crate)
 	CEGUI::NamedElement *apply = crate.settings->getChildElementRecursive("Apply");
 	crate.MenuFunctions.push_back(new MenuFunction(apply, CEGUI::PushButton::EventClicked, &applyClick, crate));
 
+	CEGUI::NamedElement *moveUpVal = crate.settings->getChildElementRecursive("MoveUpVal");
+	crate.MenuFunctions.push_back(new MenuFunction(moveUpVal, CEGUI::Editbox::EventTextSelectionChanged, &keyBindActiveUp, crate));
+	crate.MenuFunctions.push_back(new MenuFunction(moveUpVal, CEGUI::Editbox::EventCaretMoved, &keyBindActiveUp, crate));
+	crate.MenuFunctions.push_back(new MenuFunction(moveUpVal, CEGUI::Editbox::EventTextAccepted, &keyBindActiveUp, crate));
+	crate.MenuFunctions.push_back(new MenuFunction(moveUpVal, CEGUI::Editbox::EventKeyDown, &keyBindActiveUp, crate));
+
+
+
+
 }
 
 void	switchLayouts(CEGUI::Window *from, CEGUI::Window *to)
@@ -95,7 +104,6 @@ bool resolutionNextClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_elemen
     var.settings->getChildElementRecursive("ResolutionValue")->setProperty("Text", newVal );
 	var.pendingSettings.video.resolution.activeValue = newVal;
 	var.pendingSettings.changed = true;
-	var.pendingSettings.video.changed = true;
 
 	return (true);
 };
@@ -109,7 +117,6 @@ bool resolutionPreviousClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_el
     var.settings->getChildElementRecursive("ResolutionValue")->setProperty("Text", newVal);
 	var.pendingSettings.video.resolution.activeValue = newVal;
 	var.pendingSettings.changed = true;
-	var.pendingSettings.video.changed = true;
 
     return (true);
 };
@@ -121,7 +128,6 @@ bool fullscreenNextClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_elemen
     var.settings->getChildElementRecursive("FullscreenValue")->setProperty("Text", newVal);
 	var.pendingSettings.video.fullScreen.activeValue = newVal;
 	var.pendingSettings.changed = true;
-	var.pendingSettings.video.changed = true;
     return (true);
 };
 
@@ -132,7 +138,6 @@ bool fullscreenPreviousClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_el
     var.settings->getChildElementRecursive("FullscreenValue")->setProperty("Text", newVal);
 	var.pendingSettings.video.fullScreen.activeValue = newVal;
 	var.pendingSettings.changed = true;
-	var.pendingSettings.video.changed = true;
     return (true);
 };
 
@@ -144,7 +149,7 @@ bool applyClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICra
 		std::string xres = newres.substr(0, newres.find("x"));
 		std::string yres = newres.substr(newres.find("x") + 1, newres.size() - newres.find("x"));
 
-		if (!(xres == g_cfg["xres"].to_str() && yres == g_cfg["yres"].to_str()) 
+		if (!(xres == g_cfg["xres"].to_str() && yres == g_cfg["yres"].to_str())
 			|| g_cfg["fullscreen"].to_str() != var.pendingSettings.video.fullScreen.activeValue)
 		{
 			g_cfg["fullscreen"] = var.pendingSettings.video.fullScreen.activeValue;
@@ -153,6 +158,14 @@ bool applyClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICra
 			var.displayChanged = true;
 		}
 		var.activeSettings = var.pendingSettings;
+		auto vals = var.keybindings.keyMapVals.begin();
+		for  (auto it = var.keybindings.keyMapChanges.begin(); it != var.keybindings.keyMapChanges.end(); it++, vals++)
+		{
+			g_cfg[(*it).c_str()] = *vals;
+			//var.keybindings.actionToKeyCode[var.keybindings.]
+			//(*keybindings.actionToKeyCode)[keybindings.actionToMap] = e.key.keysym.sym;
+			vals++;
+		}
 		g_cfg.saveConfig();
 	}
     return (true);
@@ -174,4 +187,12 @@ bool showControlsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, 
 {
 	var.settingPanes->SetActive("Controls");
 	return (true);
+}
+
+bool keyBindActiveUp(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
+{
+	var.keybindings.catchNext = true;
+	var.keybindings.actionToMap = P_MOVE_UP;
+	var.keybindings.actionToMapKey = "P_MOVE_UP";
+	var.pendingSettings.changed = true;
 }

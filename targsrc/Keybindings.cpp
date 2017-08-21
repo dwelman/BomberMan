@@ -3,6 +3,16 @@
 //
 
 #include <main.hpp>
+#include <GUI.hpp>
+
+void            mapSDLKeyToText( std::map<SDL_Keycode, std::string>	&keyCodeToText, std::map<std::string, SDL_Keycode> &textToKeyCode)
+{
+    auto end = textToKeyCode.end();
+    for (auto it = textToKeyCode.begin(); it != end; it++)
+    {
+        keyCodeToText[it->second] = it->first;
+    }
+}
 
 void            mapKeyTextToSDLKey(std::map<std::string, SDL_Keycode> &textToKeyCode)
 {
@@ -114,6 +124,117 @@ void            mapKeyTextToSDLKey(std::map<std::string, SDL_Keycode> &textToKey
     textToKeyCode["SDLK_DELETE"] = SDLK_DELETE;
 }
 
+void            mapKeyName(std::map<SDL_Keycode, std::string> &keyName)
+{
+    keyName[SDLK_1] = "1";
+    keyName[SDLK_2] = "2";
+    keyName[SDLK_3] = "3";
+    keyName[SDLK_4] = "4";
+    keyName[SDLK_5] = "5";
+    keyName[SDLK_6] = "6";
+    keyName[SDLK_7] = "7";
+    keyName[SDLK_8] = "8";
+    keyName[SDLK_9] = "9";
+    keyName[SDLK_0] = "0";
+    keyName[SDLK_q] = "q";
+    keyName[SDLK_w] = "w";
+    keyName[SDLK_e] = "e";
+    keyName[SDLK_r] = "r";
+    keyName[SDLK_t] = "t";
+    keyName[SDLK_y] = "y";
+    keyName[SDLK_u] = "u";
+    keyName[SDLK_i] = "i";
+    keyName[SDLK_o] = "o";
+    keyName[SDLK_p] = "p";
+    keyName[SDLK_a] = "a";
+    keyName[SDLK_d] = "d";
+    keyName[SDLK_f] = "f";
+    keyName[SDLK_g] = "g";
+    keyName[SDLK_h] = "h";
+    keyName[SDLK_j] = "j";
+    keyName[SDLK_k] = "k";
+    keyName[SDLK_l] = "l";
+    keyName[SDLK_z] = "z";
+    keyName[SDLK_x] = "x";
+    keyName[SDLK_c] = "c";
+    keyName[SDLK_v] = "v";
+    keyName[SDLK_b] = "b";
+    keyName[SDLK_n] = "n";
+    keyName[SDLK_m] = "m";
+    keyName[SDLK_COMMA] = "COMMA";
+    keyName[SDLK_PERIOD] = "PERIOD";
+    keyName[SDLK_SLASH] = "SLASH";
+    keyName[SDLK_BACKSLASH] = "BACKSLASH";
+    keyName[SDLK_MINUS] = "MINUS";
+    keyName[SDLK_EQUALS] = "EQUALS";
+    keyName[SDLK_SEMICOLON] = "SEMICOLON";
+    keyName[SDLK_LEFTBRACKET] = "LEFTBRACKET";
+    keyName[SDLK_RIGHTBRACKET] = "RIGHTBRACKET";
+    keyName[SDLK_QUOTE] = "QUOTE";
+    keyName[SDLK_BACKQUOTE] = "BACKQUOTE";
+    keyName[SDLK_RETURN] = "RETURN";
+    keyName[SDLK_SPACE] = "SPACE";
+    keyName[SDLK_BACKSPACE] = "BACKSPACE";
+    keyName[SDLK_TAB] = "TAB";
+    keyName[SDLK_ESCAPE] = "ESCAPE";
+    keyName[SDLK_PAUSE] = "PAUSE";
+    keyName[SDLK_SYSREQ] = "SYSREQ";
+    keyName[SDLK_POWER] = "POWER";
+    keyName[SDLK_NUMLOCKCLEAR] = "NUMLOCKCLEAR";
+    keyName[SDLK_SCROLLLOCK] = "SCROLLLOCK";
+    keyName[SDLK_F1] = "F1";
+    keyName[SDLK_F2] = "F2";
+    keyName[SDLK_F3] = "F3";
+    keyName[SDLK_F4] = "F4";
+    keyName[SDLK_F5] = "F5";
+    keyName[SDLK_F6] = "F6";
+    keyName[SDLK_F7] = "F7";
+    keyName[SDLK_F8] = "F8";
+    keyName[SDLK_F9] = "F9";
+    keyName[SDLK_F10] = "F10";
+    keyName[SDLK_F11] = "F11";
+    keyName[SDLK_F12] = "F12";
+    keyName[SDLK_F13] = "F13";
+    keyName[SDLK_F14] = "F14";
+    keyName[SDLK_F15] = "F15";
+    keyName[SDLK_LCTRL] = "LCTRL";
+    keyName[SDLK_LALT] = "LALT";
+    keyName[SDLK_LSHIFT] = "LSHIFT";
+    keyName[SDLK_LGUI] = "LGUI";
+    keyName[SDLK_RCTRL] = "RCTRL";
+    keyName[SDLK_RALT] = "RALT";
+    keyName[SDLK_RSHIFT] = "RSHIFT";
+    keyName[SDLK_RGUI] = "RGUI";
+    keyName[SDLK_MENU] = "MENU";
+    keyName[SDLK_KP_0] = "Keypad  0";
+    keyName[SDLK_KP_1] = "Keypad  1";
+    keyName[SDLK_KP_2] = "Keypad  2";
+    keyName[SDLK_KP_3] = "Keypad  3";
+    keyName[SDLK_KP_4] = "Keypad  4";
+    keyName[SDLK_KP_5] = "Keypad  5";
+    keyName[SDLK_KP_6] = "Keypad  6";
+    keyName[SDLK_KP_7] = "Keypad  7";
+    keyName[SDLK_KP_8] = "Keypad  8";
+    keyName[SDLK_KP_9] = "Keypad  9";
+    keyName[SDLK_KP_PERIOD] = "KP_PERIOD";
+    keyName[SDLK_KP_PLUS] = "KP_PLUS";
+    keyName[SDLK_KP_MINUS] = "KP_MINUS";
+    keyName[SDLK_KP_MULTIPLY] = "KP_MULTIPLY";
+    keyName[SDLK_KP_DIVIDE] = "KP_DIVIDE";
+    keyName[SDLK_KP_ENTER] = "KP_ENTER";
+    keyName[SDLK_UP] = "UP";
+    keyName[SDLK_LEFT] = "LEFT";
+    keyName[SDLK_RIGHT] = "RIGHT";
+    keyName[SDLK_DOWN] = "DOWN";
+    keyName[SDLK_HOME] = "HOME";
+    keyName[SDLK_END] = "END";
+    keyName[SDLK_PAGEUP] = "PAGEUP";
+    keyName[SDLK_PAGEDOWN] = "PAGEDOWN";
+    keyName[SDLK_INSERT] = "INSERT";
+    keyName[SDLK_DELETE] = "DELETE";
+}
+
+
 void	mapActionToKey(	std::map<std::string, SDL_Keycode> &textToKeyCode,
 						std::map<ePlayerAction, SDL_Keycode > &actionToKeyCode,
 						ConfigEditor &cfg, 
@@ -140,6 +261,20 @@ void     GetKeyCodesFromConfig(	std::map<std::string,SDL_Keycode> &textToKeyCode
 	mapActionToKey(textToKeyCode, actionToKeyCode, cfg, P_MOVE_RIGHT, "P_MOVE_RIGHT", SDLK_RIGHT);
 	mapActionToKey(textToKeyCode, actionToKeyCode, cfg, P_PLACE_BOMB, "P_PLACE_BOMB", SDLK_SPACE);
 	mapActionToKey(textToKeyCode, actionToKeyCode, cfg, P_PAUSE_GAME, "P_PAUSE_GAME", SDLK_ESCAPE);
+}
+
+/*void     SetupKeybindings(  std::map<std::string,SDL_Keycode> &textToKeyCode,
+                            std::map<ePlayerAction, SDL_Keycode > &actionToKeyCode,
+                            std::map<SDL_Keycode&, std::string&>	&keyCodeToText,
+                            std::map<SDL_Keycode, std::string> &keyName,
+                            ConfigEditor &cfg)
+*/
+void       SetupKeybindings (KeyBindings &keyBindings)
+{
+    mapKeyTextToSDLKey(*keyBindings.textToKeyCode);
+    mapSDLKeyToText(*keyBindings.keyCodeToText, *keyBindings.textToKeyCode);
+    GetKeyCodesFromConfig(*keyBindings.textToKeyCode, *keyBindings.actionToKeyCode, g_cfg);
+    mapKeyName(*keyBindings.keyName);
 }
 
 ePlayerAction   GetPlayerAction(SDL_KeyboardEvent &e)

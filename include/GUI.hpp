@@ -13,6 +13,15 @@ struct KeyBindings
 {
 	std::map<ePlayerAction, SDL_Keycode >   *actionToKeyCode;
 	std::map<std::string, SDL_Keycode>		*textToKeyCode;
+	std::map<SDL_Keycode, std::string>		*keyCodeToText;
+	std::map<SDL_Keycode, std::string>		*keyName;
+	bool 									catchNext;
+	ePlayerAction							actionToMap;
+	std::string								actionToMapKey;
+	std::vector<std::string>				keyMapChanges;
+	std::vector<std::string>				keyMapVals;
+	std::vector<ePlayerAction>				keyMapAction;
+
 };
 
 struct GUICrate
@@ -108,6 +117,8 @@ void	reloadDisplayMode(SDL_Window *win, GUICrate &crate);
 
 void	captureWindowEvents(SDL_Event &e, bool & must_quit);
 
+void       SetupKeybindings (KeyBindings &keyBindings);
+
 //Events
 
 bool setExit(const CEGUI::EventArgs& /*e*/, CEGUI::NamedElement *_element, GUICrate	&var);
@@ -133,3 +144,5 @@ bool showVideoSettingsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_elem
 bool showAudioSettingsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);
 
 bool showControlsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);
+
+bool keyBindActiveUp(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var);

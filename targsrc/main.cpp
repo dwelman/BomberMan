@@ -46,7 +46,7 @@ void gameLoop(SDL_Window *window)
 	GameManager         manager;
 	bool				mustQuit = false;
     GUICrate			crate;
-	double				guiLastTimePulse = initGui(window, crate);
+	double				guiLastTimePulse ;
 	RenderEngine        rEngine;
 	AudioManager		*Audio = new AudioManager(g_cfg);
 	SDL_Thread			*audioThread;
@@ -60,9 +60,8 @@ void gameLoop(SDL_Window *window)
     crate.mustQuit = &mustQuit;
 	crate.window = window;
     crate.engine = &rEngine;
-	mapKeyTextToSDLKey(*crate.keybindings.textToKeyCode);
-	GetKeyCodesFromConfig(*crate.keybindings.textToKeyCode, *crate.keybindings.actionToKeyCode , g_cfg);
-	//rEngine.computeMatricesFromInputs(window);
+    SetupKeybindings(crate.keybindings);
+    guiLastTimePulse = initGui(window, crate);
 	audioThread = SDL_CreateThread(&AudioThread, "AudioThread", reinterpret_cast<void*>(Audio));
     do
     {

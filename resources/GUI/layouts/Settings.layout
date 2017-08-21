@@ -214,7 +214,7 @@
                         <Property name="HorzFormatting" value="LeftAligned" />
                         <Property name="NormalTextColour" value="FFE1E4E8" />
                     </Window>
-                    <Window type="AlfiskoSkin/Editbox" name="FullscreenValue" >
+                    <Window type="AlfiskoSkin/Editbox" name="MoveUpVal" >
                         <Property name="Area" value="{{0.62,-1},{0.1,0},{0.87,-1},{0.16,0}}" />
                         <Property name="Text" value="UPARROW" />
                         <Property name="MaxTextLength" value="5" />
