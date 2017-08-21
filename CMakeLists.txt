@@ -62,6 +62,12 @@ if (WIN32)
 
 	message ("${CEGUI_LIBS_DYNAMIC}")	
 	set(CEGUI_LIB_PATH	${CMAKE_CURRENT_SOURCE_DIR}/libs/Windows/cegui)
+
+	#Assimp
+	set(ASSIMP_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/libs/${PLATFORM}/Assimp/include)
+	set(ASSIMP_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/${PLATFORM}/Assimp/lib)
+	set(ASSIMP_LIB ${ASSIMP_LIB_DIR}/assimp.lib)
+	message("Found Assimp library at ${ASSIMP_LIB}")
 else()
 	set(BREW ~/.brew)
 	set(BREW_INCLUDE ${BREW}/include)
@@ -112,6 +118,11 @@ else()
 			CEGUISILLYImageCodec.dylib)
 
 	set(CEGUI_LIB_PATH	${CMAKE_CURRENT_SOURCE_DIR}/libs/darwin/cegui)
+
+    set(ASSIMP_INCLUDE ${BREW_INCLUDE}/)
+    set(ASSIMP_LIB_DIR ${BREW_LIB})
+    set(ASSIMP_LIB ${ASSIMP_LIB_DIR}/libassimp.4.0.1.dylib)
+    message("Found Assimp library at ${ASSIMP_LIB}")
 	
 	set (CMAKE_RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
@@ -146,6 +157,7 @@ set(SOURCE
 		${TARGSRC}Keybindings.cpp
 		${TARGSRC}AudioThread.cpp
 		${TARGSRC}PaneGroup.cpp
+        ${TARGSRC}Mesh.cpp
 		)
 
 set(COMPSRC "targsrc/components/")
@@ -191,6 +203,7 @@ set(HEADERS
 		${INCLUDE}Util.hpp
 		${INCLUDE}GameObjectRenderInfo.hpp
 		${INCLUDE}AudioManager.hpp
+        ${INCLUDE}Mesh.hpp
 		)
 
 set(COMP_INCL "include/components/")
@@ -219,13 +232,13 @@ set(HEADERS_SYS
 
 set(BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR} )
 
-include_directories(${INCLUDE} ${SDL_INCLUDE} ${SDL_IMAGE_INCLUDE} ${SDL_TTF_INCLUDE} ${SDL_MIXER_INCLUDE} ${GLEW_INCLUDE} ${GLM_INCLUDE} ${OPENGL_INCLUDE})
+include_directories(${INCLUDE} ${SDL_INCLUDE} ${SDL_IMAGE_INCLUDE} ${SDL_TTF_INCLUDE} ${SDL_MIXER_INCLUDE} ${GLEW_INCLUDE} ${GLM_INCLUDE} ${OPENGL_INCLUDE} ${ASSIMP_INCLUDE})
 
-link_directories(${SDL_LIB_DIR} ${SDL_TTF_LIB_DIR} ${SDL_IMAGE_LIB_DIR}  ${SDL_MIXER_LIB_DIR} ${GLEW_LIB_DIR} ${CEGUI_LIB_PATH})
+link_directories(${SDL_LIB_DIR} ${SDL_TTF_LIB_DIR} ${SDL_IMAGE_LIB_DIR}  ${SDL_MIXER_LIB_DIR} ${GLEW_LIB_DIR} ${CEGUI_LIB_PATH} ${ASSIMP_LIB_DIR})
 
 add_executable(${PROJECT_NAME} ${SOURCE} ${HEADERS} ${SOURCE_COMP} ${SOURCE_SYS} ${HEADERS_COMP} ${HEADERS_SYS})
 
-target_link_libraries(${PROJECT_NAME} SDL2 SDL2_ttf SDL2_image ${GLEW_NAME} SDL2_mixer ${OPENGL_gl_LIBRARY} ${CEGUI_LIBS_DYNAMIC})
+target_link_libraries(${PROJECT_NAME} SDL2 SDL2_ttf SDL2_image ${GLEW_NAME} SDL2_mixer ${OPENGL_gl_LIBRARY} ${CEGUI_LIBS_DYNAMIC} assimp)
 
 if (WIN32)
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD				# Adds a post-build event to copy SDL dll to bin dir
@@ -252,6 +265,11 @@ if (WIN32)
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			"${GLEW_LIB_DIR}/glew32.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			"${ASSIMP_LIB_DIR}/assimp-vc140-mt.dll"
 			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
 			
 	#CEGUI + Dependancies

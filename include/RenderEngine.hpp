@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Mesh.hpp"
 #include "RenderObject.hpp"
 #include "GameObjectRenderInfo.hpp"
 #include "main.hpp"
@@ -11,6 +12,7 @@
 
 class GameManager;
 class GameObjectRenderInfo;
+class Mesh;
 
 struct renderData
 {
@@ -77,6 +79,7 @@ class RenderEngine
 		glm::mat4 ProjectionMatrix;
 		glm::vec3 position;
 		std::vector<renderData> rdata;
+        std::vector<Mesh> mesh;
 
 		float horizontalAngle,
 				verticalAngle,
