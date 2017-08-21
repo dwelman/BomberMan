@@ -70,11 +70,11 @@ glm::mat4 RenderEngine::getProjectionMatrix() {
     return this->ProjectionMatrix;
 }
 
-void RenderEngine::computeMatricesFromInputs(SDL_Window *window)
+void RenderEngine::computeMatricesFromInputs(SDL_Window *window, SDL_Event &event)
 {
 
     static double lastTime = SDL_GetTicks();
-	SDL_Event event;
+/*	SDL_Event event;
 
 	while (SDL_PollEvent(&event)) {
 		switch (event.type) {
@@ -86,7 +86,7 @@ void RenderEngine::computeMatricesFromInputs(SDL_Window *window)
 			break;
 		}
 	}
-
+*/
     // Compute time difference between current and last frame
     double currentTime = SDL_GetTicks();
     float deltaTime = float(currentTime - lastTime);
@@ -677,8 +677,8 @@ void RenderEngine::initGlew()
 
 int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObjectRenderInfo> gameObjects)
 {
-    if (gameStarted)
-        this->computeMatricesFromInputs(window);
+ //   if (gameStarted)
+//        this->computeMatricesFromInputs(window);
 
     glm::mat4 ProjectionMatrix = this->getProjectionMatrix();
     glm::mat4 ViewMatrix = this->getViewMatrix();

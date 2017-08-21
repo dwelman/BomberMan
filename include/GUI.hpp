@@ -21,6 +21,7 @@ struct GUICrate
 	GameManager								*manager;
 	CEGUI::OpenGL3Renderer					*guiRenderer;
 	AudioManager							*audio;
+	RenderEngine							*engine;
     SDL_Window                              *window;
 	bool									*mustQuit;
 	bool									displayChanged;

@@ -59,9 +59,10 @@ void gameLoop(SDL_Window *window)
 	crate.audio = Audio;
     crate.mustQuit = &mustQuit;
 	crate.window = window;
+    crate.engine = &rEngine;
 	mapKeyTextToSDLKey(*crate.keybindings.textToKeyCode);
 	GetKeyCodesFromConfig(*crate.keybindings.textToKeyCode, *crate.keybindings.actionToKeyCode , g_cfg);
-	rEngine.computeMatricesFromInputs(window);
+	//rEngine.computeMatricesFromInputs(window);
 	audioThread = SDL_CreateThread(&AudioThread, "AudioThread", reinterpret_cast<void*>(Audio));
     do
     {

@@ -63,7 +63,7 @@ class RenderEngine
 		void setProjectionMatrix(glm::mat4 projectionMatrix);
 		glm::mat4 getViewMatrix();
 		glm::mat4 getProjectionMatrix();
-		void computeMatricesFromInputs(SDL_Window *window);
+		void computeMatricesFromInputs(SDL_Window *window, SDL_Event &event);
 		//static GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
 		GLuint loadBMP(const char * imagepath, GLuint texture);
 		GLuint loadDDS(const char * imagepath, GLuint texture);

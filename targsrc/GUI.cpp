@@ -243,6 +243,8 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 		captureInputForGameManager(manager, e, must_quit, crate.keybindings);
 		captureWindowEvents(e, crate);
 	}
+    crate.engine->computeMatricesFromInputs(window, e);
+
 //	if (manager.GetGameStarted()) // && !manager.GetGamePaused())
 //		crate.main->setVisible(false);
 	injectTimePulse(guiLastTimePulse);
