@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <time.h>
+#include <cmath>
 
 GameManager::GameManager()
 {
@@ -11,7 +12,7 @@ GameManager::GameManager()
 	m_gameStarted = false;
 	m_playerMoveSpeed = 4.5f;
 	m_playerBombAmount = 3;
-	m_explosionSize = 0;
+	m_explosionSize = 1;
 	m_lives = 3;
 	m_score = 0;
 	createEntityAtPosition("player", Vec3(1, 1, 0));
@@ -256,9 +257,7 @@ std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 con
 		entity.RegisterComponent(m_currentComponentID, TAG);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(DAMAGE_ENEMY_TAG | DAMAGE_PLAYER_TAG | DAMAGE_WALL_TAG)));
 		entity.RegisterComponent(m_currentComponentID, EXPLOSION);
-		m_components.emplace(std::make_pair(m_currentComponentID++, new Explosion(m_explosionSize, Vec3(0, 0, 0), 1)));
-        entity.RegisterComponent(m_currentComponentID, RENDER);
-        m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BLOCK_OT, true)));
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Explosion(m_explosionSize, Vec3(0, 0, 0), 0.4f)));
 	}
 	else if (entityType == "powerup_life")
 	{
@@ -337,6 +336,16 @@ void GameManager::deleteEntity(std::size_t ID)
 bool 	GameManager::Update()
 {
 	m_deltaTime = Clock::Instance().GetDeltaTime();
+	for (std::size_t y = 0; y < MAP_Y; y++)
+	{
+		for (std::size_t x = 0; x < MAP_X; x++)
+		{
+			if (m_gameMap[y][x] >= 0)
+			{
+				m_gameMap[y][x] = -1;
+			}
+		}
+	}
 	for (auto iter = m_entities.begin(); iter != m_entities.end(); iter++)
 	{
 		std::size_t i = iter->first;
@@ -422,6 +431,9 @@ bool 	GameManager::Update()
 					Movement *movement = dynamic_cast<Movement *>(m_components[movementID]);
 					Position *position = dynamic_cast<Position *>(m_components[positionID]);
 					handleMovement(*position, *movement);
+					m_gameMap[(int)round(position->GetPosition().GetY())][(int)round(position->GetPosition().GetX())] = i;
+					//std::cout << "Map pos x: " << (long int)round(position->GetPosition().GetX()) << " | y: " << (long int)round(position->GetPosition().GetY()) << std::endl;
+					//std::cout << "Actual pos x: " << position->GetPosition().GetX() << " | y: " << position->GetPosition().GetY() << std::endl;
 				}
 				catch (std::exception &e)
 				{
@@ -429,30 +441,6 @@ bool 	GameManager::Update()
 				}
 			}
 		}
-
-		//Collision System
-		/*{
-			if ((bitmask & COLLISION_SYSTEM_FLAGS) == COLLISION_SYSTEM_FLAGS)
-			{
-				try
-				{
-					std::size_t collisionID = m_entities[i].GetComponentOfType(COLLISION);
-					std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
-					Collision *collision = dynamic_cast<Collision *>(m_components[collisionID]);
-					Position *position = dynamic_cast<Position *>(m_components[positionID]);
-					if (collision->GetCheckCollision() == true)
-					{
-						std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
-						Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
-						handleCollisions(*collision, *position, *tag, i);
-					}
-				}
-				catch (std::exception &e)
-				{
-					return (false);
-				}
-			}
-		}*/
 
 		//Bomb system
 		{
@@ -491,6 +479,8 @@ bool 	GameManager::Update()
 			}
 		}
 
+
+
 		//Explosion system
 		{
 			if ((bitmask & EXPLOSION) == EXPLOSION)
@@ -511,6 +501,10 @@ bool 	GameManager::Update()
 						explosion->SetChildExplosions(0);
 					}
 					explosion->SetDuration(explosion->GetDuration() - Clock::Instance().GetDeltaTime());
+					if (m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] >= 0)
+					{
+						m_toBeDeleted.push_back(m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]);
+					}
 					if (explosion->GetDuration() <= 0)
 					{
 						m_toBeDeleted.push_back(i);
@@ -522,6 +516,30 @@ bool 	GameManager::Update()
 				}
 			}
 		}
+
+		//Collision System
+		/*{
+			if ((bitmask & COLLISION_SYSTEM_FLAGS) == COLLISION_SYSTEM_FLAGS)
+			{
+				try
+				{
+					std::size_t collisionID = m_entities[i].GetComponentOfType(COLLISION);
+					std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
+					Collision *collision = dynamic_cast<Collision *>(m_components[collisionID]);
+					Position *position = dynamic_cast<Position *>(m_components[positionID]);
+					if (collision->GetCheckCollision() == true)
+					{
+						std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
+						Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
+						handleCollisions(*collision, *position, *tag, i);
+					}
+				}
+				catch (std::exception &e)
+				{
+				return (false);
+				}
+			}
+		}*/
 
 		m_action = P_NOACTION;
 	}
