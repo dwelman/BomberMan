@@ -19,6 +19,7 @@ GameManager::GameManager()
 
 	//This is way too expensive, slows down game to an unplayable state
 
+    createEntityAtPosition("indestructible_wall", Vec3(3, 4, 1));
 	/*for (float x = 2; x < 25; x++)
 	{
 	for (int z = 2; z < 45; z++)
@@ -180,7 +181,7 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
 		entity.RegisterComponent(m_currentComponentID, POSITION);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
 		entity.RegisterComponent(m_currentComponentID, COLLISION);
-		m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.4f, 0.4f, 0.4f, true)));
 		entity.RegisterComponent(m_currentComponentID, MOVEMENT);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Movement(Vec3(0, 0, 0), m_playerMoveSpeed, Vec3(0, 0, 0))));
 		entity.RegisterComponent(m_currentComponentID, PLAYERCONTROLLER);
@@ -303,8 +304,6 @@ void GameManager::deleteEntity(std::size_t ID)
 {
 	try
 	{
-		std::cout << "ID: " << ID << " | ";
-		std::cout << "Size: " << m_entities.size() << std::endl;
 		std::vector<std::size_t> components;
 
 		components = m_entities[ID].GetChildrenIDs();
@@ -373,6 +372,7 @@ bool 	GameManager::Update()
 						{
 							MovementSystem::SetMovement(*movement, *position, Vec3(0, -1, 0));
 						}
+                        std::cout << "Player pos: " << "x: " << position->GetPosition().GetX() << " | y: " << position->GetPosition().GetY() << " | z: " << position->GetPosition().GetZ() << std::endl;
 					}
 
 					//if bomb placed

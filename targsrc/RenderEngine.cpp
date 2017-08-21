@@ -737,7 +737,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 		if (shouldDraw)
 		{
 			glm::mat4 ModelMatrix3 = glm::mat4(1.0);
-			ModelMatrix3 = glm::translate(ModelMatrix3, glm::vec3((gameObjects[i].GetPosition().GetX() * 2) - 4, gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) - 4));
+			ModelMatrix3 = glm::translate(ModelMatrix3, glm::vec3((gameObjects[i].GetPosition().GetX() * 2) - 4, gameObjects[i].GetPosition().GetZ() * 2, (gameObjects[i].GetPosition().GetY() * 2) - 4));
 			ModelMatrix3 = glm::rotate(ModelMatrix3, gameObjects[i].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
 			glm::mat4 MVP3 = ProjectionMatrix * ViewMatrix * ModelMatrix3;
 
