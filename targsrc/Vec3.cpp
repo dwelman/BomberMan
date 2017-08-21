@@ -118,3 +118,11 @@ Vec3    operator/(Vec3 lhs, Vec3 const &rhs)
     lhs.SetZ(lhs.GetZ() / rhs.GetZ());
     return (lhs);
 }
+
+Vec3 operator*(Vec3 lhs, float rhs)
+{
+    lhs.SetX(lhs.GetX() * rhs);
+    lhs.SetY(lhs.GetY() * rhs);
+    lhs.SetZ(lhs.GetZ() * rhs);
+    return (lhs);
+}

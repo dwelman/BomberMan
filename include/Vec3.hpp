@@ -31,4 +31,5 @@ Vec3    operator+(Vec3 lhs, Vec3 const &rhs);
 Vec3    operator-(Vec3 lhs, Vec3 const &rhs);
 Vec3    operator*(Vec3 lhs, Vec3 const &rhs);
 Vec3    operator/(Vec3 lhs, Vec3 const &rhs);
+Vec3    operator*(Vec3 lhs, float rhs);
 

@@ -14,27 +14,26 @@ GameManager::GameManager()
 	m_explosionSize = 0;
 	m_lives = 3;
 	m_score = 0;
-	createEntityAtPosition("player", Vec3(0, 0, 0));
+	createEntityAtPosition("player", Vec3(1, 1, 0));
 	srand(time(NULL));
 
-	//This is way too expensive, slows down game to an unplayable state
-
-    createEntityAtPosition("indestructible_wall", Vec3(3, 4, 1));
-	/*for (float x = 2; x < 25; x++)
-	{
-	for (int z = 2; z < 45; z++)
-	{
-	createEntityAtPosition("indestructible_wall", Vec3(x, 0.0f, z));
-	}
-	}
-
-	for (float x = 2; x < 26; x += 2)
-	{
-	for (int z = 2; z < 46; z += 2)
-	{
-	createEntityAtPosition("indestructible_wall", Vec3(x, 1.0f,z));
-	}
-	}*/
+    for (std::size_t y = 0; y < MAP_Y; y++)
+    {
+        for (std::size_t x = 0; x < MAP_X; x++)
+        {
+            m_gameMap[y][x] = -1;
+            if (x == 0 || y == 0 || x == MAP_X - 1 || y == MAP_Y - 1)
+            {
+                m_gameMap[y][x] = -2;
+                createEntityAtPosition("indestructible_wall", Vec3(x, y, 1));
+            }
+            else if (x % 2 == 0 && y % 2 == 0)
+            {
+                m_gameMap[y][x] = -2;
+                createEntityAtPosition("indestructible_wall", Vec3(x, y, 1));
+            }
+        }
+    }
 }
 
 GameManager::GameManager(GameManager const & gm)
@@ -54,8 +53,9 @@ GameManager & GameManager::operator=(GameManager const & gm)
 
 void	GameManager::handleCollisions(Collision &c, Position &p, Tag &t, std::size_t ID)
 {
-	for (std::size_t i = 0; i < m_entities.size(); i++)
-	{
+    for (auto iter = m_entities.begin(); iter != m_entities.end(); iter++)
+    {
+        std::size_t i = iter->first;
 		if (i != ID)
 		{
 			COMPONENT_MASK_TYPE bitmask = m_entities[i].GetComponentFlags();
@@ -144,13 +144,20 @@ void	GameManager::handleCollisions(Collision &c, Position &p, Tag &t, std::size_
 
 						if (TagSystem::CheckMaskForTag(t.GetTagMask(), MOVING_ENTITY_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), WALL_TAG))
 						{
-							//Entity hits a wall and must turn around
+                            std::size_t movementID = m_entities[ID].GetComponentOfType(MOVEMENT);
+                            Movement *movement = dynamic_cast<Movement*>(m_components[movementID]);
+                            std::size_t posID = m_entities[ID].GetComponentOfType(POSITION);
+                            Position *pos = dynamic_cast<Position*>(m_components[posID]);
+
+                            std::cout << "x: " << pos->GetPosition().GetX() << " y: " << pos->GetPosition().GetY() << " z: " << pos->GetPosition().GetZ() << std::endl;
+                            movement->SetDestination(movement->GetDestination() - (movement->GetDirection() * -2));
+                            movement->SetDirection(movement->GetDirection() * -1);
 						}
 					}
 				}
 				catch (std::exception &e)
 				{
-
+                    std::cout << e.what() << std::endl;
 				}
 			}
 		}
@@ -172,7 +179,7 @@ void GameManager::handleMovement(Position &p, Movement &m)
 	MovementSystem::CheckSnapMovement(m, p);
 }
 
-void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos)
+std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos)
 {
 	Entity entity;
 	if (entityType == "player")
@@ -187,7 +194,7 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
 		entity.RegisterComponent(m_currentComponentID, PLAYERCONTROLLER);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new PlayerController()));
 		entity.RegisterComponent(m_currentComponentID, TAG);
-		m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(PLAYER_TAG)));
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(PLAYER_TAG | MOVING_ENTITY_TAG)));
 		entity.RegisterComponent(m_currentComponentID, RENDER);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Render(PLAYER_OT, true)));
 	}
@@ -249,7 +256,9 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
 		entity.RegisterComponent(m_currentComponentID, TAG);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(DAMAGE_ENEMY_TAG | DAMAGE_PLAYER_TAG | DAMAGE_WALL_TAG)));
 		entity.RegisterComponent(m_currentComponentID, EXPLOSION);
-		m_components.emplace(std::make_pair(m_currentComponentID++, new Explosion(m_explosionSize, Vec3(0, 0, 0), 0.4)));
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Explosion(m_explosionSize, Vec3(0, 0, 0), 1)));
+        entity.RegisterComponent(m_currentComponentID, RENDER);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BLOCK_OT, true)));
 	}
 	else if (entityType == "powerup_life")
 	{
@@ -280,24 +289,21 @@ void GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos
 		entity.SetCanTick(false);
 	}
 	else if (entityType == "powerup_bomb_strength")
-	{
-		entity.RegisterComponent(m_currentComponentID, POSITION);
-		m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
-		entity.RegisterComponent(m_currentComponentID, COLLISION);
-		m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
-		entity.RegisterComponent(m_currentComponentID, TAG);
-		m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(POWERUP_TAG)));
-		entity.RegisterComponent(m_currentComponentID, POWERUP);
-		m_components.emplace(std::make_pair(m_currentComponentID++, new Powerup(BOMB_STRENGTH_UP)));
-		entity.RegisterComponent(m_currentComponentID, RENDER);
-		m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BOMB_STRENGTH_POWERUP_OT, true)));
-		entity.SetCanTick(false);
-	}
-	else
-	{
-		return;
-	}
+    {
+        entity.RegisterComponent(m_currentComponentID, POSITION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
+        entity.RegisterComponent(m_currentComponentID, COLLISION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
+        entity.RegisterComponent(m_currentComponentID, TAG);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(POWERUP_TAG)));
+        entity.RegisterComponent(m_currentComponentID, POWERUP);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Powerup(BOMB_STRENGTH_UP)));
+        entity.RegisterComponent(m_currentComponentID, RENDER);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BOMB_STRENGTH_POWERUP_OT, true)));
+        entity.SetCanTick(false);
+    }
 	m_entities.emplace(std::make_pair(m_currentEntityID++, Entity(entity)));
+    return (m_currentEntityID - 1);
 }
 
 void GameManager::deleteEntity(std::size_t ID)
@@ -358,21 +364,32 @@ bool 	GameManager::Update()
 						canDoAction = movement->GetCanChangeDirection();
 						if (m_action == P_MOVE_LEFT)
 						{
-							MovementSystem::SetMovement(*movement, *position, Vec3(-1, 0, 0));
+                            if (m_gameMap[(long int)position->GetPosition().GetY()][(long int)position->GetPosition().GetX() - 1] != -2)
+                            {
+                                MovementSystem::SetMovement(*movement, *position, Vec3(-1, 0, 0));
+                            }
 						}
 						else if (m_action == P_MOVE_RIGHT)
 						{
-							MovementSystem::SetMovement(*movement, *position, Vec3(1, 0, 0));
+                            if (m_gameMap[(long int)position->GetPosition().GetY()][(long int)position->GetPosition().GetX() + 1] != -2)
+                            {
+                                MovementSystem::SetMovement(*movement, *position, Vec3(1, 0, 0));
+                            }
 						}
 						else if (m_action == P_MOVE_UP)
 						{
-							MovementSystem::SetMovement(*movement, *position, Vec3(0, 1, 0));
+                            if (m_gameMap[(long int)position->GetPosition().GetY() + 1][(long int)position->GetPosition().GetX()] != -2)
+                            {
+                                MovementSystem::SetMovement(*movement, *position, Vec3(0, 1, 0));
+                            }
 						}
 						else if (m_action == P_MOVE_DOWN)
 						{
-							MovementSystem::SetMovement(*movement, *position, Vec3(0, -1, 0));
+                            if (m_gameMap[(long int)position->GetPosition().GetY() - 1][(long int)position->GetPosition().GetX()] != -2)
+                            {
+                                MovementSystem::SetMovement(*movement, *position, Vec3(0, -1, 0));
+                            }
 						}
-                        std::cout << "Player pos: " << "x: " << position->GetPosition().GetX() << " | y: " << position->GetPosition().GetY() << " | z: " << position->GetPosition().GetZ() << std::endl;
 					}
 
 					//if bomb placed
@@ -414,7 +431,7 @@ bool 	GameManager::Update()
 		}
 
 		//Collision System
-		{
+		/*{
 			if ((bitmask & COLLISION_SYSTEM_FLAGS) == COLLISION_SYSTEM_FLAGS)
 			{
 				try
@@ -435,7 +452,7 @@ bool 	GameManager::Update()
 					return (false);
 				}
 			}
-		}
+		}*/
 
 		//Bomb system
 		{

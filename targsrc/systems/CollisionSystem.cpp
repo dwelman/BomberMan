@@ -18,6 +18,5 @@ bool CollisionSystem::CheckCollision(Position const &aPos, Collision const &aCol
     //The collider size is doubled to get from the one corner to the other
     collisionX = aPosX + (aCol.GetColliderSize().GetX() * 2) >= bPosX && bPosX + (bCol.GetColliderSize().GetX() * 2) >= aPosX;
     collisionY = aPosY + (aCol.GetColliderSize().GetY() * 2) >= bPosY && bPosY + (bCol.GetColliderSize().GetY() * 2) >= aPosY;
-    //No collisions are done on the Z axis. It's not necessary
     return (collisionX && collisionY);
 }
