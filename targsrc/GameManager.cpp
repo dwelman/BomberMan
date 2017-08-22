@@ -35,6 +35,20 @@ GameManager::GameManager()
             }
         }
     }
+
+    for (std::size_t y = 0; y < MAP_Y; y++)
+    {
+        for (std::size_t x = 0; x < MAP_X; x++)
+        {
+            if (m_gameMap[y][x] == -1 && !(y == 2 && x == 1) && !(y == 1 && x == 2) && !(y == 1 && x == 1))
+            {
+                if (rand() % 100 > 40)
+                {
+                    createEntityAtPosition("destructible_wall", Vec3(x, y, 1));
+                }
+            }
+        }
+    }
 }
 
 GameManager::GameManager(GameManager const & gm)
@@ -52,9 +66,10 @@ GameManager & GameManager::operator=(GameManager const & gm)
 	return (*this);
 }
 
-void	GameManager::handleCollisions(Collision &c, Position &p, Tag &t, std::size_t ID)
+void	GameManager::handleCollisions(Position &p, Tag &t, std::size_t ID)
 {
-    for (auto iter = m_entities.begin(); iter != m_entities.end(); iter++)
+    //if ()
+    /*for (auto iter = m_entities.begin(); iter != m_entities.end(); iter++)
     {
         std::size_t i = iter->first;
 		if (i != ID)
@@ -162,7 +177,7 @@ void	GameManager::handleCollisions(Collision &c, Position &p, Tag &t, std::size_
 				}
 			}
 		}
-	}
+	}*/
 }
 
 
@@ -221,7 +236,7 @@ std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 con
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(WALL_TAG)));
 		entity.RegisterComponent(m_currentComponentID, RENDER);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BLOCK_OT, true)));
-		entity.SetCanTick(false);
+		//entity.SetCanTick(false);
 	}
 	else if (entityType == "enemy_1")
 	{
@@ -346,6 +361,37 @@ bool 	GameManager::Update()
 			}
 		}
 	}
+    for (auto iter = m_entities.begin(); iter != m_entities.end(); iter++)
+    {
+        std::size_t i = iter->first;
+        if (!m_entities[i].GetCanTick())
+        {
+            continue;
+        }
+        //Check each component for the relevant flags
+        COMPONENT_MASK_TYPE bitmask = m_entities[i].GetComponentFlags();
+        //Position system
+        {
+            if ((bitmask & (POSITION | TAG)) == (POSITION | TAG))
+            {
+                try
+                {
+                    std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
+                    Position *position = dynamic_cast<Position *>(m_components[positionID]);
+                    std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
+                    Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
+                    if (!((tag->GetTagMask() & (INDESTRUCTIBLE_TAG | WALL_TAG)) == (INDESTRUCTIBLE_TAG | WALL_TAG)))
+                    {
+                        m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] = i;
+                    }
+                }
+                catch (std::exception &e)
+                {
+                    std::cout << e.what() << std::endl;
+                }
+            }
+        }
+    }
 	for (auto iter = m_entities.begin(); iter != m_entities.end(); iter++)
 	{
 		std::size_t i = iter->first;
@@ -373,28 +419,88 @@ bool 	GameManager::Update()
 						canDoAction = movement->GetCanChangeDirection();
 						if (m_action == P_MOVE_LEFT)
 						{
-                            if (m_gameMap[(long int)position->GetPosition().GetY()][(long int)position->GetPosition().GetX() - 1] != -2)
+                            long ID = m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX() - 1];
+                            if (ID >= 0)
+                            {
+                                COMPONENT_MASK_TYPE flags = m_entities[ID].GetComponentFlags();
+                                if ((flags & TAG) == TAG)
+                                {
+                                    std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
+                                    Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
+
+                                    if ((tag->GetTagMask() & (POWERUP_TAG | ENEMY_TAG)) == (POWERUP_TAG | ENEMY_TAG))
+                                    {
+                                        MovementSystem::SetMovement(*movement, *position, Vec3(-1, 0, 0));
+                                    }
+                                }
+                            }
+                            else if (ID == -1)
                             {
                                 MovementSystem::SetMovement(*movement, *position, Vec3(-1, 0, 0));
                             }
 						}
 						else if (m_action == P_MOVE_RIGHT)
 						{
-                            if (m_gameMap[(long int)position->GetPosition().GetY()][(long int)position->GetPosition().GetX() + 1] != -2)
+                            long ID = m_gameMap[(long int)position->GetPosition().GetY()][(long int)position->GetPosition().GetX() + 1];
+                            if (ID >= 0)
+                            {
+                                COMPONENT_MASK_TYPE flags = m_entities[ID].GetComponentFlags();
+                                if ((flags & TAG) == TAG)
+                                {
+                                    std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
+                                    Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
+
+                                    if ((tag->GetTagMask() & (POWERUP_TAG | ENEMY_TAG)) == (POWERUP_TAG | ENEMY_TAG))
+                                    {
+                                        MovementSystem::SetMovement(*movement, *position, Vec3(1, 0, 0));
+                                    }
+                                }
+                            }
+                            else if (ID == -1)
                             {
                                 MovementSystem::SetMovement(*movement, *position, Vec3(1, 0, 0));
                             }
 						}
 						else if (m_action == P_MOVE_UP)
 						{
-                            if (m_gameMap[(long int)position->GetPosition().GetY() + 1][(long int)position->GetPosition().GetX()] != -2)
+                            long ID = m_gameMap[(long int)position->GetPosition().GetY() + 1][(long int)position->GetPosition().GetX()];
+                            if (ID >= 0)
+                            {
+                                COMPONENT_MASK_TYPE flags = m_entities[ID].GetComponentFlags();
+                                if ((flags & TAG) == TAG)
+                                {
+                                    std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
+                                    Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
+
+                                    if ((tag->GetTagMask() & (POWERUP_TAG | ENEMY_TAG)) == (POWERUP_TAG | ENEMY_TAG))
+                                    {
+                                        MovementSystem::SetMovement(*movement, *position, Vec3(0, 1, 0));
+                                    }
+                                }
+                            }
+                            else if (ID == -1)
                             {
                                 MovementSystem::SetMovement(*movement, *position, Vec3(0, 1, 0));
                             }
 						}
 						else if (m_action == P_MOVE_DOWN)
 						{
-                            if (m_gameMap[(long int)position->GetPosition().GetY() - 1][(long int)position->GetPosition().GetX()] != -2)
+                            long ID = m_gameMap[(long int)position->GetPosition().GetY() - 1][(long int)position->GetPosition().GetX()];
+                            if (ID >= 0)
+                            {
+                                COMPONENT_MASK_TYPE flags = m_entities[ID].GetComponentFlags();
+                                if ((flags & TAG) == TAG)
+                                {
+                                    std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
+                                    Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
+
+                                    if ((tag->GetTagMask() & (POWERUP_TAG | ENEMY_TAG)) == (POWERUP_TAG | ENEMY_TAG))
+                                    {
+                                        MovementSystem::SetMovement(*movement, *position, Vec3(0, -1, 0));
+                                    }
+                                }
+                            }
+                            else if (ID == -1)
                             {
                                 MovementSystem::SetMovement(*movement, *position, Vec3(0, -1, 0));
                             }
@@ -409,7 +515,7 @@ bool 	GameManager::Update()
 						if (m_playerBombAmount > 0)
 						{
 							m_playerBombAmount--;
-							createEntityAtPosition("bomb", position->GetPosition());
+                            m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] = createEntityAtPosition("bomb", position->GetPosition());
 						}
 					}
 				}

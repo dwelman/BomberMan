@@ -41,7 +41,7 @@ private:
 	ePlayerAction 							m_action;
 	long int								m_gameMap[MAP_Y][MAP_X];
 
-	void		handleCollisions(Collision &c, Position &p, Tag &t, std::size_t ID);
+	void		handleCollisions(Position &p, Tag &t, std::size_t ID);
     void        handleMovement(Position &p, Movement &m);
     std::size_t createEntityAtPosition(std::string entityType, Vec3 const &pos);
     void        deleteEntity(std::size_t ID);
