@@ -11,7 +11,7 @@ GameManager::GameManager()
 	m_currentComponentID = 0;
 	m_gameStarted = false;
 	m_playerMoveSpeed = 4.5f;
-	m_playerBombAmount = 3;
+	m_playerBombAmount = 1;
 	m_explosionSize = 1;
 	m_lives = 3;
 	m_score = 0;
@@ -597,6 +597,31 @@ bool 	GameManager::Update()
 					std::size_t explosionID = m_entities[i].GetComponentOfType(EXPLOSION);
 					Position *position = dynamic_cast<Position *>(m_components[positionID]);
 					Explosion *explosion = dynamic_cast<Explosion *>(m_components[explosionID]);
+                    if (m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] >= 0)
+                    {
+                        std::size_t tagID = m_entities[m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]].GetComponentOfType(TAG);
+                        Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
+                        if ((tag->GetTagMask() & (WALL_TAG)) == (WALL_TAG))
+                        {
+                            explosion->SetChildExplosions(0);
+                            explosion->SetDuration(0);
+                        }
+                        if ((tag->GetTagMask() & (BOMB_TAG)) == (BOMB_TAG))
+                        {
+                            std::size_t bombID = m_entities[m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]].GetComponentOfType(BOMB);
+                            Bomb *bomb = dynamic_cast<Bomb *>(m_components[bombID]);
+                            bomb->SetBombTime(0);
+                        }
+                        else
+                        {
+                            m_toBeDeleted.push_back(m_gameMap[(int) position->GetPosition().GetY()][(int) position->GetPosition().GetX()]);
+                        }
+                    }
+                    else if (m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] == -2)
+                    {
+                        explosion->SetChildExplosions(0);
+                        explosion->SetDuration(0);
+                    }
 					if (explosion->GetChildExplosions() > 0)
 					{
 						Vec3 newPos = position->GetPosition() + explosion->GetDirection();
@@ -607,10 +632,6 @@ bool 	GameManager::Update()
 						explosion->SetChildExplosions(0);
 					}
 					explosion->SetDuration(explosion->GetDuration() - Clock::Instance().GetDeltaTime());
-					if (m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] >= 0)
-					{
-						m_toBeDeleted.push_back(m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]);
-					}
 					if (explosion->GetDuration() <= 0)
 					{
 						m_toBeDeleted.push_back(i);
