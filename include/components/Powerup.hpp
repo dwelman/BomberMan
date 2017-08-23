@@ -6,8 +6,7 @@ enum PowerupType
 {
     LIFE,
     BOMB_AMOUNT_UP,
-    BOMB_STRENGTH_UP,
-    PLAYER_SPEED_UP
+    BOMB_STRENGTH_UP
 };
 
 class Powerup : public BaseComponent
