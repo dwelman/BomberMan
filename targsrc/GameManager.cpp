@@ -50,7 +50,8 @@ GameManager::GameManager()
         }
     }
 
-	createEntityAtPosition("powerup_bomb_amount", Vec3(1, 2, 0.2));
+	createEntityAtPosition("powerup_bomb_amount", Vec3(1, 2, 0));
+	createEntityAtPosition("powerup_bomb_strength", Vec3(2, 1, 0));
 }
 
 GameManager::GameManager(GameManager const & gm)

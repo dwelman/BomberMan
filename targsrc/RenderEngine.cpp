@@ -545,8 +545,8 @@ void RenderEngine::initGlew()
         renderData *obj = new renderData;
         rdata.push_back(*obj);
     }
-    rdata[0].Textures = new GLuint[9];
-    glGenTextures(9, rdata[0].Textures);
+    rdata[0].Textures = new GLuint[10];
+    glGenTextures(10, rdata[0].Textures);
 
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();
@@ -573,6 +573,7 @@ void RenderEngine::initGlew()
     tx = loadDDS("textures/BombAO.dds", rdata[0].Textures[6]);
 	tx = loadDDS("textures/crate.dds", rdata[0].Textures[7]);
 	tx = loadDDS("textures/caveWall.dds", rdata[0].Textures[8]);
+	tx = loadDDS("textures/barrel.dds", rdata[0].Textures[9]);
     //tx = loadDDS("textures/DwarfAO.dds", rdata.rObjs[0].getTextureID());
 
     //std::vector<glm::vec3> objV, objN, objT, objBt;
@@ -596,7 +597,10 @@ void RenderEngine::initGlew()
     Mesh *bomb = new Mesh("obj/bomb.obj");
     mesh.push_back(*bomb);
 
-	Mesh *crate = new Mesh("obj/crate.dae");
+	Mesh *barrel = new Mesh("obj/barrel.obj");
+	mesh.push_back(*barrel);
+
+	Mesh *crate = new Mesh("obj/crate.obj");
 	mesh.push_back(*crate);
 
     //computeTangentBasis(rdata[1].objVertices, rdata[1].objUVS, rdata[1].objNormals, rdata[1].objTangents, rdata[1].objBitangents);
@@ -943,8 +947,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 
     glActiveTexture(GL_TEXTURE1);
 
-    //glDisable(GL_CULL_FACE);
-    //glEnable(GL_BLEND);
+
 
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[8]);
@@ -975,7 +978,8 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 //    gameObjects[0].SetPosition(Vec3(1, 1, 5));
 //    gameObjects[1].SetObjectType(BOMB_OT);
 //    gameObjects[1].SetPosition(Vec3(3, 1, 5));
-
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
     for (int l = 0; l < gameObjects.size(); l++)
     {
         bool shouldDraw = false;
@@ -1034,8 +1038,8 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 
     i = 0;
 
-    //glDisable(GL_BLEND);
-    //glEnable(GL_CULL_FACE);
+    glDisable(GL_BLEND);
+    glEnable(GL_CULL_FACE);
 
 	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[6]);
 
@@ -1145,8 +1149,46 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 		{
 			glm::mat4 ModelMatrix2 = glm::mat4(1.0);
 			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) + 1, gameObjects[i].GetPosition().GetX() * 2));
-			ModelMatrix2 = glm::rotate(ModelMatrix2, 1.575f, glm::vec3(0, 1, 0));
+			//ModelMatrix2 = glm::rotate(ModelMatrix2, 1.575f, glm::vec3(0, 1, 0));
 			ModelMatrix2 = glm::scale(ModelMatrix2, glm::vec3(1.5, 1.5, 1.5));
+			glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
+
+			glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
+			glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
+			mesh[4].render();
+		}
+		i++;
+	}
+
+	i = 0;
+
+	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[9]);
+
+	for (int l = 0; l < gameObjects.size(); l++)
+	{
+		bool shouldDraw = false;
+
+		while (gameObjects[i].GetObjectType() != 8) {
+			l++;
+			i++;
+			if (i == gameObjects.size())
+				break;
+			//            if (gameObjects[i].GetObjectType() == 0) {
+			//                shouldDraw = true;
+			//            }
+		}
+		if (i >= gameObjects.size()) {
+			shouldDraw = false;
+		}
+		else
+			shouldDraw = true;
+
+		if (shouldDraw)
+		{
+			glm::mat4 ModelMatrix2 = glm::mat4(1.0);
+			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) + 1, gameObjects[i].GetPosition().GetX() * 2));
+			ModelMatrix2 = glm::rotate(ModelMatrix2, 1.575f, glm::vec3(0, 1, 0));
+			//ModelMatrix2 = glm::scale(ModelMatrix2, glm::vec3(1.5, 1.5, 1.5));
 			glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
 
 			glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
