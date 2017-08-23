@@ -42,13 +42,15 @@ GameManager::GameManager()
         {
             if (m_gameMap[y][x] == -1 && !(y == 2 && x == 1) && !(y == 1 && x == 2) && !(y == 1 && x == 1))
             {
-                if (rand() % 100 > 40)
+                if (rand() % 100 > 70)
                 {
                     createEntityAtPosition("destructible_wall", Vec3(x, y, 1));
                 }
             }
         }
     }
+
+	createEntityAtPosition("powerup_bomb_amount", Vec3(1, 2, 0.2));
 }
 
 GameManager::GameManager(GameManager const & gm)

@@ -25,6 +25,8 @@ struct renderData
 	GLuint ModelMatrixID;
 	GLuint ModelView3x3MatrixID;
 	GLuint LightID;
+	GLuint DepthBiasID;
+	GLuint ShadowMapID;
 	//GLuint TextureID;
 	GLuint DiffuseTextureID;
 	GLuint NormalTextureID;
