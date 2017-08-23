@@ -29,7 +29,7 @@ Mesh::MeshEntry::MeshEntry(aiMesh *mesh) {
 
         glGenBuffers(1, &vbo[VERTEX_BUFFER]);
         glBindBuffer(GL_ARRAY_BUFFER, vbo[VERTEX_BUFFER]);
-        glBufferData(GL_ARRAY_BUFFER, 3 * mesh->mNumVertices * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, mesh->mNumVertices * sizeof(glm::vec3), vertices, GL_STATIC_DRAW);
 
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
         glEnableVertexAttribArray (0);
@@ -47,7 +47,7 @@ Mesh::MeshEntry::MeshEntry(aiMesh *mesh) {
 
         glGenBuffers(1, &vbo[TEXCOORD_BUFFER]);
         glBindBuffer(GL_ARRAY_BUFFER, vbo[TEXCOORD_BUFFER]);
-        glBufferData(GL_ARRAY_BUFFER, 2 * mesh->mNumVertices * sizeof(GLfloat), texCoords, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, mesh->mNumVertices * sizeof(glm::vec2), texCoords, GL_STATIC_DRAW);
 
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
         glEnableVertexAttribArray (1);
@@ -66,7 +66,7 @@ Mesh::MeshEntry::MeshEntry(aiMesh *mesh) {
 
         glGenBuffers(1, &vbo[NORMAL_BUFFER]);
         glBindBuffer(GL_ARRAY_BUFFER, vbo[NORMAL_BUFFER]);
-        glBufferData(GL_ARRAY_BUFFER, 3 * mesh->mNumVertices * sizeof(GLfloat), normals, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, mesh->mNumVertices * sizeof(glm::vec3), normals, GL_STATIC_DRAW);
 
         glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
         glEnableVertexAttribArray (2);
@@ -85,7 +85,7 @@ Mesh::MeshEntry::MeshEntry(aiMesh *mesh) {
 
         glGenBuffers(1, &vbo[INDEX_BUFFER]);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[INDEX_BUFFER]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * mesh->mNumFaces * sizeof(GLuint), indices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->mNumFaces * sizeof(glm::vec3), indices, GL_STATIC_DRAW);
 
         glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
         glEnableVertexAttribArray (3);
