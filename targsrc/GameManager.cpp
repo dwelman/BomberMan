@@ -15,6 +15,7 @@ GameManager::GameManager()
 	m_explosionSize = 1;
 	m_lives = 3;
 	m_score = 0;
+    m_paused = false;
 	createEntityAtPosition("player", Vec3(1, 1, 0));
 	srand(time(NULL));
 
@@ -50,8 +51,8 @@ GameManager::GameManager()
         }
     }
 
-	createEntityAtPosition("powerup_bomb_amount", Vec3(1, 2, 0));
-	createEntityAtPosition("powerup_bomb_strength", Vec3(2, 1, 0));
+	m_gameMap[1][2] = createEntityAtPosition("powerup_bomb_amount", Vec3(1, 2, 0));
+    m_gameMap[2][1] = createEntityAtPosition("powerup_bomb_strength", Vec3(2, 1, 0));
 }
 
 GameManager::GameManager(GameManager const & gm)
@@ -354,6 +355,17 @@ void GameManager::deleteEntity(std::size_t ID)
 bool 	GameManager::Update()
 {
 	m_deltaTime = Clock::Instance().GetDeltaTime();
+    std::size_t playerID;
+    bool playerAlive = false;
+
+    if (m_action == P_PAUSE_GAME)
+    {
+        m_paused = !m_paused;
+        m_action = P_NOACTION;
+    }
+    if (m_paused == true)
+        return (false);
+
 	for (std::size_t y = 0; y < MAP_Y; y++)
 	{
 		for (std::size_t x = 0; x < MAP_X; x++)
@@ -383,9 +395,14 @@ bool 	GameManager::Update()
                     Position *position = dynamic_cast<Position *>(m_components[positionID]);
                     std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
                     Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
-                    if (!((tag->GetTagMask() & (INDESTRUCTIBLE_TAG | WALL_TAG)) == (INDESTRUCTIBLE_TAG | WALL_TAG)))
+                    if (!((tag->GetTagMask() & (INDESTRUCTIBLE_TAG | WALL_TAG | PLAYER_TAG)) == (INDESTRUCTIBLE_TAG | WALL_TAG | PLAYER_TAG)))
                     {
                         m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] = i;
+                    }
+                    if (tag->GetTagMask() & PLAYER_TAG == PLAYER_TAG)
+                    {
+                        playerID = i;
+                        playerAlive = true;
                     }
                 }
                 catch (std::exception &e)
@@ -708,7 +725,16 @@ bool 	GameManager::Update()
                         }
                         else
                         {
-                            m_toBeDeleted.push_back(m_gameMap[(int) position->GetPosition().GetY()][(int) position->GetPosition().GetX()]);
+                            m_toBeDeleted.push_back(m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]);
+                        }
+                        if (playerAlive)
+                        {
+                            std::size_t posID = m_entities[playerID].GetComponentOfType(POSITION);
+                            Position *pos = dynamic_cast<Position *>(m_components[posID]);
+                            if (pos == position)
+                            {
+                                m_toBeDeleted.push_back(playerID);
+                            }
                         }
                     }
                     else if (m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] == -2)
@@ -719,8 +745,7 @@ bool 	GameManager::Update()
 					if (explosion->GetChildExplosions() > 0)
 					{
 						Vec3 newPos = position->GetPosition() + explosion->GetDirection();
-						createEntityAtPosition("explosion", newPos);
-						Explosion *newExplosion = dynamic_cast<Explosion *>(m_components[m_entities[m_currentEntityID - 1].GetComponentOfType(EXPLOSION)]);
+						Explosion *newExplosion = dynamic_cast<Explosion *>(m_components[m_entities[createEntityAtPosition("explosion", newPos)].GetComponentOfType(EXPLOSION)]);
 						newExplosion->SetDirection(explosion->GetDirection());
 						newExplosion->SetChildExplosions(explosion->GetChildExplosions() - 1);
 						explosion->SetChildExplosions(0);
@@ -769,6 +794,7 @@ bool 	GameManager::Update()
 		deleteEntity(m_toBeDeleted[i]);
 	}
 	m_toBeDeleted.clear();
+
 	return (false);
 }
 
@@ -833,4 +859,9 @@ void GameManager::SetGameStarted(bool gameStarted)
 void GameManager::GivePlayerAction(ePlayerAction pa)
 {
 	m_action = pa;
+}
+
+bool GameManager::GetGamePaused() const
+{
+    return (m_paused);
 }

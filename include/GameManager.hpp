@@ -33,6 +33,7 @@ private:
     double                                  m_deltaTime;
     std::vector<std::size_t>                m_toBeDeleted;
     bool                                    m_gameStarted;
+    bool                                    m_paused;
 	float 									m_playerMoveSpeed;
 	std::size_t 							m_playerBombAmount;
 	std::size_t 							m_explosionSize;
@@ -56,4 +57,5 @@ public:
     bool        GetGameStarted() const;
     void        SetGameStarted(bool gameStarted);
 	void 		GivePlayerAction(ePlayerAction pa);
+    bool        GetGamePaused() const;
 };
