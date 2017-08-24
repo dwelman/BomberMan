@@ -160,8 +160,28 @@ bool applyClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICra
 
 		}
 		var.keybindings.keyBindChanges.clear();
-		g_cfg.saveConfig();
+
+		CEGUI::Slider* slider = static_cast<CEGUI::Slider*>(var.settings->getChildElementRecursive("MusicVolSlider"));
+		g_cfg["MusicVolume"] = std::to_string(slider->getCurrentValue());
+		var.audio->MusicVolume(slider->getCurrentValue());
+		slider = static_cast<CEGUI::Slider*>(var.settings->getChildElementRecursive("SFXVolSlider"));
+		g_cfg["SFXVolume"] = std::to_string(slider->getCurrentValue());
+		var.audio->SFXVolume(slider->getCurrentValue());
+		slider = static_cast<CEGUI::Slider*>(var.settings->getChildElementRecursive("MasterVolSlider"));
+		g_cfg["MasterVolume"] = std::to_string(slider->getCurrentValue());
+		var.audio->MasterVolume(slider->getCurrentValue());
 	}
+	CEGUI::Slider* slider = static_cast<CEGUI::Slider*>(var.settings->getChildElementRecursive("MusicVolSlider"));
+	g_cfg["MusicVolume"] = std::to_string(slider->getCurrentValue());
+	var.audio->MusicVolume(slider->getCurrentValue());
+	slider = static_cast<CEGUI::Slider*>(var.settings->getChildElementRecursive("SFXVolSlider"));
+	g_cfg["SFXVolume"] = std::to_string(slider->getCurrentValue());
+	var.audio->SFXVolume(slider->getCurrentValue());
+	slider = static_cast<CEGUI::Slider*>(var.settings->getChildElementRecursive("MasterVolSlider"));
+	g_cfg["MasterVolume"] = std::to_string(slider->getCurrentValue());
+	var.audio->MasterVolume(slider->getCurrentValue());
+
+	g_cfg.saveConfig();
     return (true);
 };
 
@@ -175,6 +195,21 @@ bool showVideoSettingsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_elem
 bool showAudioSettingsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate	&var)
 {
 	var.settingPanes->SetActive("AudioSettings");
+
+	CEGUI::Slider* slider = static_cast<CEGUI::Slider*>(var.settings->getChildElementRecursive("MasterVolSlider"));
+	slider->setMaxValue(100);
+	slider->setClickStep(1);
+	slider->setCurrentValue(std::stof(g_cfg["MasterVolume"].to_str()));
+	float valueSlider = slider->getCurrentValue();
+	slider = static_cast<CEGUI::Slider*>(var.settings->getChildElementRecursive("SFXVolSlider"));
+	slider->setMaxValue(128);
+	slider->setClickStep(1);
+	slider->setCurrentValue(std::stof(g_cfg["SFXVolume"].to_str()));
+	slider = static_cast<CEGUI::Slider*>(var.settings->getChildElementRecursive("MusicVolSlider"));
+	slider->setMaxValue(128);
+	slider->setClickStep(1);
+	slider->setCurrentValue(std::stof(g_cfg["MusicVolume"].to_str()));
+
 	initMenuValues(var);
 	return (true);
 }

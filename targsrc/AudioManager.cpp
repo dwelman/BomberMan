@@ -21,11 +21,12 @@ AudioManager::AudioManager(ConfigEditor &cfg)
     Mix_Music *muse = Mix_LoadMUS("resources/Sounds/Rob_Gasser_-_Ricochet.wav");
     Music.push_back(muse);
     SFX.push_back(temp);
-    int vol = std::stoi(cfg["MasterVolume"].to_str());
-    SFXVol = vol;
-    MasterVol = vol;
-    SFXVolume(vol);
-    MusicVolume(vol);
+    MasterVol = std::stod(cfg["MasterVolume"].to_str());
+    SFXVol = std::stod(cfg["SFXVolume"].to_str());
+    MusicVol = std::stod(cfg["MusicVolume"].to_str());
+    SFXVolume(SFXVol);
+    MusicVolume(MusicVol);
+    MasterVolume(MasterVol);
 
 }
 
@@ -85,24 +86,33 @@ void    AudioManager::PlaySFX(int i)
         Mix_PlayChannel( -1, SFX[i], 0 );
 }
 
-void    AudioManager::MusicVolume(int vol)
+void    AudioManager::MusicVolume(double vol)
 {
-    if (vol >= 0 && vol <= 100)
-        Mix_VolumeMusic(vol);
+    if (vol >= 0 && vol <= 128)
+    {
+        Mix_VolumeMusic(round(vol * (MasterVol/100)));
+        MusicVol = vol;
+    }
 }
 
-void    AudioManager::SFXVolume(int vol)
+void    AudioManager::SFXVolume(double vol)
 {
-    if (vol >= 0 && vol <= 100)
+    if (vol >= 0 && vol <= 128)
+    {
         Mix_Volume(-1, vol);
+        SFXVol = vol;
+    }
 }
 
-void    AudioManager::MasterVolume(int vol)
+void    AudioManager::MasterVolume(double vol)
 {
     if (vol >= 0 && vol <= 100)
     {
-        Mix_VolumeMusic(vol);
-        Mix_Volume(-1, vol);
+        MasterVol = vol;
+        double volume = round((vol / 100) * SFXVol);
+        Mix_Volume(-1, volume);
+        volume = round(MusicVol * (vol / 100));
+        Mix_VolumeMusic(volume);
     }
 }
 

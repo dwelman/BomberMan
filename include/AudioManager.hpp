@@ -2,6 +2,7 @@
 
 #include <SDL_mixer.h>
 #include <ConfigEditor.hpp>
+#include <math.h>
 #include <string>
 #include <vector>
 #include <queue>
@@ -32,9 +33,9 @@ class AudioManager
         std::vector<Mix_Chunk*> SFX;
         std::vector<Mix_Music*> Music;
         std::queue<AudioEvent*> queue;
-        int                     SFXVol;
-        int                     MusicVol;
-        int                     MasterVol;
+        double                     SFXVol;
+        double                     MusicVol;
+        double                     MasterVol;
 
     public:
         AudioManager();
@@ -50,9 +51,9 @@ class AudioManager
         void PauseMusic(int i);
         void PlaySFX(int i);
 
-        void MusicVolume(int vol);
-        void SFXVolume(int vol);
-		void MasterVolume(int vol); 
+        void MusicVolume(double vol);
+        void SFXVolume(double vol);
+		void MasterVolume(double vol); 
 		
 		void PushEvent(bool type, int);
 		void execQueue();
