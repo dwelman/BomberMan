@@ -7,13 +7,15 @@
 void		setupEvents(GUICrate &crate)
 {
 	//Main menu
+	CEGUI::NamedElement *cunt = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("Continue");
+	crate.MenuFunctions.push_back(new MenuFunction(cunt, CEGUI::PushButton::EventClicked, &continueGameMainMenu, crate));
 	CEGUI::NamedElement *start = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("StartGame");
 	crate.MenuFunctions.push_back(new MenuFunction(start, CEGUI::PushButton::EventClicked, &startGameMainMenu, crate));
 	CEGUI::NamedElement *settings = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("Settings");
 	crate.MenuFunctions.push_back(new MenuFunction(settings, CEGUI::PushButton::EventClicked, &openSettingsMenu, crate));
 	CEGUI::NamedElement *exit = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("Exit");
 	crate.MenuFunctions.push_back(new MenuFunction(exit, CEGUI::PushButton::EventClicked, &setExit, crate));
-
+	 
 	//Settings
 	CEGUI::NamedElement *videoSettingsBtn = crate.settings->getChildElementRecursive("VideoSettingsBtn");
 	crate.MenuFunctions.push_back(new MenuFunction(videoSettingsBtn, CEGUI::PushButton::EventClicked, &showVideoSettingsPane, crate));
@@ -59,6 +61,18 @@ void	switchLayouts(CEGUI::Window *from, CEGUI::Window *to)
 		CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(to);
 	}
 }
+
+bool continueGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate &var)
+{
+	if (var.manager->GetGamePaused())
+		var.manager->GivePlayerAction(P_PAUSE_GAME);
+	else
+	{
+		//TODO load saved game
+		var.manager->SetGameStarted(true);
+	}
+	return (true);
+};
 
 bool startGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate &var)
 {

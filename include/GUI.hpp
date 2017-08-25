@@ -48,6 +48,7 @@ struct GUICrate
 	//Layouts
 	CEGUI::Window							*main;
 	CEGUI::Window							*settings;
+	CEGUI::NamedElement						*paused;
 	PaneGroup								*settingPanes;
 
 	//Setting States
@@ -134,6 +135,8 @@ bool setExit(const CEGUI::EventArgs& /*e*/, CEGUI::NamedElement *_element, GUICr
 bool openSettingsMenu(const CEGUI::EventArgs& /*e*/, CEGUI::NamedElement *_element, GUICrate &var);
 
 bool openMainMenu(const CEGUI::EventArgs& /*e*/, CEGUI::NamedElement *_element, GUICrate &var);
+
+bool continueGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate &var);
 
 bool startGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate &var);
 

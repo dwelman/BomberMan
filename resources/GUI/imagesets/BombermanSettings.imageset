@@ -3,5 +3,10 @@
     <Image height="83" name="SideBarBtn" width="490" xPos="520" yPos="5" />
     <Image height="83" name="SideBarBtnHover" width="490" xPos="1020" yPos="5" />
     <Image height="83" name="SideBarBtnPush" width="490" xPos="1520" yPos="5" />
-    <Image height="70" name="SideBarArrow" width="67" xPos="520" yPos="100" />
+    <Image height="70" name="ArrowR" width="67" xPos="520" yPos="100" />
+    <Image height="70" name="ArrowHoverR" width="67" xPos="600" yPos="100" />
+    <Image height="70" name="ArrowPushedR" width="67" xPos="680" yPos="100" />
+    <Image height="70" name="ArrowHoverL" width="67" xPos="600" yPos="190" />
+    <Image height="70" name="ArrowL" width="67" xPos="680" yPos="190" />
+    <Image height="70" name="ArrowPushedL" width="67" xPos="520" yPos="190" />
 </Imageset>

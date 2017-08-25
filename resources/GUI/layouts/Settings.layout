@@ -23,7 +23,6 @@
                 <Property name="Area" value="{{0.260417,0},{0,0},{0.999997,0},{0.9,0}}" />
                 <Property name="Text" value=" Settings" />
                 <Property name="MaxSize" value="{{1,0},{1,0}}" />
-                <Property name="Visible" value="false" />
                 <Property name="AlwaysOnTop" value="true" />
                 <Property name="ContentArea" value="l:0 t:-1 r:884.5 b:164" />
                 <AutoWindow namePath="__auto_container__" >
@@ -39,15 +38,16 @@
                     </Window>
                     <Window type="AlfiskoSkin/ImageButton" name="FullscreenNext" >
                         <Property name="Area" value="{{0.89,0},{0.2,0},{0.94,0},{0.26,0}}" />
-                        <Property name="HoverImage" value="AlfiskoSkin/ScrollRightHover" />
-                        <Property name="NormalImage" value="AlfiskoSkin/ScrollRightNormal" />
-                        <Property name="PushedImage" value="AlfiskoSkin/ScrollRightPushed" />
+                        <Property name="HoverImage" value="BombermanSettings/ArrowHoverR" />
+                        <Property name="NormalImage" value="BombermanSettings/ArrowR" />
+                        <Property name="PushedImage" value="BombermanSettings/ArrowPushedR" />
                     </Window>
                     <Window type="AlfiskoSkin/ImageButton" name="FullscreenPrevious" >
                         <Property name="Area" value="{{0.55,0},{0.2,0},{0.6,0},{0.26,0}}" />
-                        <Property name="HoverImage" value="AlfiskoSkin/ScrollLeftHover" />
-                        <Property name="NormalImage" value="AlfiskoSkin/ScrollLeftNormal" />
-                        <Property name="PushedImage" value="AlfiskoSkin/ScrollLeftPushed" />
+                        <Property name="HoverImage" value="BombermanSettings/ArrowHoverL" />
+                        <Property name="NormalImage" value="BombermanSettings/ArrowL" />
+                        <Property name="PushedImage" value="BombermanSettings/ArrowPushedL" />
+                        <Property name="AutoRenderingSurface" value="true" />
                     </Window>
                     <Window type="AlfiskoSkin/Editbox" name="FullscreenValue" >
                         <Property name="Area" value="{{0.62,0},{0.2,0},{0.87,0},{0.26,0}}" />
@@ -64,9 +64,9 @@
                     </Window>
                     <Window type="AlfiskoSkin/ImageButton" name="ResolutionNext" >
                         <Property name="Area" value="{{0.89,-1},{0.1,0},{0.94,-1},{0.16,0}}" />
-                        <Property name="HoverImage" value="AlfiskoSkin/ScrollRightHover" />
-                        <Property name="NormalImage" value="AlfiskoSkin/ScrollRightNormal" />
-                        <Property name="PushedImage" value="AlfiskoSkin/ScrollRightPushed" />
+                        <Property name="HoverImage" value="BombermanSettings/ArrowHoverR" />
+                        <Property name="NormalImage" value="BombermanSettings/ArrowR" />
+                        <Property name="PushedImage" value="BombermanSettings/ArrowPushedR" />
                     </Window>
                     <Window type="AlfiskoSkin/Editbox" name="ResolutionValue" >
                         <Property name="Area" value="{{0.62,-1},{0.1,0},{0.87,-1},{0.16,0}}" />
@@ -76,12 +76,13 @@
                     </Window>
                     <Window type="AlfiskoSkin/ImageButton" name="ResolutionPrevious" >
                         <Property name="Area" value="{{0.55,-2},{0.1,0},{0.6,-2},{0.16,0}}" />
-                        <Property name="HoverImage" value="AlfiskoSkin/ScrollLeftHover" />
-                        <Property name="NormalImage" value="AlfiskoSkin/ScrollLeftNormal" />
-                        <Property name="PushedImage" value="AlfiskoSkin/ScrollLeftPushed" />
+                        <Property name="HoverImage" value="BombermanSettings/ArrowHoverL" />
+                        <Property name="NormalImage" value="BombermanSettings/ArrowL" />
+                        <Property name="PushedImage" value="BombermanSettings/ArrowPushedL" />
+                        <Property name="AutoRenderingSurface" value="true" />
                     </Window>
                     <Window type="Generic/LabelWithOutline" name="VideoSettingsCaption" >
-                        <Property name="Area" value="{{0,0},{0,-1},{0.9,0},{0,30}}" />
+                        <Property name="Area" value="{{0,0},{0,-1},{0.9,0},{0.06,-1}}" />
                         <Property name="Text" value="Video Settings" />
                         <Property name="MaxSize" value="{{1,0},{1,0}}" />
                         <Property name="DragDropTarget" value="false" />
@@ -144,7 +145,7 @@
                         <Property name="NormalTextColour" value="FFE1E4E8" />
                     </Window>
                     <Window type="Generic/LabelWithOutline" name="VideoSettingsCaption" >
-                        <Property name="Area" value="{{0,0},{0,-1},{0.9,0},{0,30}}" />
+                        <Property name="Area" value="{{0,0},{0,-1},{0.9,0},{0.06,-1}}" />
                         <Property name="Text" value="Audio Settings" />
                         <Property name="MaxSize" value="{{1,0},{1,0}}" />
                         <Property name="DragDropTarget" value="false" />
@@ -201,10 +202,11 @@
                 <Property name="Area" value="{{0.260417,0},{0,0},{0.999997,0},{0.9,0}}" />
                 <Property name="Text" value=" Settings" />
                 <Property name="MaxSize" value="{{1,0},{1,0}}" />
+                <Property name="Visible" value="false" />
                 <Property name="AlwaysOnTop" value="true" />
-                <Property name="ContentArea" value="l:0 t:-2 r:883.5 b:417" />
+                <Property name="ContentArea" value="l:-1 t:-2 r:837 b:417" />
                 <AutoWindow namePath="__auto_container__" >
-                    <Property name="ContentArea" value="l:0 t:-2 r:883.5 b:417" />
+                    <Property name="ContentArea" value="l:-1 t:-2 r:837 b:417" />
                     <Property name="AutoRenderingSurface" value="true" />
                     <Property name="MouseInputPropagationEnabled" value="true" />
                     <Window type="Generic/LabelWithOutline" name="MoveUpLabel" >
@@ -280,7 +282,7 @@
                         <Property name="TextFormatting" value="CentreAligned" />
                     </Window>
                     <Window type="Generic/LabelWithOutline" name="ControlsCaption" >
-                        <Property name="Area" value="{{0,-1},{0,-2},{0.9,-1},{0,29}}" />
+                        <Property name="Area" value="{{0,-1},{0,-2},{0.9,-1},{0.06,-2}}" />
                         <Property name="Text" value="Controls" />
                         <Property name="MaxSize" value="{{1,0},{1,0}}" />
                         <Property name="DragDropTarget" value="false" />

@@ -115,6 +115,7 @@ void		loadResources(GUICrate &crate)
 void        initMenuValues(GUICrate &crate)
 {
 	g_cfg.reload();
+	crate.paused = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("Paused");
     //Video Settings
     CEGUI::NamedElement *resolutionValue = crate.settings->getChildElementRecursive("ResolutionValue");
     resolutionValue->setProperty("Text", g_cfg["xres"].to_str() + "x" + g_cfg["yres"].to_str());
@@ -274,7 +275,10 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 		captureInputForSettingMenu(e, crate.keybindings, crate.settings);
 	}
     crate.engine->computeMatricesFromInputs(window, e);
-
+	if (manager.GetGamePaused())
+		crate.paused->setProperty("Visible", "True");
+	else
+		crate.paused->setProperty("Visible", "False");
 //	if (manager.GetGameStarted()) // && !manager.GetGamePaused())
 //		crate.main->setVisible(false);
 	injectTimePulse(guiLastTimePulse);
@@ -283,7 +287,7 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
     glDisable(GL_TEXTURE_2D);
 	glGetIntegerv(GL_ACTIVE_TEXTURE, &activeID);
 	glActiveTexture(GL_TEXTURE0);
-	if (!manager.GetGameStarted()) //NEED TO FIGURE LIGHTS THE FUCK PIdasdasdads
+	if (!manager.GetGameStarted() || manager.GetGamePaused()) //NEED TO FIGURE LIGHTS THE FUCK PIdasdasdads
         CEGUI::System::getSingleton().renderAllGUIContexts();
 
 	glActiveTexture(activeID);
