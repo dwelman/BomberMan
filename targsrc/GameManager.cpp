@@ -16,43 +16,7 @@ GameManager::GameManager()
 	m_lives = 3;
 	m_score = 0;
     m_paused = false;
-	createEntityAtPosition("player", Vec3(1, 1, 0));
-	srand(time(NULL));
-
-    for (std::size_t y = 0; y < MAP_Y; y++)
-    {
-        for (std::size_t x = 0; x < MAP_X; x++)
-        {
-            m_gameMap[y][x] = -1;
-            if (x == 0 || y == 0 || x == MAP_X - 1 || y == MAP_Y - 1)
-            {
-                m_gameMap[y][x] = -2;
-                createEntityAtPosition("indestructible_wall", Vec3(x, y, 1));
-            }
-            else if (x % 2 == 0 && y % 2 == 0)
-            {
-                m_gameMap[y][x] = -2;
-                createEntityAtPosition("indestructible_wall", Vec3(x, y, 1));
-            }
-        }
-    }
-
-    for (std::size_t y = 0; y < MAP_Y; y++)
-    {
-        for (std::size_t x = 0; x < MAP_X; x++)
-        {
-            if (m_gameMap[y][x] == -1 && !(y == 2 && x == 1) && !(y == 1 && x == 2) && !(y == 1 && x == 1))
-            {
-                if (rand() % 100 > 70)
-                {
-                    createEntityAtPosition("destructible_wall", Vec3(x, y, 1));
-                }
-            }
-        }
-    }
-
-	m_gameMap[1][2] = createEntityAtPosition("powerup_bomb_amount", Vec3(1, 2, 0));
-    m_gameMap[2][1] = createEntityAtPosition("powerup_bomb_strength", Vec3(2, 1, 0));
+	startLevel();
 }
 
 GameManager::GameManager(GameManager const & gm)
@@ -350,6 +314,61 @@ void GameManager::deleteEntity(std::size_t ID)
 	{
 		std::cout << e.what() << std::endl;
 	}
+}
+
+void GameManager::startLevel()
+{
+	m_entities.clear();
+	m_components.clear();
+	createEntityAtPosition("player", Vec3(1, 1, 0));
+	m_seed = time(NULL);
+	srand(m_seed);
+	m_currentEntityID = 0;
+	m_currentComponentID = 0;
+
+	for (std::size_t y = 0; y < MAP_Y; y++)
+	{
+		for (std::size_t x = 0; x < MAP_X; x++)
+		{
+			m_gameMap[y][x] = -1;
+			if (x == 0 || y == 0 || x == MAP_X - 1 || y == MAP_Y - 1)
+			{
+				m_gameMap[y][x] = -2;
+				createEntityAtPosition("indestructible_wall", Vec3(x, y, 1));
+			}
+			else if (x % 2 == 0 && y % 2 == 0)
+			{
+				m_gameMap[y][x] = -2;
+				createEntityAtPosition("indestructible_wall", Vec3(x, y, 1));
+			}
+		}
+	}
+
+	for (std::size_t y = 0; y < MAP_Y; y++)
+	{
+		for (std::size_t x = 0; x < MAP_X; x++)
+		{
+			if (m_gameMap[y][x] == -1 && !(y == 2 && x == 1) && !(y == 1 && x == 2) && !(y == 1 && x == 1))
+			{
+				if (rand() % 100 > 70)
+				{
+					createEntityAtPosition("destructible_wall", Vec3(x, y, 1));
+				}
+			}
+		}
+	}
+}
+
+void GameManager::killPlayer()
+{
+	m_lives--;
+	m_playerBombAmount = 1;
+	m_explosionSize = 1;
+	if (m_lives <= 0)
+	{
+		exit(0);
+	}
+	startLevel();
 }
 
 bool 	GameManager::Update()
@@ -720,9 +739,11 @@ bool 	GameManager::Update()
                         {
                             std::size_t posID = m_entities[playerID].GetComponentOfType(POSITION);
                             Position *pos = dynamic_cast<Position *>(m_components[posID]);
-                            if (pos == position)
+                            if (pos->GetPosition() == position->GetPosition())
                             {
                                 m_toBeDeleted.push_back(playerID);
+								killPlayer();
+								return (false);
                             }
                         }
                     }
@@ -775,14 +796,13 @@ bool 	GameManager::Update()
 				}
 			}
 		}*/
-
-		m_action = P_NOACTION;
 	}
 	for (std::size_t i = 0; i < m_toBeDeleted.size(); i++)
 	{
 		deleteEntity(m_toBeDeleted[i]);
 	}
 	m_toBeDeleted.clear();
+	m_action = P_NOACTION;
 
 	return (false);
 }
