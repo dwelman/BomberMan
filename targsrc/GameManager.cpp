@@ -452,6 +452,7 @@ bool 	GameManager::Update()
 										if (powerup->GetPowerupType() == LIFE)
 										{
 											m_lives++;
+											m_toBeDeleted.push_back(ID);
 										}
 										else if (powerup->GetPowerupType() == BOMB_AMOUNT_UP)
 										{
@@ -490,6 +491,7 @@ bool 	GameManager::Update()
 										if (powerup->GetPowerupType() == LIFE)
 										{
 											m_lives++;
+											m_toBeDeleted.push_back(ID);
 										}
 										else if (powerup->GetPowerupType() == BOMB_AMOUNT_UP)
 										{
@@ -528,6 +530,7 @@ bool 	GameManager::Update()
 										if (powerup->GetPowerupType() == LIFE)
 										{
 											m_lives++;
+											m_toBeDeleted.push_back(ID);
 										}
 										else if (powerup->GetPowerupType() == BOMB_AMOUNT_UP)
 										{
@@ -566,6 +569,7 @@ bool 	GameManager::Update()
 										if (powerup->GetPowerupType() == LIFE)
 										{
 											m_lives++;
+											m_toBeDeleted.push_back(ID);
 										}
 										else if (powerup->GetPowerupType() == BOMB_AMOUNT_UP)
 										{
