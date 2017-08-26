@@ -379,10 +379,6 @@ bool 	GameManager::Update()
     for (auto iter = m_entities.begin(); iter != m_entities.end(); iter++)
     {
         std::size_t i = iter->first;
-        if (!m_entities[i].GetCanTick())
-        {
-            continue;
-        }
         //Check each component for the relevant flags
         COMPONENT_MASK_TYPE bitmask = m_entities[i].GetComponentFlags();
         //Position system
@@ -395,14 +391,14 @@ bool 	GameManager::Update()
                     Position *position = dynamic_cast<Position *>(m_components[positionID]);
                     std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
                     Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
-                    if (!((tag->GetTagMask() & (INDESTRUCTIBLE_TAG | WALL_TAG | PLAYER_TAG)) == (INDESTRUCTIBLE_TAG | WALL_TAG | PLAYER_TAG)))
+					if (tag->GetTagMask() & PLAYER_TAG == PLAYER_TAG)
+					{
+						playerID = i;
+						playerAlive = true;
+					}
+                    else if (!((tag->GetTagMask() & (INDESTRUCTIBLE_TAG | WALL_TAG)) == (INDESTRUCTIBLE_TAG | WALL_TAG)))
                     {
                         m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] = i;
-                    }
-                    if (tag->GetTagMask() & PLAYER_TAG == PLAYER_TAG)
-                    {
-                        playerID = i;
-                        playerAlive = true;
                     }
                 }
                 catch (std::exception &e)
@@ -448,29 +444,26 @@ bool 	GameManager::Update()
                                     std::size_t tagID = m_entities[ID].GetComponentOfType(TAG);
                                     Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
 
-                                    if ((tag->GetTagMask() & (POWERUP_TAG | ENEMY_TAG)) == (POWERUP_TAG | ENEMY_TAG))
-                                    {
-                                        MovementSystem::SetMovement(*movement, *position, Vec3(-1, 0, 0));
-										if (tag->GetTagMask() & POWERUP_TAG == POWERUP_TAG)
+									if ((tag->GetTagMask() & (POWERUP_TAG)) == (POWERUP_TAG))
+									{
+										MovementSystem::SetMovement(*movement, *position, Vec3(-1, 0, 0));
+										std::size_t powerupID = m_entities[ID].GetComponentOfType(POWERUP);
+										Powerup *powerup = dynamic_cast<Powerup *>(m_components[powerupID]);
+										if (powerup->GetPowerupType() == LIFE)
 										{
-											std::size_t powerupID = m_entities[ID].GetComponentOfType(POWERUP);
-											Powerup *powerup = dynamic_cast<Powerup *>(m_components[powerupID]);
-											if (powerup->GetPowerupType() == LIFE)
-											{
-												m_lives++;
-											}
-											else if (powerup->GetPowerupType() == BOMB_AMOUNT_UP)
-											{
-												m_playerBombAmount++;
-												m_toBeDeleted.push_back(ID);
-											}
-											else if (powerup->GetPowerupType() == BOMB_STRENGTH_UP)
-											{
-												m_explosionSize++;
-												m_toBeDeleted.push_back(ID);
-											}
+											m_lives++;
 										}
-                                    }
+										else if (powerup->GetPowerupType() == BOMB_AMOUNT_UP)
+										{
+											m_playerBombAmount++;
+											m_toBeDeleted.push_back(ID);
+										}
+										else if (powerup->GetPowerupType() == BOMB_STRENGTH_UP)
+										{
+											m_explosionSize++;
+											m_toBeDeleted.push_back(ID);
+										}
+									}
                                 }
                             }
                             else if (ID == -1)
@@ -489,27 +482,24 @@ bool 	GameManager::Update()
                                     std::size_t tagID = m_entities[ID].GetComponentOfType(TAG);
                                     Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
 
-                                    if ((tag->GetTagMask() & (POWERUP_TAG | ENEMY_TAG)) == (POWERUP_TAG | ENEMY_TAG))
+                                    if ((tag->GetTagMask() & (POWERUP_TAG)) == (POWERUP_TAG))
                                     {
                                         MovementSystem::SetMovement(*movement, *position, Vec3(1, 0, 0));
-										if (tag->GetTagMask() & POWERUP_TAG == POWERUP_TAG)
+										std::size_t powerupID = m_entities[ID].GetComponentOfType(POWERUP);
+										Powerup *powerup = dynamic_cast<Powerup *>(m_components[powerupID]);
+										if (powerup->GetPowerupType() == LIFE)
 										{
-											std::size_t powerupID = m_entities[ID].GetComponentOfType(POWERUP);
-											Powerup *powerup = dynamic_cast<Powerup *>(m_components[powerupID]);
-											if (powerup->GetPowerupType() == LIFE)
-											{
-												m_lives++;
-											}
-											else if (powerup->GetPowerupType() == BOMB_AMOUNT_UP)
-											{
-												m_playerBombAmount++;
-												m_toBeDeleted.push_back(ID);
-											}
-											else if (powerup->GetPowerupType() == BOMB_STRENGTH_UP)
-											{
-												m_explosionSize++;
-												m_toBeDeleted.push_back(ID);
-											}
+											m_lives++;
+										}
+										else if (powerup->GetPowerupType() == BOMB_AMOUNT_UP)
+										{
+											m_playerBombAmount++;
+											m_toBeDeleted.push_back(ID);
+										}
+										else if (powerup->GetPowerupType() == BOMB_STRENGTH_UP)
+										{
+											m_explosionSize++;
+											m_toBeDeleted.push_back(ID);
 										}
                                     }
                                 }
@@ -530,29 +520,26 @@ bool 	GameManager::Update()
                                     std::size_t tagID = m_entities[ID].GetComponentOfType(TAG);
                                     Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
 
-                                    if ((tag->GetTagMask() & (POWERUP_TAG | ENEMY_TAG)) == (POWERUP_TAG | ENEMY_TAG))
-                                    {
-                                        MovementSystem::SetMovement(*movement, *position, Vec3(0, 1, 0));
-										if (tag->GetTagMask() & POWERUP_TAG == POWERUP_TAG)
+									if ((tag->GetTagMask() & (POWERUP_TAG)) == (POWERUP_TAG))
+									{
+										MovementSystem::SetMovement(*movement, *position, Vec3(0, 1, 0));
+										std::size_t powerupID = m_entities[ID].GetComponentOfType(POWERUP);
+										Powerup *powerup = dynamic_cast<Powerup *>(m_components[powerupID]);
+										if (powerup->GetPowerupType() == LIFE)
 										{
-											std::size_t powerupID = m_entities[ID].GetComponentOfType(POWERUP);
-											Powerup *powerup = dynamic_cast<Powerup *>(m_components[powerupID]);
-											if (powerup->GetPowerupType() == LIFE)
-											{
-												m_lives++;
-											}
-											else if (powerup->GetPowerupType() == BOMB_AMOUNT_UP)
-											{
-												m_playerBombAmount++;
-												m_toBeDeleted.push_back(ID);
-											}
-											else if (powerup->GetPowerupType() == BOMB_STRENGTH_UP)
-											{
-												m_explosionSize++;
-												m_toBeDeleted.push_back(ID);
-											}
+											m_lives++;
 										}
-                                    }
+										else if (powerup->GetPowerupType() == BOMB_AMOUNT_UP)
+										{
+											m_playerBombAmount++;
+											m_toBeDeleted.push_back(ID);
+										}
+										else if (powerup->GetPowerupType() == BOMB_STRENGTH_UP)
+										{
+											m_explosionSize++;
+											m_toBeDeleted.push_back(ID);
+										}
+									}
                                 }
                             }
                             else if (ID == -1)
@@ -571,29 +558,26 @@ bool 	GameManager::Update()
                                     std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
                                     Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
 
-                                    if ((tag->GetTagMask() & (POWERUP_TAG | ENEMY_TAG)) == (POWERUP_TAG | ENEMY_TAG))
-                                    {
-                                        MovementSystem::SetMovement(*movement, *position, Vec3(0, -1, 0));
-										if (tag->GetTagMask() & POWERUP_TAG == POWERUP_TAG)
+									if ((tag->GetTagMask() & (POWERUP_TAG)) == (POWERUP_TAG))
+									{
+										MovementSystem::SetMovement(*movement, *position, Vec3(1, 0, 0));
+										std::size_t powerupID = m_entities[ID].GetComponentOfType(POWERUP);
+										Powerup *powerup = dynamic_cast<Powerup *>(m_components[powerupID]);
+										if (powerup->GetPowerupType() == LIFE)
 										{
-											std::size_t powerupID = m_entities[ID].GetComponentOfType(POWERUP);
-											Powerup *powerup = dynamic_cast<Powerup *>(m_components[powerupID]);
-											if (powerup->GetPowerupType() == LIFE)
-											{
-												m_lives++;
-											}
-											else if (powerup->GetPowerupType() == BOMB_AMOUNT_UP)
-											{
-												m_playerBombAmount++;
-												m_toBeDeleted.push_back(ID);
-											}
-											else if (powerup->GetPowerupType() == BOMB_STRENGTH_UP)
-											{
-												m_explosionSize++;
-												m_toBeDeleted.push_back(ID);
-											}
+											m_lives++;
 										}
-                                    }
+										else if (powerup->GetPowerupType() == BOMB_AMOUNT_UP)
+										{
+											m_playerBombAmount++;
+											m_toBeDeleted.push_back(ID);
+										}
+										else if (powerup->GetPowerupType() == BOMB_STRENGTH_UP)
+										{
+											m_explosionSize++;
+											m_toBeDeleted.push_back(ID);
+										}
+									}
                                 }
                             }
                             else if (ID == -1)
