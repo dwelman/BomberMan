@@ -41,11 +41,14 @@ private:
 	std::size_t 							m_score;
 	ePlayerAction 							m_action;
 	long int								m_gameMap[MAP_Y][MAP_X];
+	unsigned int							m_seed;
 
 	void		handleCollisions(Position &p, Tag &t, std::size_t ID);
     void        handleMovement(Position &p, Movement &m);
     std::size_t createEntityAtPosition(std::string entityType, Vec3 const &pos);
     void        deleteEntity(std::size_t ID);
+	void		startLevel();
+	void		killPlayer();
 public:
 	GameManager();
 	GameManager(GameManager const &gm);

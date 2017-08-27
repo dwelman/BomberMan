@@ -54,7 +54,7 @@ Vec3    &Vec3::operator*=(Vec3 const &v)
 
 bool    Vec3::operator==(Vec3 const &v)
 {
-    return (this->GetX() == v.GetX() && this->GetY() == v.GetY() && this->GetZ() && v.GetZ());
+    return (m_x == v.GetX() && m_y == v.GetY() && m_z == v.GetZ());
 }
 
 float   Vec3::GetX() const
