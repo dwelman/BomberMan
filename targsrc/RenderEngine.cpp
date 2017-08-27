@@ -545,8 +545,8 @@ void RenderEngine::initGlew()
         renderData *obj = new renderData;
         rdata.push_back(*obj);
     }
-    rdata[0].Textures = new GLuint[10];
-    glGenTextures(10, rdata[0].Textures);
+    rdata[0].Textures = new GLuint[13];
+    glGenTextures(13, rdata[0].Textures);
 
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();
@@ -574,6 +574,9 @@ void RenderEngine::initGlew()
 	tx = loadDDS("textures/crate.dds", rdata[0].Textures[7]);
 	tx = loadDDS("textures/caveWall.dds", rdata[0].Textures[8]);
 	tx = loadDDS("textures/barrel.dds", rdata[0].Textures[9]);
+	tx = loadDDS("textures/Meat.dds", rdata[0].Textures[10]);
+	tx = loadDDS("textures/open_door_AO.dds", rdata[0].Textures[11]);
+	tx = loadDDS("textures/closed_door_AO.dds", rdata[0].Textures[12]);
     //tx = loadDDS("textures/DwarfAO.dds", rdata.rObjs[0].getTextureID());
 
     //std::vector<glm::vec3> objV, objN, objT, objBt;
@@ -602,6 +605,15 @@ void RenderEngine::initGlew()
 
 	Mesh *crate = new Mesh("obj/crate.obj");
 	mesh.push_back(*crate);
+
+	Mesh *meat = new Mesh("obj/meat.obj");
+	mesh.push_back(*meat);
+
+	Mesh *doorOpen = new Mesh("obj/open_door.obj");
+	mesh.push_back(*doorOpen);
+
+	Mesh *doorClosed = new Mesh("obj/closed_door.obj");
+	mesh.push_back(*doorClosed);
 
     //computeTangentBasis(rdata[1].objVertices, rdata[1].objUVS, rdata[1].objNormals, rdata[1].objTangents, rdata[1].objBitangents);
 
@@ -1274,6 +1286,111 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
     }
 
     i = 0;
+
+	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[10]);
+
+	for (int l = 0; l < gameObjects.size(); l++)
+	{
+		bool shouldDraw = false;
+
+		while (gameObjects[i].GetObjectType() != 7) {
+			l++;
+			i++;
+			if (i == gameObjects.size())
+				break;
+		}
+		if (i >= gameObjects.size()) {
+			shouldDraw = false;
+		}
+		else
+			shouldDraw = true;
+
+		if (shouldDraw)
+		{
+			glm::mat4 ModelMatrix2 = glm::mat4(1.0);
+			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) + 1, gameObjects[i].GetPosition().GetX() * 2));
+			//ModelMatrix2 = glm::rotate(ModelMatrix2, 1.575f, glm::vec3(0, 1, 0));
+			ModelMatrix2 = glm::scale(ModelMatrix2, glm::vec3(1.5, 1.5, 1.5));
+			glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
+
+			glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
+			glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
+			mesh[5].render();
+		}
+		i++;
+	}
+
+	i = 0;
+
+	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[11]);
+
+	for (int l = 0; l < gameObjects.size(); l++)
+	{
+		bool shouldDraw = false;
+
+		while (gameObjects[i].GetObjectType() != 10) {
+			l++;
+			i++;
+			if (i == gameObjects.size())
+				break;
+		}
+		if (i >= gameObjects.size()) {
+			shouldDraw = false;
+		}
+		else
+			shouldDraw = true;
+
+		if (shouldDraw)
+		{
+			glm::mat4 ModelMatrix2 = glm::mat4(1.0);
+			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) + 1, gameObjects[i].GetPosition().GetX() * 2));
+			//ModelMatrix2 = glm::rotate(ModelMatrix2, 1.575f, glm::vec3(0, 1, 0));
+			ModelMatrix2 = glm::scale(ModelMatrix2, glm::vec3(1.5, 1.5, 1.5));
+			glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
+
+			glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
+			glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
+			mesh[6].render();
+		}
+		i++;
+	}
+
+	i = 0;
+
+	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[12]);
+
+	for (int l = 0; l < gameObjects.size(); l++)
+	{
+		bool shouldDraw = false;
+
+		while (gameObjects[i].GetObjectType() != 11) {
+			l++;
+			i++;
+			if (i == gameObjects.size())
+				break;
+		}
+		if (i >= gameObjects.size()) {
+			shouldDraw = false;
+		}
+		else
+			shouldDraw = true;
+
+		if (shouldDraw)
+		{
+			glm::mat4 ModelMatrix2 = glm::mat4(1.0);
+			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) + 1, gameObjects[i].GetPosition().GetX() * 2));
+			//ModelMatrix2 = glm::rotate(ModelMatrix2, 1.575f, glm::vec3(0, 1, 0));
+			ModelMatrix2 = glm::scale(ModelMatrix2, glm::vec3(1.5, 1.5, 1.5));
+			glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
+
+			glUniformMatrix4fv(rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
+			glUniformMatrix4fv(rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
+			mesh[7].render();
+		}
+		i++;
+	}
+
+	i = 0;
 
 //
 //    glm::mat4 ModelMatrix2 = glm::mat4(1.0);
