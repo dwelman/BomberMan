@@ -716,19 +716,20 @@ bool 	GameManager::Update()
                             explosion->SetChildExplosions(0);
                             explosion->SetDuration(0);
 							m_toBeDeleted.push_back(m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]);
-							if (rand() % 100 < 30)
+							//TODO: Tweak, needs balancing
+							if (rand() % 100 < 40)
 							{
-								if (rand() % 100 <= 33)
+								if (rand() % 100 <= 60)
 								{
 									m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] = createEntityAtPosition("powerup_bomb_amount", position->GetPosition());
 								}
-								else if (rand() % 100 <= 33)
+								else if (rand() % 100 <= 90)
 								{
 									m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] = createEntityAtPosition("powerup_bomb_strength", position->GetPosition());
 								}
 								else
 								{
-									//m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] = createEntityAtPosition("powerup_life", position->GetPosition());
+									m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] = createEntityAtPosition("powerup_life", position->GetPosition());
 								}
 							}
                         }
