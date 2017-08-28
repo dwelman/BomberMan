@@ -320,11 +320,11 @@ void GameManager::startLevel()
 {
 	m_entities.clear();
 	m_components.clear();
+	m_currentEntityID = 0;
+	m_currentComponentID = 0;
 	createEntityAtPosition("player", Vec3(1, 1, 0));
 	m_seed = time(NULL);
 	srand(m_seed);
-	m_currentEntityID = 0;
-	m_currentComponentID = 0;
 
 	for (std::size_t y = 0; y < MAP_Y; y++)
 	{
