@@ -61,4 +61,6 @@ public:
     void        SetGameStarted(bool gameStarted);
 	void 		GivePlayerAction(ePlayerAction pa);
     bool        GetGamePaused() const;
+	void		LoadSave(std::string path);
+	void		WriteSave(std::string path);
 };
