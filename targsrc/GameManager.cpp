@@ -322,7 +322,6 @@ void GameManager::startLevel()
 	m_components.clear();
 	m_currentEntityID = 0;
 	m_currentComponentID = 0;
-	createEntityAtPosition("player", Vec3(1, 1, 0));
 	m_seed = time(NULL);
 	srand(m_seed);
 
@@ -357,6 +356,8 @@ void GameManager::startLevel()
 			}
 		}
 	}
+
+	createEntityAtPosition("player", Vec3(1, 1, 0));
 }
 
 void GameManager::killPlayer()
