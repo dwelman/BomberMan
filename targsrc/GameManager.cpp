@@ -4,6 +4,7 @@
 #include <iostream>
 #include <time.h>
 #include <cmath>
+#include <fstream>
 
 GameManager::GameManager()
 {
@@ -875,4 +876,16 @@ void GameManager::GivePlayerAction(ePlayerAction pa)
 bool GameManager::GetGamePaused() const
 {
     return (m_paused);
+}
+
+void GameManager::LoadSave(std::string path)
+{
+	std::fstream	file;
+	file.open(path, std::fstream::in);
+}
+
+void GameManager::WriteSave(std::string path)
+{
+	std::fstream	file;
+	file.open(path, std::fstream::out);
 }
