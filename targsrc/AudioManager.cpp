@@ -97,7 +97,7 @@ void    AudioManager::MusicVolume(double vol)
 
 void    AudioManager::SFXVolume(double vol)
 {
-    if (vol >= 0 && vol <= 128)
+    if (vol > 0 && vol <= 128)
     {
         Mix_Volume(-1, vol);
         SFXVol = vol;

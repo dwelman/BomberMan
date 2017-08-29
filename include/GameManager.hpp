@@ -48,7 +48,7 @@ private:
     void        handleMovement(Position &p, Movement &m);
     std::size_t createEntityAtPosition(std::string entityType, Vec3 const &pos);
     void        deleteEntity(std::size_t ID);
-	void		startLevel(bool save = true);
+	void		startLevel(bool save = true, unsigned int seed = 0);
 	void		killPlayer();
 public:
 	GameManager();

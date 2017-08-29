@@ -318,13 +318,20 @@ void GameManager::deleteEntity(std::size_t ID)
 	}
 }
 
-void GameManager::startLevel(bool save)
+void GameManager::startLevel(bool save, unsigned int seed)
 {
 	m_entities.clear();
 	m_components.clear();
 	m_currentEntityID = 0;
 	m_currentComponentID = 0;
-	m_seed = time(NULL);
+	if (seed == 0)
+	{
+		m_seed = time(NULL);
+	}
+	else
+	{
+		m_seed = seed;
+	}
 	srand(m_seed);
 
 	for (std::size_t y = 0; y < MAP_Y; y++)
@@ -375,6 +382,7 @@ void GameManager::killPlayer()
 	{
 		exit(0);
 	}
+	WriteSave("save/savegame");
 	startLevel();
 }
 
@@ -908,7 +916,7 @@ void GameManager::LoadSave(std::string path)
         m_seed = time(NULL);
         m_level = 1;
     }
-    startLevel();
+    startLevel(false, m_seed);
 }
 
 void GameManager::WriteSave(std::string path)
