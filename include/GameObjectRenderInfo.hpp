@@ -17,7 +17,10 @@ enum ObjectType
     BOMB_STRENGTH_POWERUP_OT,
     BOMB_AMOUNT_POWERUP_OT,
 	DOOR_OPEN_OT,
-	DOOR_CLOSED_OT
+	DOOR_CLOSED_OT,
+    EXPLOSION_PE,
+    BLOOD_PE,
+    RUBBLE_PE
 };
 
 enum Direction
@@ -34,7 +37,6 @@ private:
     ObjectType  m_objectType;
     Vec3        m_position;
     Direction        m_direction;
-
     GameObjectRenderInfo();
 public:
     GameObjectRenderInfo(ObjectType objectType, Vec3 position, Direction direction);
