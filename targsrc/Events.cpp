@@ -211,6 +211,7 @@ bool showAudioSettingsPane(const CEGUI::EventArgs& e, CEGUI::NamedElement *_elem
 	var.settingPanes->SetActive("AudioSettings");
 
 	CEGUI::Slider* slider = static_cast<CEGUI::Slider*>(var.settings->getChildElementRecursive("MasterVolSlider"));
+
 	slider->setMaxValue(100);
 	slider->setClickStep(1);
 	slider->setCurrentValue(std::stof(g_cfg["MasterVolume"].to_str()));

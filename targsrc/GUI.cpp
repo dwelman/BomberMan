@@ -106,6 +106,7 @@ void		loadResources(GUICrate &crate)
 	crate.settings->setVisible(false);
 
 	CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(crate.main);
+    crate.paused = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("Paused");
 
 }
 
@@ -115,7 +116,6 @@ void		loadResources(GUICrate &crate)
 void        initMenuValues(GUICrate &crate)
 {
 	g_cfg.reload();
-	crate.paused = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("Paused");
     //Video Settings
     CEGUI::NamedElement *resolutionValue = crate.settings->getChildElementRecursive("ResolutionValue");
     resolutionValue->setProperty("Text", g_cfg["xres"].to_str() + "x" + g_cfg["yres"].to_str());
