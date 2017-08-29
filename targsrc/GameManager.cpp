@@ -11,13 +11,14 @@ GameManager::GameManager()
 	m_currentEntityID = 0;
 	m_currentComponentID = 0;
 	m_gameStarted = false;
-	m_playerMoveSpeed = 4.5f;
+	m_playerMoveSpeed = 7;
 	m_playerBombAmount = 1;
 	m_explosionSize = 1;
 	m_lives = 3;
 	m_score = 0;
     m_paused = false;
-	startLevel();
+    m_level = 1;
+	startLevel(false);
 }
 
 GameManager::GameManager(GameManager const & gm)
@@ -317,7 +318,7 @@ void GameManager::deleteEntity(std::size_t ID)
 	}
 }
 
-void GameManager::startLevel()
+void GameManager::startLevel(bool save)
 {
 	m_entities.clear();
 	m_components.clear();
@@ -359,6 +360,10 @@ void GameManager::startLevel()
 	}
 
 	createEntityAtPosition("player", Vec3(1, 1, 0));
+    if (save)
+    {
+        WriteSave("save/savegame");
+    }
 }
 
 void GameManager::killPlayer()
@@ -880,12 +885,39 @@ bool GameManager::GetGamePaused() const
 
 void GameManager::LoadSave(std::string path)
 {
-	std::fstream	file;
-	file.open(path, std::fstream::in);
+	std::ifstream	file;
+	file.open(path);
+
+    if (file.is_open())
+    {
+        std::string save;
+        getline(file, save);
+        m_seed = std::stoi(save);
+        getline(file, save);
+        m_level = std::stoi(save);
+        getline(file, save);
+        m_score = std::stoi(save);
+        getline(file, save);
+        m_lives = std::stoi(save);
+        file.close();
+    }
+    else
+    {
+        m_lives = 3;
+        m_score = 0;
+        m_seed = time(NULL);
+        m_level = 1;
+    }
+    startLevel();
 }
 
 void GameManager::WriteSave(std::string path)
 {
-	std::fstream	file;
-	file.open(path, std::fstream::out);
+	std::ofstream	file;
+	file.open(path);
+
+    file << m_seed << std::endl;
+    file << m_level << std::endl;
+    file << m_score << std::endl;
+    file << m_lives << std::endl;
 }
