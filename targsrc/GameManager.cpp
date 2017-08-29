@@ -286,6 +286,27 @@ std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 con
         m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BOMB_STRENGTH_POWERUP_OT, true)));
         entity.SetCanTick(false);
     }
+	else if (entityType == "explosion_particle")
+	{
+		entity.RegisterComponent(m_currentComponentID, POSITION);
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
+		entity.RegisterComponent(m_currentComponentID, RENDER);
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Render(EXPLOSION_PE, true)));
+	}
+	else if (entityType == "blood_particle")
+	{
+		entity.RegisterComponent(m_currentComponentID, POSITION);
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
+		entity.RegisterComponent(m_currentComponentID, RENDER);
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BLOOD_PE, true)));
+	}
+	else if (entityType == "rubble_particle")
+	{
+		entity.RegisterComponent(m_currentComponentID, POSITION);
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
+		entity.RegisterComponent(m_currentComponentID, RENDER);
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Render(RUBBLE_PE, true)));
+	}
 	m_entities.emplace(std::make_pair(m_currentEntityID++, Entity(entity)));
     return (m_currentEntityID - 1);
 }
@@ -715,6 +736,7 @@ bool 	GameManager::Update()
 					std::size_t explosionID = m_entities[i].GetComponentOfType(EXPLOSION);
 					Position *position = dynamic_cast<Position *>(m_components[positionID]);
 					Explosion *explosion = dynamic_cast<Explosion *>(m_components[explosionID]);
+					m_toBeDeleted.push_back(createEntityAtPosition("explosion_particle", position->GetPosition()));
                     if (m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] >= 0)
                     {
                         std::size_t tagID = m_entities[m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]].GetComponentOfType(TAG);
@@ -730,6 +752,7 @@ bool 	GameManager::Update()
                             explosion->SetChildExplosions(0);
                             explosion->SetDuration(0);
 							m_toBeDeleted.push_back(m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]);
+							m_toBeDeleted.push_back(createEntityAtPosition("rubble_particle", position->GetPosition()));
 							//TODO: Tweak, needs balancing
 							if (rand() % 100 < 40)
 							{
@@ -758,6 +781,7 @@ bool 	GameManager::Update()
                             if (pos->GetPosition() == position->GetPosition())
                             {
                                 m_toBeDeleted.push_back(playerID);
+								m_toBeDeleted.push_back(createEntityAtPosition("blood_particle", position->GetPosition()));
 								killPlayer();
 								return (false);
                             }
