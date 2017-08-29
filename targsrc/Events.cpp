@@ -69,6 +69,7 @@ bool continueGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_eleme
 	else
 	{
 		//TODO load saved game
+        var.manager->LoadSave("save/savegame");
 		var.manager->SetGameStarted(true);
 	}
 	return (true);
@@ -79,6 +80,7 @@ bool startGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element,
 	var.audio->PlayMusic(0);
 	var.audio->PlaySFX(0);
 	var.manager->SetGameStarted(true);
+    var.manager->WriteSave("save/savegame");
 	return (true);
 };
 

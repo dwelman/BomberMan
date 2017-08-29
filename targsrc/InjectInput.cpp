@@ -209,34 +209,3 @@ void injectTimePulse(double& last_time_pulse)
 	/* store the new time as the last time */
 	last_time_pulse = t;
 }
-
-void renderGui(SDL_Window *window)
-{
-	/* clear the colour buffer */
-	glClear(GL_COLOR_BUFFER_BIT);
-	/* render the GUI :) */
-	CEGUI::System::getSingleton().renderAllGUIContexts();
-	/* Update the screen */
-	SDL_GL_SwapWindow(window);
-}
-
-/*
-void main_loop(SDL_Window *window)
-{
-	bool must_quit = false;
-	double last_time_pulse = 0.001 * static_cast<double>(SDL_GetTicks());
-	while (!must_quit)
-	{
-		injectInput(must_quit);
-		injectTimePulse(last_time_pulse);
-		renderGui(window);
-	}
-}
-
-
-
-int mainleop(int argc, char **argv)
-{
-	
-}
-*/

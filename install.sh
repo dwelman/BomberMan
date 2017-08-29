@@ -3,4 +3,5 @@ brew install SDL2_image
 brew install SDL2_ttf
 brew install SDL2_mixer
 brew install GLEW
+brew install assimp
 sh FreshBuild.sh

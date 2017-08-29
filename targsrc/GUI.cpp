@@ -142,8 +142,8 @@ void		destroyGUI(GUICrate &crate)
 	TODO
 	*/
 	// Clean crate
-//	for (auto it = crate.MenuFunctions.begin(); it != crate.MenuFunctions.end(); it++)
-//		delete (*it);
+	for (auto it = crate.MenuFunctions.begin(); it != crate.MenuFunctions.end(); it++)
+		delete (*it);
 
 	CEGUI::System::destroy();
 	CEGUI::OpenGL3Renderer::destroy(static_cast<CEGUI::OpenGL3Renderer&>(*crate.guiRenderer));

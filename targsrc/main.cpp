@@ -33,7 +33,7 @@ SDL_Window *initWindow(ConfigEditor &cfg)
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 	SDL_GLContext gContext = SDL_GL_CreateContext(window);
-	if (gContext == NULL) 
+	if (gContext == NULL)
 	{ 
 		std::cerr << "OpenGL context could not be created! SDL Error: %s\n" << SDL_GetError();
 		return (nullptr);
@@ -71,7 +71,7 @@ void gameLoop(SDL_Window *window)
 		if (manager.Update() == true)
 		{
 //			break;
-		}
+        }
         manager.GetRenderData(gameObjects);
 		rEngine.Draw(window, manager.GetGameStarted(), gameObjects);
         renderGUIInjectEvents(manager, window, guiLastTimePulse, mustQuit, crate);
