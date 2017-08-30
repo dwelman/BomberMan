@@ -208,41 +208,34 @@ void	captureInputForGameManager(GameManager &manager, SDL_Event &e, bool & must_
 		action = P_MOVE_UP;
 	else if (keystates[(*keybindings.keyCodeToScan)[(*keybindings.actionToKeyCode)[P_MOVE_DOWN]]])
 		action = P_MOVE_DOWN;
-	else if (keystates[(*keybindings.keyCodeToScan)[(*keybindings.actionToKeyCode)[P_PLACE_BOMB]]])
+/*	else if (keystates[(*keybindings.keyCodeToScan)[(*keybindings.actionToKeyCode)[P_PLACE_BOMB]]])
 		action = P_PLACE_BOMB;
 	else if (keystates[(*keybindings.keyCodeToScan)[(*keybindings.actionToKeyCode)[P_PAUSE_GAME]]])
 		action = P_PAUSE_GAME;
-
+		*/
 	if (action != P_NOACTION)
-	{
 		manager.GivePlayerAction(action);
-		std::cout << "action = " << action << std::endl;
-	}
-	/*
+}
+
+void	captureEventsForGameManager(GameManager &manager, SDL_Event &e, bool & must_quit, KeyBindings &keybindings)
+{
+	ePlayerAction	action = P_NOACTION;
+	const Uint8* keystates = SDL_GetKeyboardState(NULL);
+
+	if (e.type == SDL_QUIT)
+		must_quit = true;
+
 	if (e.type == SDL_KEYDOWN)
 	{
-		if ((*keybindings.actionToKeyCode)[P_MOVE_LEFT] == e.key.keysym.sym)
-			action = P_MOVE_LEFT;
-		else if ((*keybindings.actionToKeyCode)[P_MOVE_RIGHT] == e.key.keysym.sym)
-			action = P_MOVE_RIGHT;
-		else if ((*keybindings.actionToKeyCode)[P_MOVE_UP] == e.key.keysym.sym)
-			action = P_MOVE_UP;
-		else if ((*keybindings.actionToKeyCode)[P_MOVE_DOWN] == e.key.keysym.sym)
-			action = P_MOVE_DOWN;
-		else if ((*keybindings.actionToKeyCode)[P_PLACE_BOMB] == e.key.keysym.sym)
-			action = P_PLACE_BOMB;
+		if ((*keybindings.actionToKeyCode)[P_PLACE_BOMB] == e.key.keysym.sym)
+		action = P_PLACE_BOMB;
 		else if ((*keybindings.actionToKeyCode)[P_PAUSE_GAME] == e.key.keysym.sym)
-			action = P_PAUSE_GAME;
-
+		action = P_PAUSE_GAME;
 		if (action != P_NOACTION)
-		{
-			// Feed actions  into GM
 			manager.GivePlayerAction(action);
-			std::cout << "action = " << action << std::endl;
-		}
 	}
-	*/
 }
+
 
 void	captureWindowEvents(SDL_Event &e, GUICrate &crate)
 {
@@ -296,6 +289,7 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 		injectInput(must_quit, CEGUI::System::getSingleton().getDefaultGUIContext(), e);
 		captureWindowEvents(e, crate);
 		captureInputForSettingMenu(e, crate.keybindings, crate.settings);
+		captureEventsForGameManager(manager, e, must_quit, crate.keybindings);
 	}
 	captureInputForGameManager(manager, e, must_quit, crate.keybindings);
     crate.engine->computeMatricesFromInputs(window, e);
@@ -303,15 +297,17 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 		crate.paused->setProperty("Visible", "True");
 	else
 		crate.paused->setProperty("Visible", "False");
-//	if (manager.GetGameStarted()) // && !manager.GetGamePaused())
-//		crate.main->setVisible(false);
+	if (manager.GetGameStarted() )
+		crate.main->setVisible(false);
+	if (manager.GetGamePaused())
+		crate.main->setVisible(true);
 	injectTimePulse(guiLastTimePulse);
 	glDisable(GL_DEPTH_TEST);
     glDisable(GL_TEXTURE_2D);
 	glGetIntegerv(GL_ACTIVE_TEXTURE, &activeID);
 	glActiveTexture(GL_TEXTURE0);
-	if (!manager.GetGameStarted() || manager.GetGamePaused()) //NEED TO FIGURE LIGHTS THE FUCK PIdasdasdads
-        CEGUI::System::getSingleton().renderAllGUIContexts();
+	//if (!manager.GetGameStarted() || manager.GetGamePaused()) //NEED TO FIGURE LIGHTS THE FUCK PIdasdasdads
+    CEGUI::System::getSingleton().renderAllGUIContexts();
 	glActiveTexture(activeID);
 	glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
