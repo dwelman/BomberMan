@@ -746,6 +746,7 @@ bool 	GameManager::Update()
 							std::size_t bombID = m_entities[m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]].GetComponentOfType(BOMB);
 							Bomb *bomb = dynamic_cast<Bomb *>(m_components[bombID]);
 							bomb->SetBombTime(0);
+							m_score += 5;
 						}
                         else if ((tag->GetTagMask() & (WALL_TAG)) == (WALL_TAG))
                         {
@@ -753,20 +754,24 @@ bool 	GameManager::Update()
                             explosion->SetDuration(0);
 							m_toBeDeleted.push_back(m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]);
 							createEntityAtPosition("rubble_particle", position->GetPosition());
+							m_score++;
 							//TODO: Tweak, needs balancing
 							if (rand() % 100 < 40)
 							{
 								if (rand() % 100 <= 60)
 								{
 									m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] = createEntityAtPosition("powerup_bomb_amount", position->GetPosition());
+									m_score += 10;
 								}
 								else if (rand() % 100 <= 90)
 								{
 									m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] = createEntityAtPosition("powerup_bomb_strength", position->GetPosition());
+									m_score += 15;
 								}
 								else
 								{
 									m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] = createEntityAtPosition("powerup_life", position->GetPosition());
+									m_score += 25;
 								}
 							}
                         }
@@ -781,7 +786,7 @@ bool 	GameManager::Update()
                             if (pos->GetPosition() == position->GetPosition())
                             {
                                 m_toBeDeleted.push_back(playerID);
-								m_toBeDeleted.push_back(createEntityAtPosition("blood_particle", position->GetPosition()));
+								createEntityAtPosition("blood_particle", position->GetPosition());
 								killPlayer();
 								return (false);
                             }
