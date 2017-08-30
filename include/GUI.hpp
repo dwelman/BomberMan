@@ -23,6 +23,8 @@ struct KeyBindings
 	std::map<std::string, SDL_Keycode>		*textToKeyCode;
 	std::map<SDL_Keycode, std::string>		*keyCodeToText;
 	std::map<SDL_Keycode, std::string>		*keyName;
+	std::map<SDL_Keycode, SDL_Scancode>		*keyCodeToScan;
+
 	bool 									catchNext;
 	ePlayerAction							actionToMap;
 	std::string								actionToMapKey;

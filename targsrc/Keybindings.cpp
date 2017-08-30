@@ -234,6 +234,115 @@ void            mapKeyName(std::map<SDL_Keycode, std::string> &keyName)
     keyName[SDLK_DELETE] = "DELETE";
 }
 
+void	mapScanCodes(std::map<SDL_Keycode, SDL_Scancode> &keyCodeToScan)
+{
+	keyCodeToScan[SDLK_1] = SDL_SCANCODE_1;
+	keyCodeToScan[SDLK_2] = SDL_SCANCODE_2;
+	keyCodeToScan[SDLK_3] = SDL_SCANCODE_3;
+	keyCodeToScan[SDLK_4] = SDL_SCANCODE_4;
+	keyCodeToScan[SDLK_5] = SDL_SCANCODE_5;
+	keyCodeToScan[SDLK_6] = SDL_SCANCODE_6;
+	keyCodeToScan[SDLK_7] = SDL_SCANCODE_7;
+	keyCodeToScan[SDLK_8] = SDL_SCANCODE_8;
+	keyCodeToScan[SDLK_9] = SDL_SCANCODE_9;
+	keyCodeToScan[SDLK_0] = SDL_SCANCODE_0;
+	keyCodeToScan[SDLK_q] = SDL_SCANCODE_Q;
+	keyCodeToScan[SDLK_w] = SDL_SCANCODE_W;
+	keyCodeToScan[SDLK_e] = SDL_SCANCODE_E;
+	keyCodeToScan[SDLK_r] = SDL_SCANCODE_R;
+	keyCodeToScan[SDLK_t] = SDL_SCANCODE_T;
+	keyCodeToScan[SDLK_y] = SDL_SCANCODE_Y;
+	keyCodeToScan[SDLK_u] = SDL_SCANCODE_U;
+	keyCodeToScan[SDLK_i] = SDL_SCANCODE_I;
+	keyCodeToScan[SDLK_o] = SDL_SCANCODE_O;
+	keyCodeToScan[SDLK_p] = SDL_SCANCODE_P;
+	keyCodeToScan[SDLK_a] = SDL_SCANCODE_A;
+	keyCodeToScan[SDLK_d] = SDL_SCANCODE_D;
+	keyCodeToScan[SDLK_f] = SDL_SCANCODE_F;
+	keyCodeToScan[SDLK_g] = SDL_SCANCODE_G;
+	keyCodeToScan[SDLK_h] = SDL_SCANCODE_H;
+	keyCodeToScan[SDLK_j] = SDL_SCANCODE_J;
+	keyCodeToScan[SDLK_k] = SDL_SCANCODE_K;
+	keyCodeToScan[SDLK_l] = SDL_SCANCODE_L;
+	keyCodeToScan[SDLK_z] = SDL_SCANCODE_Z;
+	keyCodeToScan[SDLK_x] = SDL_SCANCODE_X;
+	keyCodeToScan[SDLK_c] = SDL_SCANCODE_C;
+	keyCodeToScan[SDLK_v] = SDL_SCANCODE_V;
+	keyCodeToScan[SDLK_b] = SDL_SCANCODE_B;
+	keyCodeToScan[SDLK_n] = SDL_SCANCODE_N;
+	keyCodeToScan[SDLK_m] = SDL_SCANCODE_M;
+	keyCodeToScan[SDLK_COMMA] = SDL_SCANCODE_COMMA;
+	keyCodeToScan[SDLK_PERIOD] = SDL_SCANCODE_PERIOD;
+	keyCodeToScan[SDLK_SLASH] = SDL_SCANCODE_SLASH;
+	keyCodeToScan[SDLK_BACKSLASH] = SDL_SCANCODE_BACKSLASH;
+	keyCodeToScan[SDLK_MINUS] = SDL_SCANCODE_MINUS;
+	keyCodeToScan[SDLK_EQUALS] = SDL_SCANCODE_EQUALS;
+	keyCodeToScan[SDLK_SEMICOLON] = SDL_SCANCODE_SEMICOLON;
+	keyCodeToScan[SDLK_LEFTBRACKET] = SDL_SCANCODE_LEFTBRACKET;
+	keyCodeToScan[SDLK_RIGHTBRACKET] = SDL_SCANCODE_RIGHTBRACKET;
+	keyCodeToScan[SDLK_QUOTE] = SDL_SCANCODE_APOSTROPHE;
+	keyCodeToScan[SDLK_BACKQUOTE] = SDL_SCANCODE_GRAVE;
+	keyCodeToScan[SDLK_RETURN] = SDL_SCANCODE_RETURN;
+	keyCodeToScan[SDLK_SPACE] = SDL_SCANCODE_SPACE;
+	keyCodeToScan[SDLK_BACKSPACE] = SDL_SCANCODE_BACKSPACE;
+	keyCodeToScan[SDLK_TAB] = SDL_SCANCODE_TAB;
+	keyCodeToScan[SDLK_ESCAPE] = SDL_SCANCODE_ESCAPE;
+	keyCodeToScan[SDLK_PAUSE] = SDL_SCANCODE_PAUSE;
+	keyCodeToScan[SDLK_SYSREQ] = SDL_SCANCODE_SYSREQ;
+	keyCodeToScan[SDLK_POWER] = SDL_SCANCODE_POWER;
+	keyCodeToScan[SDLK_NUMLOCKCLEAR] = SDL_SCANCODE_NUMLOCKCLEAR;
+	keyCodeToScan[SDLK_SCROLLLOCK] = SDL_SCANCODE_SCROLLLOCK;
+	keyCodeToScan[SDLK_F1] = SDL_SCANCODE_F1;
+	keyCodeToScan[SDLK_F2] = SDL_SCANCODE_F2;
+	keyCodeToScan[SDLK_F3] = SDL_SCANCODE_F3;
+	keyCodeToScan[SDLK_F4] = SDL_SCANCODE_F4;
+	keyCodeToScan[SDLK_F5] = SDL_SCANCODE_F5;
+	keyCodeToScan[SDLK_F6] = SDL_SCANCODE_F6;
+	keyCodeToScan[SDLK_F7] = SDL_SCANCODE_F7;
+	keyCodeToScan[SDLK_F8] = SDL_SCANCODE_F8;
+	keyCodeToScan[SDLK_F9] = SDL_SCANCODE_F9;
+	keyCodeToScan[SDLK_F10] = SDL_SCANCODE_F10;
+	keyCodeToScan[SDLK_F11] = SDL_SCANCODE_F11;
+	keyCodeToScan[SDLK_F12] = SDL_SCANCODE_F12;
+	keyCodeToScan[SDLK_F13] = SDL_SCANCODE_F13;
+	keyCodeToScan[SDLK_F14] = SDL_SCANCODE_F14;
+	keyCodeToScan[SDLK_F15] = SDL_SCANCODE_F15;
+	keyCodeToScan[SDLK_LCTRL] = SDL_SCANCODE_LCTRL;
+	keyCodeToScan[SDLK_LALT] = SDL_SCANCODE_LALT;
+	keyCodeToScan[SDLK_LSHIFT] = SDL_SCANCODE_LSHIFT;
+	keyCodeToScan[SDLK_LGUI] = SDL_SCANCODE_LGUI;
+	keyCodeToScan[SDLK_RCTRL] = SDL_SCANCODE_RCTRL;
+	keyCodeToScan[SDLK_RALT] = SDL_SCANCODE_RALT;
+	keyCodeToScan[SDLK_RSHIFT] = SDL_SCANCODE_RSHIFT;
+	keyCodeToScan[SDLK_RGUI] = SDL_SCANCODE_RGUI;
+	keyCodeToScan[SDLK_MENU] = SDL_SCANCODE_MENU;
+	keyCodeToScan[SDLK_KP_0] = SDL_SCANCODE_KP_0;
+	keyCodeToScan[SDLK_KP_1] = SDL_SCANCODE_KP_1;
+	keyCodeToScan[SDLK_KP_2] = SDL_SCANCODE_KP_2;
+	keyCodeToScan[SDLK_KP_3] = SDL_SCANCODE_KP_3;
+	keyCodeToScan[SDLK_KP_4] = SDL_SCANCODE_KP_4;
+	keyCodeToScan[SDLK_KP_5] = SDL_SCANCODE_KP_5;
+	keyCodeToScan[SDLK_KP_6] = SDL_SCANCODE_KP_6;
+	keyCodeToScan[SDLK_KP_7] = SDL_SCANCODE_KP_7;
+	keyCodeToScan[SDLK_KP_8] = SDL_SCANCODE_KP_8;
+	keyCodeToScan[SDLK_KP_9] = SDL_SCANCODE_KP_9;
+	keyCodeToScan[SDLK_KP_PERIOD] = SDL_SCANCODE_KP_PERIOD;
+	keyCodeToScan[SDLK_KP_PLUS] = SDL_SCANCODE_KP_PLUS;
+	keyCodeToScan[SDLK_KP_MINUS] = SDL_SCANCODE_KP_MINUS;
+	keyCodeToScan[SDLK_KP_MULTIPLY] = SDL_SCANCODE_KP_MULTIPLY;
+	keyCodeToScan[SDLK_KP_DIVIDE] = SDL_SCANCODE_KP_DIVIDE;
+	keyCodeToScan[SDLK_KP_ENTER] = SDL_SCANCODE_KP_ENTER;
+	keyCodeToScan[SDLK_UP] = SDL_SCANCODE_UP;
+	keyCodeToScan[SDLK_LEFT] = SDL_SCANCODE_LEFT;
+	keyCodeToScan[SDLK_RIGHT] = SDL_SCANCODE_RIGHT;
+	keyCodeToScan[SDLK_DOWN] = SDL_SCANCODE_DOWN;
+	keyCodeToScan[SDLK_HOME] = SDL_SCANCODE_HOME;
+	keyCodeToScan[SDLK_END] = SDL_SCANCODE_END;
+	keyCodeToScan[SDLK_PAGEUP] = SDL_SCANCODE_PAGEUP;
+	keyCodeToScan[SDLK_PAGEDOWN] = SDL_SCANCODE_PAGEDOWN;
+	keyCodeToScan[SDLK_INSERT] = SDL_SCANCODE_INSERT;
+	keyCodeToScan[SDLK_DELETE] = SDL_SCANCODE_DELETE;
+}
 
 void	mapActionToKey(	std::map<std::string, SDL_Keycode> &textToKeyCode,
 						std::map<ePlayerAction, SDL_Keycode > &actionToKeyCode,
@@ -275,6 +384,7 @@ void       SetupKeybindings (KeyBindings &keyBindings)
     mapSDLKeyToText(*keyBindings.keyCodeToText, *keyBindings.textToKeyCode);
     GetKeyCodesFromConfig(*keyBindings.textToKeyCode, *keyBindings.actionToKeyCode, *keyBindings.keyCodeToText, g_cfg);
     mapKeyName(*keyBindings.keyName);
+	mapScanCodes(*keyBindings.keyCodeToScan);
 }
 
 ePlayerAction   GetPlayerAction(SDL_KeyboardEvent &e)
