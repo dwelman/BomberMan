@@ -11,7 +11,7 @@ GameManager::GameManager()
 	m_currentEntityID = 0;
 	m_currentComponentID = 0;
 	m_gameStarted = false;
-	m_playerMoveSpeed = 7;
+	m_playerMoveSpeed = 5;
 	m_playerBombAmount = 1;
 	m_explosionSize = 1;
 	m_lives = 3;
@@ -736,7 +736,7 @@ bool 	GameManager::Update()
 					std::size_t explosionID = m_entities[i].GetComponentOfType(EXPLOSION);
 					Position *position = dynamic_cast<Position *>(m_components[positionID]);
 					Explosion *explosion = dynamic_cast<Explosion *>(m_components[explosionID]);
-					m_toBeDeleted.push_back(createEntityAtPosition("explosion_particle", position->GetPosition()));
+					createEntityAtPosition("explosion_particle", position->GetPosition());
                     if (m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] >= 0)
                     {
                         std::size_t tagID = m_entities[m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]].GetComponentOfType(TAG);
@@ -752,7 +752,7 @@ bool 	GameManager::Update()
                             explosion->SetChildExplosions(0);
                             explosion->SetDuration(0);
 							m_toBeDeleted.push_back(m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]);
-							m_toBeDeleted.push_back(createEntityAtPosition("rubble_particle", position->GetPosition()));
+							createEntityAtPosition("rubble_particle", position->GetPosition());
 							//TODO: Tweak, needs balancing
 							if (rand() % 100 < 40)
 							{
@@ -849,8 +849,9 @@ bool 	GameManager::Update()
 
 void        GameManager::GetRenderData(std::vector<GameObjectRenderInfo> &g)
 {
-	for (std::size_t i = 0; i < m_entities.size(); i++)
+	for (auto iter = m_entities.begin(); iter != m_entities.end(); iter++)
 	{
+		std::size_t i = iter->first;
 		try
 		{
 			COMPONENT_MASK_TYPE mask = m_entities[i].GetComponentFlags();
@@ -884,8 +885,17 @@ void        GameManager::GetRenderData(std::vector<GameObjectRenderInfo> &g)
 					}
 				}
 
+				if (render->GetObjectType() == EXPLOSION_PE || render->GetObjectType() == RUBBLE_PE || render->GetObjectType() == BLOOD_PE)
+				{
+					m_toBeDeleted.push_back(i);
+				}
+
 				GameObjectRenderInfo newObj(render->GetObjectType(), position->GetPosition(), dir);
 				g.push_back(newObj);
+			}
+			for (std::size_t i = 0; i < m_toBeDeleted.size(); i++)
+			{
+				deleteEntity(m_toBeDeleted[i]);
 			}
 		}
 		catch (std::exception &e)
