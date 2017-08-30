@@ -89,6 +89,7 @@ class RenderEngine
 		void computeTangentBasis(/*Inputs*/std::vector<glm::vec3> & vertices, std::vector<glm::vec2> & uvs, std::vector<glm::vec3> & normals, /*Outputs*/std::vector<glm::vec3> & tangents, std::vector<glm::vec3> & bitangents);
 		int FindUnusedParticle();
 		void SortParticles();
+		void drawParticles(std::vector<GameObjectRenderInfo> parts);
 		void initGlew();
 		int Draw(SDL_Window *window, bool gameStarted, std::vector<GameObjectRenderInfo>   gameObjects);
 

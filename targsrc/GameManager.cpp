@@ -849,9 +849,8 @@ bool 	GameManager::Update()
 
 void        GameManager::GetRenderData(std::vector<GameObjectRenderInfo> &g)
 {
-	for (auto iter = m_entities.begin(); iter != m_entities.end(); iter++)
+	for (std::size_t i = m_entities.begin()->first; i < m_entities.size(); i++)
 	{
-		std::size_t i = iter->first;
 		try
 		{
 			COMPONENT_MASK_TYPE mask = m_entities[i].GetComponentFlags();

@@ -27,6 +27,12 @@ GLuint billboard_vertex_buffer;
 GLuint particles_position_buffer;
 GLuint particles_color_buffer;
 GLuint VertexArrayID;
+static const GLfloat g_vertex_buffer_data[] = {
+	-0.5f, -0.5f, 0.0f,
+	0.5f, -0.5f, 0.0f,
+	-0.5f,  0.5f, 0.0f,
+	0.5f,  0.5f, 0.0f,
+};
 
 RenderEngine::RenderEngine()
 {
@@ -108,12 +114,12 @@ void RenderEngine::computeMatricesFromInputs(SDL_Window *window, SDL_Event &even
     double currentTime = SDL_GetTicks();
     float DeltaTime = float(currentTime - LastTime);
 
-//    int xpos, ypos;
-//	SDL_GetMouseState(&xpos, &ypos);
-//    this->horizontalAngle += this->mouseSpeed * float(g_cfg["xres"].to_int() / 2 - xpos);
-//    this->verticalAngle += this->mouseSpeed * float(g_cfg["yres"].to_int() / 2 - ypos);
-////    usleep(50000);
-//	SDL_WarpMouseInWindow(window, g_cfg["xres"].to_int() / 2, g_cfg["yres"].to_int() / 2);
+    //int xpos, ypos;
+	//SDL_GetMouseState(&xpos, &ypos);
+    //this->horizontalAngle += this->mouseSpeed * float(g_cfg["xres"].to_int() / 2 - xpos);
+    //this->verticalAngle += this->mouseSpeed * float(g_cfg["yres"].to_int() / 2 - ypos);
+//    usleep(50000);
+	//SDL_WarpMouseInWindow(window, g_cfg["xres"].to_int() / 2, g_cfg["yres"].to_int() / 2);
 
     // Direction : Spherical coordinates to Cartesian coordinates conversion
     glm::vec3 direction(
@@ -689,12 +695,6 @@ void RenderEngine::initGlew()
 
 	// The VBO containing the 4 vertices of the particles.
 	// Thanks to instancing, they will be shared by all particles.
-	static const GLfloat g_vertex_buffer_data[] = {
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		-0.5f,  0.5f, 0.0f,
-		0.5f,  0.5f, 0.0f,
-	};
 
 	glGenBuffers(1, &billboard_vertex_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
@@ -800,6 +800,176 @@ void RenderEngine::initGlew()
 //
 //	}
 //}
+
+void RenderEngine::drawParticles(std::vector<GameObjectRenderInfo> parts)
+{
+	std::cout << parts.size() << std::endl;
+	for (size_t l = 0; l < parts.size(); l++)
+	{
+	double currentTime = SDL_GetTicks();
+	deltaTime = float(currentTime - lastTime);
+	lastTime = currentTime;
+
+	glm::vec3 CameraPosition(glm::inverse(ViewMatrix)[3]);
+
+	glm::mat4 ViewProjectionMatrix = ProjectionMatrix * ViewMatrix;
+
+
+	int newparticles = (int)(deltaTime*7000.0);
+	if (newparticles > (int)(0.030f*7000.0))
+		newparticles = (int)(0.030f*7000.0);
+
+	for (int i = 0; i < newparticles; i++) {
+		int particleIndex = FindUnusedParticle();
+		ParticlesContainer[particleIndex].life = 1000.0f;
+		ParticlesContainer[particleIndex].pos = glm::vec3(parts[l].GetPosition().GetY() * 2, parts[l].GetPosition().GetZ() * 2, parts[l].GetPosition().GetX() * 2);
+
+		float spread = 0.4f;
+		glm::vec3 maindir = glm::vec3(0.0f, 4.0f, 0.0f);
+
+		glm::vec3 randomdir = glm::vec3(
+			(rand() % 2000 - 1000.0f) / 1000.0f,
+			(rand() % 2000 - 1000.0f) / 1000.0f,
+			(rand() % 2000 - 1000.0f) / 1000.0f
+		);
+
+		ParticlesContainer[particleIndex].speed = maindir + randomdir*spread;
+
+		ParticlesContainer[particleIndex].r = 255;
+		ParticlesContainer[particleIndex].g = 180;
+		ParticlesContainer[particleIndex].b = 20;
+		ParticlesContainer[particleIndex].a = (rand() % 255) / 3;
+
+		ParticlesContainer[particleIndex].size = 0.2f; //(rand() % 1000) / 2000.0f + 0.1f;
+
+	}
+
+
+
+	// Simulate all particles
+	int ParticlesCount = 0;
+	for (int i = 0; i < MaxParticles; i++) {
+
+		Particle& p = ParticlesContainer[i]; // shortcut
+
+		if (p.life > 0.0f) {
+
+			// Decrease life
+			p.life -= deltaTime;
+			if (p.life > 0.0f) {
+
+				// Simulate simple physics : gravity only, no collisions
+				p.speed += glm::vec3(0.0f, -2.81f, 0.0f) * (float)deltaTime * 0.5f;
+				p.pos += p.speed * (float)deltaTime;
+				p.cameradistance = glm::length2(p.pos - CameraPosition);
+				//ParticlesContainer[i].pos += glm::vec3(0.0f,10.0f, 0.0f) * (float)delta;
+
+				// Fill the GPU buffer
+				g_particule_position_size_data[4 * ParticlesCount + 0] = p.pos.x;
+				g_particule_position_size_data[4 * ParticlesCount + 1] = p.pos.y;
+				g_particule_position_size_data[4 * ParticlesCount + 2] = p.pos.z;
+
+				g_particule_position_size_data[4 * ParticlesCount + 3] = p.size;
+
+				g_particule_color_data[4 * ParticlesCount + 0] = p.r;
+				g_particule_color_data[4 * ParticlesCount + 1] = p.g;
+				g_particule_color_data[4 * ParticlesCount + 2] = p.b;
+				g_particule_color_data[4 * ParticlesCount + 3] = p.a;
+
+			}
+			else {
+				// Particles that just died will be put at the end of the buffer in SortParticles();
+				p.cameradistance = -1.0f;
+			}
+
+			ParticlesCount++;
+
+		}
+	}
+
+	SortParticles();
+
+	glBindVertexArray(VertexArrayID);
+
+	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf
+	glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLfloat) * 4, g_particule_position_size_data);
+
+	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
+	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLubyte) * 4, g_particule_color_data);
+
+	glProgramUniform1i(rdata[1].shaders, TextureID, 0);
+
+	glProgramUniform3f(rdata[1].shaders, CameraRight_worldspace_ID, ViewMatrix[0][0], ViewMatrix[1][0], ViewMatrix[2][0]);
+	glProgramUniform3f(rdata[1].shaders, CameraUp_worldspace_ID, ViewMatrix[0][1], ViewMatrix[1][1], ViewMatrix[2][1]);
+
+	glProgramUniformMatrix4fv(rdata[1].shaders, ViewProjMatrixID, 1, GL_FALSE, &ViewProjectionMatrix[0][0]);
+
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
+	glVertexAttribPointer(
+		0,
+		3,
+		GL_FLOAT,
+		GL_FALSE,
+		0,
+		(void*)0
+	);
+
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+	glVertexAttribPointer(
+		1,
+		4,
+		GL_FLOAT,
+		GL_FALSE,
+		0,
+		(void*)0
+	);
+
+	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
+	glVertexAttribPointer(
+		2,
+		4,
+		GL_UNSIGNED_BYTE,
+		GL_TRUE,                          // unsigned char[4] will be accessible with a vec4 (floats) in the shader
+		0,
+		(void*)0
+	);
+
+	glVertexAttribDivisor(0, 0); // particles vertices : always reuse the same 4 vertices -> 0
+	glVertexAttribDivisor(1, 1); // positions : one per quad (its center)                 -> 1
+	glVertexAttribDivisor(2, 1); // color : one per quad                                  -> 1
+
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, ParticlesCount);
+
+
+	delete[] g_particule_position_size_data;
+	delete[] g_particule_color_data;
+	g_particule_position_size_data = new GLfloat[MaxParticles * 4];
+	g_particule_color_data = new GLubyte[MaxParticles * 4];
+
+	glGenBuffers(1, &billboard_vertex_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
+	// The VBO containing the positions and sizes of the particles
+
+	glGenBuffers(1, &particles_position_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+	// Initialize with empty (NULL) buffer : it will be updated later, each frame.
+	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
+
+	// The VBO containing the colors of the particles
+
+	glGenBuffers(1, &particles_color_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
+	// Initialize with empty (NULL) buffer : it will be updated later, each frame.
+	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
+}
+}
 
 int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObjectRenderInfo> gameObjects)
 {
@@ -1190,107 +1360,13 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
     glLoadIdentity();
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glUseProgram(rdata[1].shaders);
+//        glUseProgram(rdata[1].shaders);
 //        glm::mat4 ModelMatrix2 = glm::mat4(1.0);
 //        ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(2, 2, 2));
 //        glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
 //
 //        glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
 //        glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
-
-		double currentTime = SDL_GetTicks() / 50;
-		deltaTime = float(currentTime - lastTime);
-		lastTime = currentTime;
-
-		glm::vec3 CameraPosition(glm::inverse(ViewMatrix)[3]);
-
-		glm::mat4 ViewProjectionMatrix = ProjectionMatrix * ViewMatrix;
-
-
-		int newparticles = (int)(deltaTime*5000.0);
-		if (newparticles > (int)(0.030f*5000.0))
-			newparticles = (int)(0.030f*5000.0);
-
-		for (int i = 0; i<newparticles; i++) {
-			int particleIndex = FindUnusedParticle();
-			ParticlesContainer[particleIndex].life = 5.0f;
-			ParticlesContainer[particleIndex].pos = glm::vec3(2.0f, 0.0f, 2.0f);
-
-			float spread = 0.3f;
-			glm::vec3 maindir = glm::vec3(0.0f, 4.0f, 0.0f);
-
-			glm::vec3 randomdir = glm::vec3(
-				(rand() % 2000 - 1000.0f) / 1000.0f,
-				(rand() % 2000 - 1000.0f) / 1000.0f,
-				(rand() % 2000 - 1000.0f) / 1000.0f
-			);
-
-			ParticlesContainer[particleIndex].speed = maindir + randomdir*spread;
-
-			ParticlesContainer[particleIndex].r = 255;
-			ParticlesContainer[particleIndex].g = 230;
-			ParticlesContainer[particleIndex].b = 40;
-			ParticlesContainer[particleIndex].a = (rand() % 255) / 3;
-
-			ParticlesContainer[particleIndex].size = 0.1f; //(rand() % 1000) / 2000.0f + 0.1f;
-
-		}
-
-
-
-		// Simulate all particles
-		int ParticlesCount = 0;
-		for (int i = 0; i<MaxParticles; i++) {
-
-			Particle& p = ParticlesContainer[i]; // shortcut
-
-			if (p.life > 0.0f) {
-
-				// Decrease life
-				p.life -= deltaTime;
-				if (p.life > 0.0f) {
-
-					// Simulate simple physics : gravity only, no collisions
-					p.speed += glm::vec3(0.0f, -2.81f, 0.0f) * (float)deltaTime * 0.5f;
-					p.pos += p.speed * (float)deltaTime;
-					p.cameradistance = glm::length2(p.pos - CameraPosition);
-					//ParticlesContainer[i].pos += glm::vec3(0.0f,10.0f, 0.0f) * (float)delta;
-
-					// Fill the GPU buffer
-					g_particule_position_size_data[4 * ParticlesCount + 0] = p.pos.x;
-					g_particule_position_size_data[4 * ParticlesCount + 1] = p.pos.y;
-					g_particule_position_size_data[4 * ParticlesCount + 2] = p.pos.z;
-
-					g_particule_position_size_data[4 * ParticlesCount + 3] = p.size;
-
-					g_particule_color_data[4 * ParticlesCount + 0] = p.r;
-					g_particule_color_data[4 * ParticlesCount + 1] = p.g;
-					g_particule_color_data[4 * ParticlesCount + 2] = p.b;
-					g_particule_color_data[4 * ParticlesCount + 3] = p.a;
-
-				}
-				else {
-					// Particles that just died will be put at the end of the buffer in SortParticles();
-					p.cameradistance = -1.0f;
-				}
-
-				ParticlesCount++;
-
-			}
-		}
-
-		SortParticles();
-
-        glBindVertexArray(VertexArrayID);
-
-		glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
-		glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf
-		glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLfloat) * 4, g_particule_position_size_data);
-
-		glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
-		glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLubyte) * 4, g_particule_color_data);
-
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1300,51 +1376,55 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[12]);
 
-		glProgramUniform1i(rdata[1].shaders, TextureID, 0);
+		std::vector<GameObjectRenderInfo> parts;
+		static bool drawPE = false;
+		static bool drawStart = false;
+		static double lastTime = SDL_GetTicks();
+		static double currentTime = SDL_GetTicks();
 
-		glProgramUniform3f(rdata[1].shaders, CameraRight_worldspace_ID, ViewMatrix[0][0], ViewMatrix[1][0], ViewMatrix[2][0]);
-		glProgramUniform3f(rdata[1].shaders, CameraUp_worldspace_ID, ViewMatrix[0][1], ViewMatrix[1][1], ViewMatrix[2][1]);
+		for (int l = 0; l < gameObjects.size(); l++)
+		{
+			bool shouldDraw = false;
 
-		glProgramUniformMatrix4fv(rdata[1].shaders, ViewProjMatrixID, 1, GL_FALSE, &ViewProjectionMatrix[0][0]);
+			while (gameObjects[i].GetObjectType() != EXPLOSION_PE) {
+				l++;
+				i++;
+				if (i == gameObjects.size())
+					break;
+			}
+			if (i >= gameObjects.size()) {
+				shouldDraw = false;
+			}
+			else
+				shouldDraw = true;
 
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
-		glVertexAttribPointer(
-			0,
-			3,
-			GL_FLOAT,
-			GL_FALSE,
-			0,
-			(void*)0
-		);
+			if (shouldDraw)
+			{
+				parts.push_back(gameObjects[i]);
+				drawPE = true;
+				if (!drawStart)
+				{
+					drawStart = true;
+					lastTime = SDL_GetTicks();
+				}
+			}
+			i++;
+			//std::cout << "draw: " << drawPE << std::endl;
+		}
 
-		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
-		glVertexAttribPointer(
-			1,
-			4,
-			GL_FLOAT,
-			GL_FALSE,
-			0,
-			(void*)0
-		);
-
-		glEnableVertexAttribArray(2);
-		glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
-		glVertexAttribPointer(
-			2,
-			4,
-			GL_UNSIGNED_BYTE,
-			GL_TRUE,                          // unsigned char[4] will be accessible with a vec4 (floats) in the shader
-			0,
-			(void*)0
-		);
-
-		glVertexAttribDivisor(0, 0); // particles vertices : always reuse the same 4 vertices -> 0
-		glVertexAttribDivisor(1, 1); // positions : one per quad (its center)                 -> 1
-		glVertexAttribDivisor(2, 1); // color : one per quad                                  -> 1
-
-		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, ParticlesCount);
+		if (drawPE)
+		{
+			currentTime = SDL_GetTicks();
+			if (currentTime - lastTime > 5000)
+			{
+				drawPE = false;
+				drawStart = false;
+			}
+			else
+			{
+				drawParticles(parts);
+			}
+		}
 
 		i = 0;
 
