@@ -803,7 +803,6 @@ void RenderEngine::initGlew()
 
 void RenderEngine::drawParticles(std::vector<GameObjectRenderInfo> parts)
 {
-	std::cout << parts.size() << std::endl;
 	for (size_t l = 0; l < parts.size(); l++)
 	{
 	double currentTime = SDL_GetTicks();
