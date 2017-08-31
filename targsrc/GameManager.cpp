@@ -1012,3 +1012,18 @@ void GameManager::WriteSave(std::string path)
     file << m_score << std::endl;
     file << m_lives << std::endl;
 }
+
+std::size_t GameManager::GetLives() const
+{
+    return (m_lives);
+}
+
+std::size_t GameManager::GetScore() const
+{
+    return (m_score);
+}
+
+std::size_t GameManager::GetBombs() const
+{
+    return (m_playerBombAmount);
+}

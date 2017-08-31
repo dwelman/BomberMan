@@ -64,4 +64,7 @@ public:
     bool        GetGamePaused() const;
 	void		LoadSave(std::string path);
 	void		WriteSave(std::string path);
+	std::size_t GetLives() const;
+	std::size_t	GetScore() const;
+	std::size_t	GetBombs() const;
 };
