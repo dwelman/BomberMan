@@ -6,36 +6,39 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <map>
 
-enum SFXs
+enum eSFX
 {
-    EXPLODE = 0,
+	NOSFX = 0,
+    EXPLODE,
     WALK,
     CRUMBLING
 };
 
-enum Musics
+enum eMusic
 {
-    START = 0,
+	NOMUSIC = 0,
+    START,
     COBBLE
-
 };
 
 struct AudioEvent
 {
-    bool    type;
-    int     pos; 
+    bool        isMusic;
+    eSFX        sfx;
+    eMusic      music;
 };
 
 class AudioManager
 {
     private:
-        std::vector<Mix_Chunk*> SFX;
-        std::vector<Mix_Music*> Music;
-        std::queue<AudioEvent*> queue;
-        double                     SFXVol;
-        double                     MusicVol;
-        double                     MasterVol;
+        std::map<eSFX, Mix_Chunk*>    	SFX;
+        std::map<eMusic, Mix_Music*>    Music;
+        std::queue<AudioEvent*>         queue;
+        double                      SFXVol;
+        double                      MusicVol;
+        double                      MasterVol;
 
     public:
         AudioManager();
@@ -44,18 +47,20 @@ class AudioManager
         ~AudioManager();
 
         AudioManager &operator=(AudioManager const & src);
-        std::vector<Mix_Music*> getMusic() const;
-        std::vector<Mix_Chunk*> getSFX() const;
+		std::map<eMusic, Mix_Music*> getMusic() const;
+		std::map<eSFX,Mix_Chunk*>  getSFX() const;
 
-        void PlayMusic(int i);
-        void PauseMusic(int i);
-        void PlaySFX(int i);
+        void PlayMusic(eMusic track);
+        void PauseMusic(eMusic track);
+        void PlaySFX(eSFX track);
 
         void MusicVolume(double vol);
         void SFXVolume(double vol);
-		void MasterVolume(double vol); 
-		
-		void PushEvent(bool type, int);
+		void MasterVolume(double vol);
+
+		void PushEvent(AudioEvent *e);
+		void PushMusic(eMusic);
+		void PushSFX(eSFX);
 		void execQueue();
 		
 };

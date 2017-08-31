@@ -77,8 +77,8 @@ bool continueGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_eleme
 
 bool startGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate &var)
 {
-	var.audio->PlayMusic(0);
-	var.audio->PlaySFX(0);
+	var.audio->PushMusic(START);
+	var.audio->PushSFX(EXPLODE);
 	var.manager->SetGameStarted(true);
     var.manager->WriteSave("save/savegame");
 	return (true);

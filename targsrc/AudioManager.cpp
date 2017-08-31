@@ -6,8 +6,8 @@ AudioManager::AudioManager()
     Mix_Music *muse = Mix_LoadMUS("resources/Sounds/Rob_Gasser_-_Ricochet.wav");
     std::queue<AudioEvent*> empty;
     std::swap( queue, empty );
-    Music.push_back(muse);
-    SFX.push_back(temp);
+    Music[START] = muse;
+    SFX[EXPLODE] = temp;
 }
 
 AudioManager::AudioManager(AudioManager const & src)
@@ -19,8 +19,8 @@ AudioManager::AudioManager(ConfigEditor &cfg)
 {
     Mix_Chunk *temp = Mix_LoadWAV( "resources/Sounds/high.wav" );
     Mix_Music *muse = Mix_LoadMUS("resources/Sounds/Rob_Gasser_-_Ricochet.wav");
-    Music.push_back(muse);
-    SFX.push_back(temp);
+    Music[START] = muse;
+    SFX[EXPLODE] = temp;
     MasterVol = std::stod(cfg["MasterVolume"].to_str());
     SFXVol = std::stod(cfg["SFXVolume"].to_str());
     MusicVol = std::stod(cfg["MusicVolume"].to_str());
@@ -51,8 +51,9 @@ void    AudioManager::setSFX(std::vector<Mix_Chunk*> S)
 {
     SFX = S;
 } */
+void PlaySFX(eSFX track);
 
-void    AudioManager::PlayMusic(int i)
+void    AudioManager::PlayMusic(eMusic track)
 {
     //if( Mix_PausedMusic() == 1 )
     //{
@@ -60,30 +61,30 @@ void    AudioManager::PlayMusic(int i)
    // }
     //else
     //{
-        Mix_PlayMusic( Music[i], -1 );
+        Mix_PlayMusic( Music[track], -1 );
    // }
 }
 
-std::vector<Mix_Chunk*> AudioManager::getSFX() const
+std::map<eSFX,Mix_Chunk*>  AudioManager::getSFX() const
 {
     return(this->SFX);
 }
 
-std::vector<Mix_Music*> AudioManager::getMusic() const
+std::map<eMusic, Mix_Music*> AudioManager::getMusic() const
 {
     return(this->Music);
 }
 
-void    AudioManager::PauseMusic(int i)
+void    AudioManager::PauseMusic(eMusic track)
 {
     if (Mix_PausedMusic() == 0)
-    Mix_PauseMusic();
+        Mix_PauseMusic();
 }
 
-void    AudioManager::PlaySFX(int i)
+void    AudioManager::PlaySFX(eSFX track)
 {
-    if (i < SFX.size())
-        Mix_PlayChannel( -1, SFX[i], 0 );
+    if (SFX.find(track) != SFX.end())
+        Mix_PlayChannel( -1, SFX[track], 0 );
 }
 
 void    AudioManager::MusicVolume(double vol)
@@ -116,10 +117,29 @@ void    AudioManager::MasterVolume(double vol)
     }
 }
 
-void    AudioManager::PushEvent(bool sound, int position)
+void    AudioManager::PushEvent(AudioEvent *e)
 {
-    AudioEvent event = {sound, position};
-    queue.push(&event);
+    queue.push(e);
+}
+
+void AudioManager::PushMusic(eMusic music)
+{
+    AudioEvent *e = new AudioEvent();
+
+    e->music = music;
+    e->isMusic = true;
+    e->sfx = NOSFX;
+    queue.push(e);
+}
+
+void AudioManager::PushSFX(eSFX sfx)
+{
+    AudioEvent *e = new AudioEvent();
+
+    e->sfx = sfx;
+    e->isMusic = false;
+    e->music = NOMUSIC;
+    queue.push(e);
 }
 
 void    AudioManager::execQueue()
@@ -130,13 +150,14 @@ void    AudioManager::execQueue()
     {
        temp = queue.front();
        queue.pop();
-        if (temp->type)
+        if (temp->isMusic)
         {
-           PlayMusic(temp->pos);
+            PlayMusic(temp->music);
         }
         else
         {
-            PlaySFX(temp->pos);
+            PlaySFX(temp->sfx);
         }
+        delete (temp);
     }
 }
