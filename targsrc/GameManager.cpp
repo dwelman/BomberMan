@@ -208,6 +208,30 @@ std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 con
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BLOCK_OT, true)));
 		//entity.SetCanTick(false);
 	}
+    else if (entityType == "level_exit_closed")
+    {
+        entity.RegisterComponent(m_currentComponentID, POSITION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
+        entity.RegisterComponent(m_currentComponentID, COLLISION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
+        entity.RegisterComponent(m_currentComponentID, TAG);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(INDESTRUCTIBLE_TAG)));
+        entity.RegisterComponent(m_currentComponentID, RENDER);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Render(DOOR_CLOSED_OT, true)));
+        entity.SetCanTick(false);
+    }
+    else if (entityType == "level_exit_open")
+    {
+        entity.RegisterComponent(m_currentComponentID, POSITION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
+        entity.RegisterComponent(m_currentComponentID, COLLISION);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
+        entity.RegisterComponent(m_currentComponentID, TAG);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(INDESTRUCTIBLE_TAG | LEVEL_EXIT_TAG)));
+        entity.RegisterComponent(m_currentComponentID, RENDER);
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Render(DOOR_OPEN_OT, true)));
+        entity.SetCanTick(false);
+    }
 	else if (entityType == "enemy_1")
 	{
 
@@ -520,6 +544,11 @@ bool 	GameManager::Update()
 											m_toBeDeleted.push_back(ID);
 										}
 									}
+                                    if ((tag->GetTagMask() & (LEVEL_EXIT_TAG)) == (LEVEL_EXIT_TAG))
+                                    {
+                                        m_level++;
+                                        startLevel();
+                                    }
                                 }
                             }
                             else if (ID == -1)
@@ -558,6 +587,12 @@ bool 	GameManager::Update()
 											m_explosionSize++;
 											m_toBeDeleted.push_back(ID);
 										}
+                                    }
+                                    if ((tag->GetTagMask() & (LEVEL_EXIT_TAG)) == (LEVEL_EXIT_TAG))
+                                    {
+                                        m_level++;
+                                        startLevel();
+                                        return (false);
                                     }
                                 }
                             }
@@ -598,6 +633,11 @@ bool 	GameManager::Update()
 											m_toBeDeleted.push_back(ID);
 										}
 									}
+                                    if ((tag->GetTagMask() & (LEVEL_EXIT_TAG)) == (LEVEL_EXIT_TAG))
+                                    {
+                                        m_level++;
+                                        startLevel();
+                                    }
                                 }
                             }
                             else if (ID == -1)
@@ -637,6 +677,11 @@ bool 	GameManager::Update()
 											m_toBeDeleted.push_back(ID);
 										}
 									}
+                                    if ((tag->GetTagMask() & (LEVEL_EXIT_TAG)) == (LEVEL_EXIT_TAG))
+                                    {
+                                        m_level++;
+                                        startLevel();
+                                    }
                                 }
                             }
                             else if (ID == -1)
@@ -775,7 +820,7 @@ bool 	GameManager::Update()
 								}
 							}
                         }
-						else
+						else if (!((tag->GetTagMask() & (INDESTRUCTIBLE_TAG)) == (INDESTRUCTIBLE_TAG)))
 						{
 							m_toBeDeleted.push_back(m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]);
 						}
