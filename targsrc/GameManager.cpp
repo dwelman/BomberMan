@@ -267,6 +267,8 @@ std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 con
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(DAMAGE_ENEMY_TAG | DAMAGE_PLAYER_TAG | DAMAGE_WALL_TAG)));
 		entity.RegisterComponent(m_currentComponentID, EXPLOSION);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Explosion(m_explosionSize, Vec3(0, 0, 0), 0.4f)));
+		entity.RegisterComponent(m_currentComponentID, RENDER);
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Render(EXPLOSION_PE, true)));
 	}
 	else if (entityType == "powerup_life")
 	{
@@ -314,8 +316,8 @@ std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 con
 	{
 		entity.RegisterComponent(m_currentComponentID, POSITION);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
-		entity.RegisterComponent(m_currentComponentID, RENDER);
-		m_components.emplace(std::make_pair(m_currentComponentID++, new Render(EXPLOSION_PE, true)));
+		/*entity.RegisterComponent(m_currentComponentID, RENDER);
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Render(EXPLOSION_PE, true)));*/
 	}
 	else if (entityType == "blood_particle")
 	{
@@ -781,7 +783,7 @@ bool 	GameManager::Update()
 					std::size_t explosionID = m_entities[i].GetComponentOfType(EXPLOSION);
 					Position *position = dynamic_cast<Position *>(m_components[positionID]);
 					Explosion *explosion = dynamic_cast<Explosion *>(m_components[explosionID]);
-					createEntityAtPosition("explosion_particle", position->GetPosition());
+					//createEntityAtPosition("explosion_particle", position->GetPosition());
                     if (m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] >= 0)
                     {
                         std::size_t tagID = m_entities[m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]].GetComponentOfType(TAG);
@@ -934,7 +936,7 @@ void        GameManager::GetRenderData(std::vector<GameObjectRenderInfo> &g)
 					}
 				}
 
-				if (render->GetObjectType() == EXPLOSION_PE || render->GetObjectType() == RUBBLE_PE || render->GetObjectType() == BLOOD_PE)
+				if (/*render->GetObjectType() == EXPLOSION_PE || */render->GetObjectType() == RUBBLE_PE || render->GetObjectType() == BLOOD_PE)
 				{
 					m_toBeDeleted.push_back(i);
 				}
