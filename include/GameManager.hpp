@@ -11,6 +11,7 @@
 #include "components/Explosion.hpp"
 #include "components/Powerup.hpp"
 #include "components/Render.hpp"
+#include "components/Enemy.hpp"
 #include "systems/TagSystem.hpp"
 #include "systems/PlayerControllerSystem.hpp"
 #include "systems/CollisionSystem.hpp"

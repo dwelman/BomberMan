@@ -172,6 +172,7 @@ set(SOURCE_COMP
 		${COMPSRC}Explosion.cpp
 		${COMPSRC}Tag.cpp
 		${COMPSRC}Powerup.cpp
+		${COMPSRC}Enemy.cpp
 		)
 
 set(SYSSOURCE "targsrc/systems/")
@@ -218,6 +219,7 @@ set(HEADERS_COMP
 		${COMP_INCL}Tag.hpp
 		${COMP_INCL}Explosion.hpp
 		${COMP_INCL}Powerup.hpp
+		${COMP_INCL}Enemy.hpp
 		)
 
 set(SYS_INCL "include/systems/")

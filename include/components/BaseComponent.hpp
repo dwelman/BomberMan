@@ -11,7 +11,8 @@ enum ComponentMask
     BOMB = 32,
     TAG = 64,
     EXPLOSION = 128,
-    POWERUP = 256
+    POWERUP = 256,
+	ENEMY = 512
 };
 
 #define COMPONENT_MASK_TYPE short

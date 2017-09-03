@@ -170,7 +170,6 @@ std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 con
 	Entity entity;
 	if (entityType == "player")
 	{
-		//TODO: Read this from config file later
 		entity.RegisterComponent(m_currentComponentID, POSITION);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
 		entity.RegisterComponent(m_currentComponentID, COLLISION);
@@ -234,7 +233,18 @@ std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 con
     }
 	else if (entityType == "enemy_1")
 	{
-
+		entity.RegisterComponent(m_currentComponentID, POSITION);
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Position(pos)));
+		entity.RegisterComponent(m_currentComponentID, COLLISION);
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.4f, 0.4f, 0.4f, true)));
+		entity.RegisterComponent(m_currentComponentID, MOVEMENT);
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Movement(Vec3(0, 0, 0), m_playerMoveSpeed, Vec3(0, 0, 0))));
+		entity.RegisterComponent(m_currentComponentID, TAG);
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(ENEMY_TAG | MOVING_ENTITY_TAG)));
+		entity.RegisterComponent(m_currentComponentID, ENEMY);
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Enemy(1)));
+		entity.RegisterComponent(m_currentComponentID, RENDER);
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BOMB_STRENGTH_POWERUP_OT, true)));
 	}
 	else if (entityType == "enemy_2")
 	{
@@ -399,15 +409,22 @@ void GameManager::startLevel(bool save, unsigned int seed)
 		}
 	}
 
-	for (std::size_t y = 0; y < MAP_Y; y++)
+	for (std::size_t y = 1; y < MAP_Y; y++)
 	{
-		for (std::size_t x = 0; x < MAP_X; x++)
+		for (std::size_t x = 1; x < MAP_X; x++)
 		{
 			if (m_gameMap[y][x] == -1 && !(y == 2 && x == 1) && !(y == 1 && x == 2) && !(y == 1 && x == 1))
 			{
 				if (rand() % 100 > 70)
 				{
-					createEntityAtPosition("destructible_wall", Vec3(x, y, 1));
+					if (rand() % 100 <= 70)
+					{
+						m_gameMap[y][x] = createEntityAtPosition("destructible_wall", Vec3(x, y, 1));
+					}
+					else
+					{
+						m_gameMap[y][x] = createEntityAtPosition("enemy_1", Vec3(x, y, 0));
+					}
 				}
 			}
 		}
@@ -551,6 +568,10 @@ bool 	GameManager::Update()
                                         m_level++;
                                         startLevel();
                                     }
+									if ((tag->GetTagMask() & (ENEMY_TAG)) == (ENEMY_TAG))
+									{
+										killPlayer();
+									}
                                 }
                             }
                             else if (ID == -1)
@@ -596,6 +617,10 @@ bool 	GameManager::Update()
                                         startLevel();
                                         return (false);
                                     }
+									if ((tag->GetTagMask() & (ENEMY_TAG)) == (ENEMY_TAG))
+									{
+										killPlayer();
+									}
                                 }
                             }
                             else if (ID == -1)
@@ -640,6 +665,10 @@ bool 	GameManager::Update()
                                         m_level++;
                                         startLevel();
                                     }
+									if ((tag->GetTagMask() & (ENEMY_TAG)) == (ENEMY_TAG))
+									{
+										killPlayer();
+									}
                                 }
                             }
                             else if (ID == -1)
@@ -678,6 +707,10 @@ bool 	GameManager::Update()
 											m_explosionSize++;
 											m_toBeDeleted.push_back(ID);
 										}
+									}
+									if ((tag->GetTagMask() & (ENEMY_TAG)) == (ENEMY_TAG))
+									{
+										killPlayer();
 									}
                                     if ((tag->GetTagMask() & (LEVEL_EXIT_TAG)) == (LEVEL_EXIT_TAG))
                                     {
@@ -733,6 +766,78 @@ bool 	GameManager::Update()
 				}
 			}
 		}
+
+		//Enemy system
+		/*{
+			if ((bitmask & ENEMY) == ENEMY)
+			{
+				try
+				{
+					std::size_t movementID = m_entities[i].GetComponentOfType(MOVEMENT);
+					std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
+					std::size_t enemyID = m_entities[i].GetComponentOfType(ENEMY);
+					Movement *movement = dynamic_cast<Movement *>(m_components[movementID]);
+					Position *position = dynamic_cast<Position *>(m_components[positionID]);
+					Enemy *enemy = dynamic_cast<Enemy *>(m_components[enemyID]);
+					if (enemy->GetEnemyType() == 1)
+					{
+						if (movement->GetCanChangeDirection())
+						{
+							int x = (int)movement->GetDestination().GetX();
+							int y = (int)movement->GetDestination().GetY();
+							if (m_gameMap[y][x] != -1)
+							{
+								if (m_entities[m_gameMap[y][x]].GetComponentFlags() & POWERUP == POWERUP)
+								{
+									m_toBeDeleted[m_gameMap[y][x]];
+									movement->SetDestination(position->GetPosition() + movement->GetDirection());
+								}
+								else
+								{
+									//if (rand() % 100 <= 50)
+									{
+										movement->SetDirection(movement->GetDirection() * -1);
+										movement->SetDestination(position->GetPosition() + movement->GetDirection());
+									}
+									//else
+									{
+
+									}
+								}
+							}
+							else
+							{
+								movement->SetDestination(position->GetPosition() + movement->GetDirection());
+							}
+						}
+					}
+					else if (enemy->GetEnemyType() == 2)
+					{
+
+					}
+					else
+					{
+
+					}
+					if (playerAlive)
+					{
+						std::size_t posID = m_entities[playerID].GetComponentOfType(POSITION);
+						Position *pos = dynamic_cast<Position *>(m_components[posID]);
+						if (pos->GetPosition() == position->GetPosition())
+						{
+							m_toBeDeleted.push_back(playerID);
+							createEntityAtPosition("blood_particle", position->GetPosition());
+							killPlayer();
+							return (false);
+						}
+					}
+				}
+				catch (std::exception &e)
+				{
+					return (false);
+				}
+			}
+		}*/
 
 		//Bomb system
 		{
