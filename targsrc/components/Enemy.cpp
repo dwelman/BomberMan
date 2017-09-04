@@ -1,4 +1,4 @@
-#include "components\Enemy.hpp"
+#include "components/Enemy.hpp"
 
 Enemy::Enemy() : BaseComponent(ENEMY)
 {

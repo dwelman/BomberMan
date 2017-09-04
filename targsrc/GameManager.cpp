@@ -274,7 +274,7 @@ std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 con
 		entity.RegisterComponent(m_currentComponentID, COLLISION);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
 		entity.RegisterComponent(m_currentComponentID, TAG);
-		m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(DAMAGE_ENEMY_TAG | DAMAGE_PLAYER_TAG | DAMAGE_WALL_TAG)));
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(DAMAGE_ENEMY_TAG | DAMAGE_PLAYER_TAG | DAMAGE_WALL_TAG | EXPLOSION_TAG)));
 		entity.RegisterComponent(m_currentComponentID, EXPLOSION);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Explosion(m_explosionSize, Vec3(0, 0, 0), 0.4f)));
 		entity.RegisterComponent(m_currentComponentID, RENDER);
@@ -491,7 +491,7 @@ bool 	GameManager::Update()
                     Position *position = dynamic_cast<Position *>(m_components[positionID]);
                     std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
                     Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
-					if (tag->GetTagMask() & PLAYER_TAG == PLAYER_TAG)
+					if ((tag->GetTagMask() & PLAYER_TAG) == PLAYER_TAG)
 					{
 						playerID = i;
 						playerAlive = true;
@@ -915,21 +915,18 @@ bool 	GameManager::Update()
 								if (rand() % 100 <= 60)
 								{
 									m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] = createEntityAtPosition("powerup_bomb_amount", position->GetPosition());
-									m_score += 10;
 								}
 								else if (rand() % 100 <= 90)
 								{
 									m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] = createEntityAtPosition("powerup_bomb_strength", position->GetPosition());
-									m_score += 15;
 								}
 								else
 								{
 									m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] = createEntityAtPosition("powerup_life", position->GetPosition());
-									m_score += 25;
 								}
 							}
                         }
-						else if (!((tag->GetTagMask() & (INDESTRUCTIBLE_TAG)) == (INDESTRUCTIBLE_TAG)))
+						else if (!((tag->GetTagMask() & (INDESTRUCTIBLE_TAG)) == (INDESTRUCTIBLE_TAG)) && !((tag->GetTagMask() & (EXPLOSION_TAG)) == (EXPLOSION_TAG)))
 						{
 							m_toBeDeleted.push_back(m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]);
 						}
@@ -963,6 +960,7 @@ bool 	GameManager::Update()
 					if (explosion->GetDuration() <= 0)
 					{
 						m_toBeDeleted.push_back(i);
+                        std::cout << "Explosion done" << std::endl;
 					}
 				}
 				catch (std::exception &e)
