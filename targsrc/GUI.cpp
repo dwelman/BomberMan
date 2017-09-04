@@ -309,7 +309,7 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 	crate.livesText->setProperty("Text", std::to_string(manager.GetLives()));
 	crate.bombsText->setProperty("Text", std::to_string(manager.GetBombs()));
 
-	crate.enemiesText->setProperty("Text", (manager.GetEnemiesLeft() < 0 ) ? 0 : std::to_string(manager.GetEnemiesLeft()));
+	crate.enemiesText->setProperty("Text", (manager.GetEnemiesLeft() < 0 ) ? "0" : std::to_string(manager.GetEnemiesLeft()));
 	crate.levelText->setProperty("Text", "Level " + std::to_string(manager.GetLevel()));
 	crate.scoreText->setProperty("Text", "Score : " + std::to_string(manager.GetScore()));
 	//crate.timerText->setProperty("Text", std::to_string(manager.GetTime()));
