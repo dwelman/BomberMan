@@ -28,3 +28,13 @@ short Enemy::GetEnemyType() const
 {
 	return (m_enemyType);
 }
+
+float 	 Enemy::GetTimeUntilNextMove() const
+{
+	return (m_timeUntilNextMove);
+}
+
+void 	 Enemy::SetTimeUntilNextMove(float time)
+{
+	m_timeUntilNextMove = time;
+}

@@ -44,6 +44,7 @@ private:
 	long int								m_gameMap[MAP_Y][MAP_X];
 	unsigned int							m_seed;
     unsigned int                            m_level;
+    int                                     m_enemiesToDestroy;
 
 	void		handleCollisions(Position &p, Tag &t, std::size_t ID);
     void        handleMovement(Position &p, Movement &m);

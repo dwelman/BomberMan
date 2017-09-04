@@ -238,7 +238,7 @@ std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 con
 		entity.RegisterComponent(m_currentComponentID, COLLISION);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.4f, 0.4f, 0.4f, true)));
 		entity.RegisterComponent(m_currentComponentID, MOVEMENT);
-		m_components.emplace(std::make_pair(m_currentComponentID++, new Movement(Vec3(0, 0, 0), m_playerMoveSpeed, Vec3(0, 0, 0))));
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Movement(Vec3(0, 0, 0), 3, Vec3(0, 0, 0))));
 		entity.RegisterComponent(m_currentComponentID, TAG);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(ENEMY_TAG | MOVING_ENTITY_TAG)));
 		entity.RegisterComponent(m_currentComponentID, ENEMY);
@@ -430,13 +430,15 @@ void GameManager::startLevel(bool save, unsigned int seed)
 		}
 	}
 
-	createEntityAtPosition("player", Vec3(1, 1, 0));
+    createEntityAtPosition("player", Vec3(1, 1, 0));
+    createEntityAtPosition("level_exit_closed", Vec3(2, 1, 0));
     if (save)
     {
         WriteSave("save/savegame");
     }
 	m_playerBombAmount = 1;
 	m_explosionSize = 1;
+    m_enemiesToDestroy = 5;
 }
 
 void GameManager::killPlayer()
@@ -507,6 +509,10 @@ bool 	GameManager::Update()
                 }
             }
         }
+    }
+    if (playerAlive == false)
+    {
+        killPlayer();
     }
 	for (auto iter = m_entities.begin(); iter != m_entities.end(); iter++)
 	{
@@ -781,39 +787,41 @@ bool 	GameManager::Update()
 					Movement *movement = dynamic_cast<Movement *>(m_components[movementID]);
 					Position *position = dynamic_cast<Position *>(m_components[positionID]);
 					Enemy *enemy = dynamic_cast<Enemy *>(m_components[enemyID]);
-					/*if (enemy->GetEnemyType() == 1)
+					if (enemy->GetEnemyType() == 1)
 					{
-						if (movement->GetCanChangeDirection())
+						if (movement->GetCanChangeDirection() == true)
 						{
-							int x = (int)movement->GetDestination().GetX();
-							int y = (int)movement->GetDestination().GetY();
-							if (m_gameMap[y][x] != -1)
-							{
-								if (m_entities[m_gameMap[y][x]].GetComponentFlags() & POWERUP == POWERUP)
-								{
-									m_toBeDeleted[m_gameMap[y][x]];
-									movement->SetDestination(position->GetPosition() + movement->GetDirection());
-								}
-								else
-								{
-									//if (rand() % 100 <= 50)
-									{
-										movement->SetDirection(movement->GetDirection() * -1);
-										movement->SetDestination(position->GetPosition() + movement->GetDirection());
-									}
-									//else
-									{
+                            if (enemy->GetTimeUntilNextMove() <= 0)
+                            {
+                                int x = (int) position->GetPosition().GetX();
+                                int y = (int) position->GetPosition().GetY();
 
-									}
-								}
-							}
-							else
-							{
-								movement->SetDestination(position->GetPosition() + movement->GetDirection());
-							}
+                                if (rand() % 100 >= 25 && m_gameMap[y + 1][x] == -1)
+                                {
+                                    movement->SetDirection(Vec3(0, 1, 0));
+                                    movement->SetDestination(position->GetPosition() + movement->GetDirection());
+                                }
+                                else if (rand() % 100 >= 50 && m_gameMap[y - 1][x] == -1)
+                                {
+                                    movement->SetDirection(Vec3(0, -1, 0));
+                                    movement->SetDestination(position->GetPosition() + movement->GetDirection());
+                                }
+                                else if (rand() % 100 >= 75 && m_gameMap[y][x + 1] == -1)
+                                {
+                                    movement->SetDirection(Vec3(1, 0, 0));
+                                    movement->SetDestination(position->GetPosition() + movement->GetDirection());
+                                }
+                                else if (m_gameMap[y][x - 1] == -1)
+                                {
+                                    movement->SetDirection(Vec3(-1, 0, 0));
+                                    movement->SetDestination(position->GetPosition() + movement->GetDirection());
+                                }
+                                enemy->SetTimeUntilNextMove(0.5f);
+                            }
+                            enemy->SetTimeUntilNextMove(enemy->GetTimeUntilNextMove() - Clock::Instance().GetDeltaTime());
 						}
 					}
-					else if (enemy->GetEnemyType() == 2)
+					/*else if (enemy->GetEnemyType() == 2)
 					{
 
 					}
@@ -825,7 +833,18 @@ bool 	GameManager::Update()
 					{
 						std::size_t posID = m_entities[playerID].GetComponentOfType(POSITION);
 						Position *pos = dynamic_cast<Position *>(m_components[posID]);
-						if (pos->GetPosition() == position->GetPosition())
+                        float   aPosX = pos->GetPosition().GetX() - 0.3f;
+                        float   bPosX = position->GetPosition().GetX() - 0.3f;
+
+                        //The corner of the y axis for a
+                        float   aPosY = pos->GetPosition().GetY() - 0.3f;
+                        //The corner of the y axis for b
+                        float   bPosY = position->GetPosition().GetY() - 0.3f;
+
+                        //The collider size is doubled to get from the one corner to the other
+                        bool collisionX = aPosX + (0.6f) >= bPosX && bPosX + (0.6f) >= aPosX;
+                        bool collisionY = aPosY + (0.6f) >= bPosY && bPosY + (0.6f) >= aPosY;
+						if (collisionX && collisionY)
 						{
 							m_toBeDeleted.push_back(playerID);
 							createEntityAtPosition("blood_particle", position->GetPosition());
@@ -926,6 +945,12 @@ bool 	GameManager::Update()
 								}
 							}
                         }
+                        else if ((tag->GetTagMask() & (ENEMY_TAG)) == (ENEMY_TAG))
+                        {
+                            m_score += 10;
+                            m_enemiesToDestroy--;
+                            m_toBeDeleted.push_back(m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]);
+                        }
 						else if (!((tag->GetTagMask() & (INDESTRUCTIBLE_TAG)) == (INDESTRUCTIBLE_TAG)) && !((tag->GetTagMask() & (EXPLOSION_TAG)) == (EXPLOSION_TAG)))
 						{
 							m_toBeDeleted.push_back(m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]);
@@ -970,29 +995,31 @@ bool 	GameManager::Update()
 			}
 		}
 
-		//Collision System
-		/*{
-			if ((bitmask & COLLISION_SYSTEM_FLAGS) == COLLISION_SYSTEM_FLAGS)
-			{
-				try
-				{
-					std::size_t collisionID = m_entities[i].GetComponentOfType(COLLISION);
-					std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
-					Collision *collision = dynamic_cast<Collision *>(m_components[collisionID]);
-					Position *position = dynamic_cast<Position *>(m_components[positionID]);
-					if (collision->GetCheckCollision() == true)
-					{
-						std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
-						Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
-						handleCollisions(*collision, *position, *tag, i);
-					}
-				}
-				catch (std::exception &e)
-				{
-				return (false);
-				}
-			}
-		}*/
+        //level exit System
+        {
+            if ((bitmask & TAG) == TAG)
+            {
+                try
+                {
+                    std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
+                    Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
+                    std::size_t posID = m_entities[i].GetComponentOfType(POSITION);
+                    Position *pos = dynamic_cast<Position *>(m_components[posID]);
+                    if ((tag->GetTagMask() & LEVEL_EXIT_TAG) == LEVEL_EXIT_TAG)
+                    {
+                        if (m_enemiesToDestroy <= 0)
+                        {
+                            m_toBeDeleted.push_back(i);
+                            createEntityAtPosition("level_exit_open", pos->GetPosition());
+                        }
+                    }
+                }
+                catch (std::exception &e)
+                {
+                    return (false);
+                }
+            }
+        }
 	}
 	for (std::size_t i = 0; i < m_toBeDeleted.size(); i++)
 	{
