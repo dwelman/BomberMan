@@ -45,6 +45,7 @@ private:
 	unsigned int							m_seed;
     unsigned int                            m_level;
     int                                     m_enemiesToDestroy;
+	bool									m_exitOpen;
 
 	void		handleCollisions(Position &p, Tag &t, std::size_t ID);
     void        handleMovement(Position &p, Movement &m);

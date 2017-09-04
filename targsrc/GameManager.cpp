@@ -439,6 +439,7 @@ void GameManager::startLevel(bool save, unsigned int seed)
 	m_playerBombAmount = 1;
 	m_explosionSize = 1;
     m_enemiesToDestroy = 2;
+	m_exitOpen = false;
 }
 
 void GameManager::killPlayer()
@@ -458,6 +459,7 @@ bool 	GameManager::Update()
 {
 	m_deltaTime = Clock::Instance().GetDeltaTime();
     std::size_t playerID;
+	std::size_t levelExitID;
     bool playerAlive = false;
 
     if (m_action == P_PAUSE_GAME)
@@ -497,6 +499,10 @@ bool 	GameManager::Update()
 					{
 						playerID = i;
 						playerAlive = true;
+					}
+					else if (m_exitOpen == false && (tag->GetTagMask() & LEVEL_EXIT_TAG) == LEVEL_EXIT_TAG)
+					{
+						levelExitID = i;
 					}
                     else if (!((tag->GetTagMask() & (INDESTRUCTIBLE_TAG | WALL_TAG)) == (INDESTRUCTIBLE_TAG | WALL_TAG)))
                     {
@@ -997,27 +1003,20 @@ bool 	GameManager::Update()
 
         //level exit System
         {
-            if ((bitmask & TAG) == TAG)
+            try
             {
-                try
+                if (m_enemiesToDestroy <= 0 && m_exitOpen == false)
                 {
-                    std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
-                    Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
-                    std::size_t posID = m_entities[i].GetComponentOfType(POSITION);
-                    Position *pos = dynamic_cast<Position *>(m_components[posID]);
-                    if ((tag->GetTagMask() & LEVEL_EXIT_TAG) == LEVEL_EXIT_TAG)
-                    {
-                        if (m_enemiesToDestroy <= 0)
-                        {
-                            m_toBeDeleted.push_back(i);
-                            createEntityAtPosition("level_exit_open", pos->GetPosition());
-                        }
-                    }
+					std::size_t posID = m_entities[levelExitID].GetComponentOfType(POSITION);
+					Position *pos = dynamic_cast<Position *>(m_components[posID]);
+                    m_toBeDeleted.push_back(levelExitID);
+                    createEntityAtPosition("level_exit_open", pos->GetPosition());
+					m_exitOpen = true;
                 }
-                catch (std::exception &e)
-                {
-                    return (false);
-                }
+            }
+            catch (std::exception &e)
+            {
+                return (false);
             }
         }
 	}
