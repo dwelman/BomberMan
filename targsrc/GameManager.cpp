@@ -1161,3 +1161,13 @@ std::size_t GameManager::GetBombs() const
 {
     return (m_playerBombAmount);
 }
+
+std::size_t GameManager::GetLevel() const
+{
+	return (m_level);
+}
+
+int GameManager::GetEnemiesLeft() const
+{
+	return (m_enemiesToDestroy);
+}

@@ -69,4 +69,6 @@ public:
 	std::size_t GetLives() const;
 	std::size_t	GetScore() const;
 	std::size_t	GetBombs() const;
+	std::size_t	GetLevel() const;
+	int			GetEnemiesLeft() const;
 };
