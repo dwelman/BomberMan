@@ -214,7 +214,7 @@ std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 con
         entity.RegisterComponent(m_currentComponentID, COLLISION);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
         entity.RegisterComponent(m_currentComponentID, TAG);
-        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(INDESTRUCTIBLE_TAG)));
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(INDESTRUCTIBLE_TAG | LEVEL_EXIT_TAG)));
         entity.RegisterComponent(m_currentComponentID, RENDER);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Render(DOOR_CLOSED_OT, true)));
         entity.SetCanTick(false);
@@ -226,7 +226,7 @@ std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 con
         entity.RegisterComponent(m_currentComponentID, COLLISION);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
         entity.RegisterComponent(m_currentComponentID, TAG);
-        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(INDESTRUCTIBLE_TAG | LEVEL_EXIT_TAG)));
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(INDESTRUCTIBLE_TAG | LEVEL_EXIT_OPEN_TAG)));
         entity.RegisterComponent(m_currentComponentID, RENDER);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Render(DOOR_OPEN_OT, true)));
         entity.SetCanTick(false);
@@ -438,7 +438,7 @@ void GameManager::startLevel(bool save, unsigned int seed)
     }
 	m_playerBombAmount = 1;
 	m_explosionSize = 1;
-    m_enemiesToDestroy = 5;
+    m_enemiesToDestroy = 2;
 }
 
 void GameManager::killPlayer()
@@ -575,7 +575,7 @@ bool 	GameManager::Update()
 											m_toBeDeleted.push_back(ID);
 										}
 									}
-                                    if ((tag->GetTagMask() & (LEVEL_EXIT_TAG)) == (LEVEL_EXIT_TAG))
+                                    if ((tag->GetTagMask() & (LEVEL_EXIT_OPEN_TAG)) == (LEVEL_EXIT_OPEN_TAG))
                                     {
                                         m_level++;
                                         startLevel();
@@ -623,7 +623,7 @@ bool 	GameManager::Update()
 											m_toBeDeleted.push_back(ID);
 										}
                                     }
-                                    if ((tag->GetTagMask() & (LEVEL_EXIT_TAG)) == (LEVEL_EXIT_TAG))
+                                    if ((tag->GetTagMask() & (LEVEL_EXIT_OPEN_TAG)) == (LEVEL_EXIT_OPEN_TAG))
                                     {
                                         m_level++;
                                         startLevel();
@@ -672,7 +672,7 @@ bool 	GameManager::Update()
 											m_toBeDeleted.push_back(ID);
 										}
 									}
-                                    if ((tag->GetTagMask() & (LEVEL_EXIT_TAG)) == (LEVEL_EXIT_TAG))
+                                    if ((tag->GetTagMask() & (LEVEL_EXIT_OPEN_TAG)) == (LEVEL_EXIT_OPEN_TAG))
                                     {
                                         m_level++;
                                         startLevel();
@@ -720,7 +720,7 @@ bool 	GameManager::Update()
 											m_toBeDeleted.push_back(ID);
 										}
 									}
-                                    if ((tag->GetTagMask() & (LEVEL_EXIT_TAG)) == (LEVEL_EXIT_TAG))
+                                    if ((tag->GetTagMask() & (LEVEL_EXIT_OPEN_TAG)) == (LEVEL_EXIT_OPEN_TAG))
                                     {
                                         m_level++;
                                         startLevel();
