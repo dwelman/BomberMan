@@ -107,7 +107,7 @@ void    AudioManager::SFXVolume(double vol)
 
 void    AudioManager::MasterVolume(double vol)
 {
-    if (vol >= 0 && vol <= 100)
+    if (vol > 0 && vol < 100)
     {
         MasterVol = vol;
         double volume = round((vol / 100) * SFXVol);
