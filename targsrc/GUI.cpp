@@ -80,14 +80,12 @@ inline void	  setupResourceGroups()
 	rp->setResourceGroupDirectory("fonts", "resources/GUI/fonts/");
 	rp->setResourceGroupDirectory("layouts", "resources/GUI/layouts/");
 	rp->setResourceGroupDirectory("looknfeels", "resources/GUI/looknfeel/");
-	//	rp->setResourceGroupDirectory("lua_scripts", "resources/GUI/lua_scripts/");
 
 	CEGUI::ImageManager::setImagesetDefaultResourceGroup("imagesets");
 	CEGUI::Font::setDefaultResourceGroup("fonts");
 	CEGUI::Scheme::setDefaultResourceGroup("schemes");
 	CEGUI::WidgetLookManager::setDefaultResourceGroup("looknfeels");
 	CEGUI::WindowManager::setDefaultResourceGroup("layouts");
-	//	CEGUI::ScriptModule::setDefaultResourceGroup("lua_scripts");
 }
 
 void		loadResources(GUICrate &crate)
@@ -95,8 +93,8 @@ void		loadResources(GUICrate &crate)
 	//Load Schemes
 	CEGUI::SchemeManager::getSingleton().createFromFile("AlfiskoSkin.scheme");
 	CEGUI::SchemeManager::getSingleton().createFromFile("Generic.scheme");
-	CEGUI::SchemeManager::getSingleton().createFromFile("SampleBrowser.scheme");
 	CEGUI::SchemeManager::getSingleton().createFromFile("Bomberman.scheme");
+	CEGUI::SchemeManager::getSingleton().createFromFile("SampleBrowser.scheme");
 
 	//Setup Defaults
 	CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().setDefaultImage("AlfiskoSkin/MouseArrow");
@@ -106,7 +104,7 @@ void		loadResources(GUICrate &crate)
 	CEGUI::WindowManager& wmgr = CEGUI::WindowManager::getSingleton();
 	crate.main = wmgr.loadLayoutFromFile("MainMenu.layout");
 
-	crate.settings = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("Settings.layout");
+	crate.settings = wmgr.loadLayoutFromFile("Settings.layout");
 	crate.settings->setVisible(false);
 
 	crate.gameOverlay = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("GameOverlay.layout");
@@ -175,8 +173,9 @@ double    initGui(SDL_Window *window, GUICrate &crate)
 		initMenuValues(crate);
 		populateSettingSpinners(crate.activeSettings);
 	}
-	catch (...)
+	catch (std::exception &e)
 	{
+		std::cerr << e.what() << std::endl;
 	}
 	return (0.001 * static_cast<double>(SDL_GetTicks()));
 }
@@ -217,11 +216,6 @@ void	captureInputForGameManager(GameManager &manager, SDL_Event &e, bool & must_
 		action = P_MOVE_UP;
 	else if (keystates[(*keybindings.keyCodeToScan)[(*keybindings.actionToKeyCode)[P_MOVE_DOWN]]])
 		action = P_MOVE_DOWN;
-/*	else if (keystates[(*keybindings.keyCodeToScan)[(*keybindings.actionToKeyCode)[P_PLACE_BOMB]]])
-		action = P_PLACE_BOMB;
-	else if (keystates[(*keybindings.keyCodeToScan)[(*keybindings.actionToKeyCode)[P_PAUSE_GAME]]])
-		action = P_PAUSE_GAME;
-		*/
 	if (action != P_NOACTION)
 		manager.GivePlayerAction(action);
 }
@@ -236,10 +230,10 @@ void	captureEventsForGameManager(GameManager &manager, SDL_Event &e, bool & must
 
 	if (e.type == SDL_KEYDOWN)
 	{
+		if ((*keybindings.actionToKeyCode)[P_PAUSE_GAME] == e.key.keysym.sym)
+			action = P_PAUSE_GAME;
 		if ((*keybindings.actionToKeyCode)[P_PLACE_BOMB] == e.key.keysym.sym)
-		action = P_PLACE_BOMB;
-		else if ((*keybindings.actionToKeyCode)[P_PAUSE_GAME] == e.key.keysym.sym)
-		action = P_PAUSE_GAME;
+			action = P_PLACE_BOMB;
 		if (action != P_NOACTION)
 			manager.GivePlayerAction(action);
 	}
@@ -311,12 +305,15 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 		switchLayouts(crate.gameOverlay, crate.main);
 	else if (manager.GetGameStarted())
 		switchLayouts(crate.main, crate.gameOverlay);
+
 	crate.livesText->setProperty("Text", std::to_string(manager.GetLives()));
 	crate.bombsText->setProperty("Text", std::to_string(manager.GetBombs()));
-	crate.enemiesText->setProperty("Text", std::to_string(manager.GetEnemiesLeft()));
+
+	crate.enemiesText->setProperty("Text", (manager.GetEnemiesLeft() < 0 ) ? 0 : std::to_string(manager.GetEnemiesLeft()));
 	crate.levelText->setProperty("Text", "Level " + std::to_string(manager.GetLevel()));
-	crate.scoreText->setProperty("Text", std::to_string(manager.GetScore()));
-	//crate.timerText->setProperty("Text", std::to_string(manager.GetScore()));
+	crate.scoreText->setProperty("Text", "Score : " + std::to_string(manager.GetScore()));
+	//crate.timerText->setProperty("Text", std::to_string(manager.GetTime()));
+
 	injectTimePulse(guiLastTimePulse);
 	glDisable(GL_DEPTH_TEST);
     glDisable(GL_TEXTURE_2D);
@@ -327,7 +324,6 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 	glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 }
 
 void		reloadDisplayMode(SDL_Window *win, GUICrate &crate)
@@ -340,7 +336,6 @@ void		reloadDisplayMode(SDL_Window *win, GUICrate &crate)
 	dsp.h = g_cfg["yres"].to_int();
 
 	SDL_SetWindowSize(win, g_cfg["xres"].to_int(), g_cfg["yres"].to_int());
-	//SDL_SetWindowDisplayMode(win, &dsp);
 	CEGUI::Size<float> NewWindowSize((float)g_cfg["xres"].to_int(), (float)g_cfg["yres"].to_int());
 	CEGUI::System::getSingleton().notifyDisplaySizeChanged(NewWindowSize);
 	CEGUI::System::getSingleton().getDefaultGUIContext().getMouseCursor().notifyDisplaySizeChanged(NewWindowSize);

@@ -62,7 +62,6 @@ void gameLoop(SDL_Window *window)
     crate.engine = &rEngine;
     SetupKeybindings(crate.keybindings);
     guiLastTimePulse = initGui(window, crate);
-	//audioThread = SDL_CreateThread(&AudioThread, "AudioThread", reinterpret_cast<void*>(Audio));
     do
     {
 		Clock::Instance().Tick();
@@ -82,20 +81,16 @@ void gameLoop(SDL_Window *window)
 			reloadDisplayMode(crate.window, crate);
     }
 	while (mustQuit == false);
-	//SDL_WaitThread(audioThread, &audioThreadStatus);
 	destroyGUI(crate);
 }
 
 int	main(int argc, char *argv[])
 {
-	//renderData rdata;
 	RenderEngine rEngine;
 
 	SDL_Window	*window = initWindow(g_cfg);
-	//rdata.rObjs.push_back(*obj);
 	if (window == nullptr)
 		return (-1);
-
 	gameLoop(window);
 	SDL_Quit();
 	return (0);

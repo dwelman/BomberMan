@@ -60,11 +60,12 @@
             <Property name="MaxSize" value="{{1,0},{1,0}}" />
         </Window>
         <Window type="Generic/Label" name="ScoreText" >
-            <Property name="Area" value="{{0.45,0},{0.055,1},{0.6,0},{0.115,1.1}}" />
+            <Property name="Area" value="{{0.79,0},{0.01,1},{0.99,0},{0.07,1.1}}" />
             <Property name="Font" value="FasterOneSmall" />
-            <Property name="Text" value="9999999" />
+            <Property name="Text" value="Score : 0000000" />
             <Property name="Alpha" value="0.5" />
             <Property name="MaxSize" value="{{1,0},{1,0}}" />
+            <Property name="HorzFormatting" value="LeftAligned" />
             <Property name="NormalTextColour" value="FF4386F2" />
         </Window>
         <Window type="Generic/Label" name="TimerText" >
