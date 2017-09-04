@@ -68,6 +68,8 @@ GUICrate::~GUICrate()
     delete keybindings.keyName;
 	delete keybindings.keyCodeToScan;
 	delete settingPanes;
+	for (int it = MenuFunctions.size(); it < MenuFunctions.size(); it++)
+		delete (MenuFunctions[it]);
 }
 
 inline void	  setupResourceGroups()
@@ -107,9 +109,17 @@ void		loadResources(GUICrate &crate)
 	crate.settings = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("Settings.layout");
 	crate.settings->setVisible(false);
 
+	crate.gameOverlay = CEGUI::WindowManager::getSingleton().loadLayoutFromFile("GameOverlay.layout");
+
 	CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(crate.main);
     crate.paused = CEGUI::System::getSingleton().getDefaultGUIContext().getRootWindow()->getChildElementRecursive("Paused");
 
+	crate.levelText = crate.gameOverlay->getChildElementRecursive("LevelText");
+	crate.livesText = crate.gameOverlay->getChildElementRecursive("LivesText");
+	crate.bombsText = crate.gameOverlay->getChildElementRecursive("BombsText");
+	crate.enemiesText = crate.gameOverlay->getChildElementRecursive("EnemiesText");
+	crate.scoreText = crate.gameOverlay->getChildElementRecursive("ScoreText");
+	crate.timerText = crate.gameOverlay->getChildElementRecursive("TimerText"); 
 }
 
 
@@ -144,8 +154,7 @@ void		destroyGUI(GUICrate &crate)
 	TODO
 	*/
 	// Clean crate
-	for (auto it = crate.MenuFunctions.begin(); it != crate.MenuFunctions.end(); it++)
-		delete (*it);
+
 
 	CEGUI::System::destroy();
 	CEGUI::OpenGL3Renderer::destroy(static_cast<CEGUI::OpenGL3Renderer&>(*crate.guiRenderer));
@@ -297,16 +306,22 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 		crate.paused->setProperty("Visible", "True");
 	else
 		crate.paused->setProperty("Visible", "False");
-	if (manager.GetGameStarted() )
-		crate.main->setVisible(false);
+
 	if (manager.GetGamePaused())
-		crate.main->setVisible(true);
+		switchLayouts(crate.gameOverlay, crate.main);
+	else if (manager.GetGameStarted())
+		switchLayouts(crate.main, crate.gameOverlay);
+	crate.livesText->setProperty("Text", std::to_string(manager.GetLives()));
+	crate.bombsText->setProperty("Text", std::to_string(manager.GetBombs()));
+	crate.enemiesText->setProperty("Text", std::to_string(manager.GetEnemiesLeft()));
+	crate.levelText->setProperty("Text", "Level " + std::to_string(manager.GetLevel()));
+	crate.scoreText->setProperty("Text", std::to_string(manager.GetScore()));
+	//crate.timerText->setProperty("Text", std::to_string(manager.GetScore()));
 	injectTimePulse(guiLastTimePulse);
 	glDisable(GL_DEPTH_TEST);
     glDisable(GL_TEXTURE_2D);
 	glGetIntegerv(GL_ACTIVE_TEXTURE, &activeID);
 	glActiveTexture(GL_TEXTURE0);
-	//if (!manager.GetGameStarted() || manager.GetGamePaused()) //NEED TO FIGURE LIGHTS THE FUCK PIdasdasdads
     CEGUI::System::getSingleton().renderAllGUIContexts();
 	glActiveTexture(activeID);
 	glEnable(GL_DEPTH_TEST);

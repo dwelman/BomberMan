@@ -1,0 +1,8 @@
+<Imageset autoScaled="vertical" imagefile="GameOverlay.png" name="GameOverlay" nativeHorzRes="1920" nativeVertRes="1080" version="2">
+    <Image height="117" name="Lives" width="520" xPos="18" yPos="254" />
+    <Image height="51" name="LabelBar" width="484" xPos="57" yPos="189" />
+    <Image height="155" name="Level" width="530" xPos="19" yPos="19" />
+    <Image height="450" name="Bomb" width="450" xPos="732" yPos="20" />
+    <Image height="400" name="Heart" width="540" xPos="1450" yPos="20" />
+    <Image height="392" name="Enemy" width="600" xPos="20" yPos="600" />
+</Imageset>

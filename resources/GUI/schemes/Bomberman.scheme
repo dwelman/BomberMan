@@ -2,8 +2,12 @@
 <GUIScheme version="5" name="BombermanSkin">
 <Font filename="Caveman.font" />
 <Font filename="FasterOne.font" />
+<Font filename="FasterOneSmall.font" />
+<Font filename="FasterOneTiny.font" />
+
     <Imageset filename="Bomberman_1.imageset" />
 	<Imageset filename="BombermanSettings.imageset" />
+	<Imageset filename="GameOverlay.imageset" />
 	<LookNFeel filename="Bomberman.looknfeel" />
     <WindowRendererSet filename="CEGUICoreWindowRendererSet" />
 	

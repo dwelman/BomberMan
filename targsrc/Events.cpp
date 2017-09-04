@@ -72,6 +72,7 @@ bool continueGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_eleme
         var.manager->LoadSave("save/savegame");
 		var.manager->SetGameStarted(true);
 	}
+	switchLayouts(var.main, var.gameOverlay);
 	return (true);
 };
 
@@ -81,6 +82,7 @@ bool startGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element,
 	var.audio->PushSFX(EXPLODE);
 	var.manager->SetGameStarted(true);
     var.manager->WriteSave("save/savegame");
+	switchLayouts(var.main, var.gameOverlay);
 	return (true);
 };
 

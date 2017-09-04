@@ -50,7 +50,18 @@ struct GUICrate
 	//Layouts
 	CEGUI::Window							*main;
 	CEGUI::Window							*settings;
+	CEGUI::Window							*gameOverlay;
+
+	//Elements
 	CEGUI::NamedElement						*paused;
+	CEGUI::NamedElement						*levelText;
+	CEGUI::NamedElement						*livesText;
+	CEGUI::NamedElement						*bombsText;
+	CEGUI::NamedElement						*enemiesText;
+	CEGUI::NamedElement						*scoreText;
+	CEGUI::NamedElement						*timerText;
+
+
 	PaneGroup								*settingPanes;
 
 	//Setting States
@@ -129,6 +140,8 @@ void	reloadDisplayMode(SDL_Window *win, GUICrate &crate);
 void	captureWindowEvents(SDL_Event &e, bool & must_quit);
 
 void    SetupKeybindings (KeyBindings &keyBindings);
+
+void	switchLayouts(CEGUI::Window *from, CEGUI::Window *to);
 
 //Events
 
