@@ -46,6 +46,7 @@ private:
     unsigned int                            m_level;
     int                                     m_enemiesToDestroy;
 	bool									m_exitOpen;
+	float									m_time;
 
 	void		handleCollisions(Position &p, Tag &t, std::size_t ID);
     void        handleMovement(Position &p, Movement &m);
@@ -72,4 +73,5 @@ public:
 	std::size_t	GetBombs() const;
 	std::size_t	GetLevel() const;
 	int			GetEnemiesLeft() const;
+	float		GetGameTime() const;
 };

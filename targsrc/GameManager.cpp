@@ -263,7 +263,7 @@ std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 con
 		entity.RegisterComponent(m_currentComponentID, TAG);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(BOMB_TAG)));
 		entity.RegisterComponent(m_currentComponentID, BOMB);
-		m_components.emplace(std::make_pair(m_currentComponentID++, new Bomb(3.0)));
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Bomb(2.0)));
 		entity.RegisterComponent(m_currentComponentID, RENDER);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BOMB_OT, true)));
 	}
@@ -434,7 +434,7 @@ void GameManager::startLevel(bool save, unsigned int seed)
 
 	do
 	{
-		int x = (rand() % MAP_X);
+ 		int x = (rand() % MAP_X);
 		int y = (rand() % MAP_Y);
 		if (m_gameMap[y][x] != -2)
 		{
@@ -452,6 +452,7 @@ void GameManager::startLevel(bool save, unsigned int seed)
     m_enemiesToDestroy = 1 + (enemyAmount / 3) + ((enemyAmount / 10) * m_level);
 	m_playerBombAmount = 1;
 	m_explosionSize = 1;
+	m_time = 300 - (5 * (m_level - 1));
 	m_exitOpen = false;
 }
 
@@ -473,6 +474,11 @@ bool 	GameManager::Update()
 	m_deltaTime = Clock::Instance().GetDeltaTime();
     std::size_t playerID;
 	std::size_t levelExitID;
+	m_time -= m_deltaTime;
+	if (m_time <= 0)
+	{
+		killPlayer();
+	}
     bool playerAlive = false;
 
     if (m_action == P_PAUSE_GAME)
@@ -949,7 +955,7 @@ bool 	GameManager::Update()
 							createEntityAtPosition("rubble_particle", position->GetPosition());
 							m_score++;
 							//TODO: Tweak, needs balancing
-							if (rand() % 100 < 40)
+							if (rand() % 100 <= 20)
 							{
 								if (rand() % 100 <= 60)
 								{
@@ -1183,4 +1189,9 @@ std::size_t GameManager::GetLevel() const
 int GameManager::GetEnemiesLeft() const
 {
 	return (m_enemiesToDestroy);
+}
+
+float GameManager::GetGameTime() const
+{
+	return (m_time);
 }
