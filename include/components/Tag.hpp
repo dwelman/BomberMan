@@ -19,7 +19,7 @@ enum TagType
 	LEVEL_EXIT_OPEN_TAG = 5096
 };
 
-#define TAG_MASK_TYPE short
+#define TAG_MASK_TYPE int
 
 class Tag : public BaseComponent
 {

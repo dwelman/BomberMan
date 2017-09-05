@@ -216,7 +216,7 @@ std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 con
         entity.RegisterComponent(m_currentComponentID, TAG);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(INDESTRUCTIBLE_TAG | LEVEL_EXIT_TAG)));
         entity.RegisterComponent(m_currentComponentID, RENDER);
-        m_components.emplace(std::make_pair(m_currentComponentID++, new Render(DOOR_CLOSED_OT, true)));
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Render(DOOR_OPEN_OT, true)));
         entity.SetCanTick(false);
     }
     else if (entityType == "level_exit_open")
@@ -226,9 +226,9 @@ std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 con
         entity.RegisterComponent(m_currentComponentID, COLLISION);
         m_components.emplace(std::make_pair(m_currentComponentID++, new Collision(0.5f, 0.5f, 0.5f, true)));
         entity.RegisterComponent(m_currentComponentID, TAG);
-        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(INDESTRUCTIBLE_TAG | LEVEL_EXIT_OPEN_TAG)));
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Tag(INDESTRUCTIBLE_TAG | LEVEL_EXIT_OPEN_TAG | LEVEL_EXIT_TAG)));
         entity.RegisterComponent(m_currentComponentID, RENDER);
-        m_components.emplace(std::make_pair(m_currentComponentID++, new Render(DOOR_OPEN_OT, true)));
+        m_components.emplace(std::make_pair(m_currentComponentID++, new Render(DOOR_CLOSED_OT, true)));
         entity.SetCanTick(false);
     }
 	else if (entityType == "enemy_1")
@@ -500,11 +500,12 @@ bool 	GameManager::Update()
 						playerID = i;
 						playerAlive = true;
 					}
-					else if (m_exitOpen == false && (tag->GetTagMask() & LEVEL_EXIT_TAG) == LEVEL_EXIT_TAG)
+					if (((tag->GetTagMask() & LEVEL_EXIT_TAG) == LEVEL_EXIT_TAG))
 					{
 						levelExitID = i;
+                        m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] = i;
 					}
-                    else if (!((tag->GetTagMask() & (INDESTRUCTIBLE_TAG | WALL_TAG)) == (INDESTRUCTIBLE_TAG | WALL_TAG)))
+                    if (!((tag->GetTagMask() & (INDESTRUCTIBLE_TAG | WALL_TAG)) == (INDESTRUCTIBLE_TAG | WALL_TAG)))
                     {
                         m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()] = i;
                     }
