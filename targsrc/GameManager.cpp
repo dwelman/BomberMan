@@ -381,6 +381,7 @@ void GameManager::startLevel(bool save, unsigned int seed)
 	m_components.clear();
 	m_currentEntityID = 0;
 	m_currentComponentID = 0;
+	std::size_t	enemyAmount = 0;
 	if (seed == 0)
 	{
 		m_seed = time(NULL);
@@ -415,30 +416,42 @@ void GameManager::startLevel(bool save, unsigned int seed)
 		{
 			if (m_gameMap[y][x] == -1 && !(y == 2 && x == 1) && !(y == 1 && x == 2) && !(y == 1 && x == 1))
 			{
-				if (rand() % 100 > 70)
+				if (rand() % 100 > 90 - m_level)
 				{
-					if (rand() % 100 <= 70)
+					if (rand() % 100 <= 90 - m_level)
 					{
 						m_gameMap[y][x] = createEntityAtPosition("destructible_wall", Vec3(x, y, 1));
 					}
 					else
 					{
 						m_gameMap[y][x] = createEntityAtPosition("enemy_1", Vec3(x, y, 0));
+						enemyAmount++;
 					}
 				}
 			}
 		}
 	}
 
+	do
+	{
+		int x = (rand() % MAP_X);
+		int y = (rand() % MAP_Y);
+		if (m_gameMap[y][x] != -2)
+		{
+			createEntityAtPosition("level_exit_closed", Vec3(y, x, 0));
+			break;
+		}
+	}
+	while (1);
+
     createEntityAtPosition("player", Vec3(1, 1, 0));
-    createEntityAtPosition("level_exit_closed", Vec3(2, 1, 0));
     if (save)
     {
         WriteSave("save/savegame");
     }
+    m_enemiesToDestroy = 1 + (enemyAmount / 3) + ((enemyAmount / 10) * m_level);
 	m_playerBombAmount = 1;
 	m_explosionSize = 1;
-    m_enemiesToDestroy = 2;
 	m_exitOpen = false;
 }
 
@@ -562,6 +575,11 @@ bool 	GameManager::Update()
 										MovementSystem::SetMovement(*movement, *position, Vec3(-1, 0, 0));
 									}
 
+									if ((tag->GetTagMask() & (LEVEL_EXIT_OPEN_TAG)) == (LEVEL_EXIT_OPEN_TAG))
+									{
+										m_level++;
+										startLevel();
+									}
 									if ((tag->GetTagMask() & (POWERUP_TAG)) == (POWERUP_TAG))
 									{
 										std::size_t powerupID = m_entities[ID].GetComponentOfType(POWERUP);
@@ -582,11 +600,6 @@ bool 	GameManager::Update()
 											m_toBeDeleted.push_back(ID);
 										}
 									}
-                                    if ((tag->GetTagMask() & (LEVEL_EXIT_OPEN_TAG)) == (LEVEL_EXIT_OPEN_TAG))
-                                    {
-                                        m_level++;
-                                        startLevel();
-                                    }
                                 }
                             }
                             else if (ID == -1)
