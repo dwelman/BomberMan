@@ -282,6 +282,15 @@ void	captureWindowEvents(SDL_Event &e, GUICrate &crate)
 	}
 }
 
+inline std::string	toClockString(float	time)
+{
+	int		seconds = static_cast<int>(time) % 60;
+	int		minutes = static_cast<int>(time) / 60;
+	std::string	clockStr(std::to_string(minutes) + ":" + ((seconds < 10 ) ? "0" + std::to_string(seconds) : std::to_string(seconds)));
+
+	return(clockStr);
+}
+
 void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiLastTimePulse, bool &must_quit, GUICrate &crate)
 {
 	SDL_Event			e;
@@ -312,7 +321,7 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 	crate.enemiesText->setProperty("Text", (manager.GetEnemiesLeft() < 0 ) ? "0" : std::to_string(manager.GetEnemiesLeft()));
 	crate.levelText->setProperty("Text", "Level " + std::to_string(manager.GetLevel()));
 	crate.scoreText->setProperty("Text", "Score : " + std::to_string(manager.GetScore()));
-	//crate.timerText->setProperty("Text", std::to_string(manager.GetTime()));
+	crate.timerText->setProperty("Text", toClockString(manager.GetGameTime()));
 
 	injectTimePulse(guiLastTimePulse);
 	glDisable(GL_DEPTH_TEST);
