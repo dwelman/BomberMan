@@ -1,5 +1,28 @@
 #include <GUI.hpp>
 
+MenuFunction::MenuFunction(CEGUI::NamedElement *_element, const CEGUI::String &name, ccev eventFunction, GUICrate	&_var) :
+var(_var), element(_element)
+{
+	customEvent = eventFunction;
+	element->subscribeEvent(name, CEGUI::Event::Subscriber(&MenuFunction::invoke, this));
+}
+
+bool 	MenuFunction::invoke(const CEGUI::EventArgs& e)
+{
+	return (customEvent(e, element ,var));
+}
+
+void									GUICrate::switchLayout(CEGUI::Window *to)
+{
+    if (active && to)
+    {
+        to->setVisible(true);
+        active->setVisible(false);
+        CEGUI::System::getSingleton().getDefaultGUIContext().setRootWindow(to);
+		active = to;
+    }
+}
+
 void 				tryAddResolution(int w, int h, SettingsState &s)
 {
 	SDL_DisplayMode	dspAttempt, dspClosest;
@@ -166,7 +189,7 @@ double    initGui(SDL_Window *window, GUICrate &crate)
 		CEGUI::OpenGL3Renderer::bootstrapSystem();
 		crate.guiRenderer = &CEGUI::OpenGL3Renderer::create();
 		SDL_WarpMouseInWindow(window, g_cfg["xres"].to_int() / 4 * 3, g_cfg["yres"].to_int() / 2);
-		SDL_ShowCursor(SDL_ENABLE);
+		SDL_ShowCursor(SDL_DISABLE);
 		setupResourceGroups();
 		loadResources(crate);
 		setupEvents(crate);
@@ -220,7 +243,7 @@ void	captureInputForGameManager(GameManager &manager, SDL_Event &e, bool & must_
 		manager.GivePlayerAction(action);
 }
 
-void	captureEventsForGameManager(GameManager &manager, SDL_Event &e, bool & must_quit, KeyBindings &keybindings)
+void	captureEventsForGameManager(GameManager &manager, SDL_Event &e, bool & must_quit, KeyBindings &keybindings, GUICrate &crate)
 {
 	ePlayerAction	action = P_NOACTION;
 	const Uint8* keystates = SDL_GetKeyboardState(NULL);
@@ -231,7 +254,14 @@ void	captureEventsForGameManager(GameManager &manager, SDL_Event &e, bool & must
 	if (e.type == SDL_KEYDOWN)
 	{
 		if ((*keybindings.actionToKeyCode)[P_PAUSE_GAME] == e.key.keysym.sym)
+		{
 			action = P_PAUSE_GAME;
+			if (manager.GetGamePaused())
+				crate.switchLayout(crate.gameOverlay);
+			else
+				crate.switchLayout(crate.main);
+
+		}
 		if ((*keybindings.actionToKeyCode)[P_PLACE_BOMB] == e.key.keysym.sym)
 			action = P_PLACE_BOMB;
 		if (action != P_NOACTION)
@@ -301,25 +331,22 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 		injectInput(must_quit, CEGUI::System::getSingleton().getDefaultGUIContext(), e);
 		captureWindowEvents(e, crate);
 		captureInputForSettingMenu(e, crate.keybindings, crate.settings);
-		captureEventsForGameManager(manager, e, must_quit, crate.keybindings);
+		captureEventsForGameManager(manager, e, must_quit, crate.keybindings, crate);
 	}
 	captureInputForGameManager(manager, e, must_quit, crate.keybindings);
     crate.engine->computeMatricesFromInputs(window, e);
+
 	if (manager.GetGamePaused())
-	{
 		crate.paused->setProperty("Visible", "True");
-	}
 	else
 		crate.paused->setProperty("Visible", "False");
 
 	if (manager.GetGamePaused())
 	{
-		switchLayouts(crate.gameOverlay, crate.main);
 		crate.audio->PauseMusic(START);
 	}
 	else if (manager.GetGameStarted())
 	{
-		switchLayouts(crate.main, crate.gameOverlay);
 		crate.audio->PlayMusic(START);
 	}
 

@@ -64,6 +64,8 @@ void	switchLayouts(CEGUI::Window *from, CEGUI::Window *to)
 
 bool continueGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate &var)
 {
+	var.state = S_INGAME;
+	var.switchLayout(var.gameOverlay);
 	if (var.manager->GetGamePaused())
 		var.manager->GivePlayerAction(P_PAUSE_GAME);
 	else
@@ -72,30 +74,32 @@ bool continueGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_eleme
         var.manager->LoadSave("save/savegame");
 		var.manager->SetGameStarted(true);
 	}
-	switchLayouts(var.main, var.gameOverlay);
 	return (true);
 };
 
 bool startGameMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate &var)
 {
+	var.state = S_INGAME;
+	var.switchLayout(var.gameOverlay);
 	var.audio->PushMusic(START);
 	var.audio->PushSFX(EXPLODE);
 	var.manager->SetGameStarted(true);
     var.manager->WriteSave("save/savegame");
-	switchLayouts(var.main, var.gameOverlay);
 	return (true);
 };
 
 bool openSettingsMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate &var)
 {
-	switchLayouts(var.main, var.settings);
+	var.state = S_SETTINGS;
+	var.switchLayout(var.settings);
 	var.pendingSettings = var.activeSettings;
 	return (true);
 };
 
 bool openMainMenu(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICrate &var)
 {
-	switchLayouts(var.settings, var.main);
+	var.state = S_MENU;
+	var.switchLayout(var.main);
 	return (true);
 };
 

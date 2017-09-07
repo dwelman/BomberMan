@@ -32,9 +32,19 @@ struct KeyBindings
 	std::vector<KeyBindChange*>				keyBindChanges;
 };
 
+enum eGUIState
+{
+	S_INGAME,
+	S_PAUSED,
+	S_SETTINGS,
+	S_MENU
+};
+
 struct GUICrate
 {
 	//Variables GUI Needs to access
+	eGUIState                               state;
+	CEGUI::Window							*active;
 	GameManager								*manager;
 	CEGUI::OpenGL3Renderer					*guiRenderer;
 	AudioManager							*audio;
@@ -68,6 +78,7 @@ struct GUICrate
 	SettingsState							activeSettings;
 	SettingsState							pendingSettings;
 
+	void									switchLayout(CEGUI::Window *to);
 	GUICrate();
 	~GUICrate();
 };
@@ -100,18 +111,8 @@ struct MenuFunction
 	ccev				customEvent;
 	CEGUI::NamedElement	*element;
 
-	MenuFunction(CEGUI::NamedElement *_element, const CEGUI::String &name, ccev eventFunction, GUICrate	&_var) :
-		var(_var), element(_element)
-	{
-		customEvent = eventFunction;
-		element->subscribeEvent(name, CEGUI::Event::Subscriber(&MenuFunction::invoke, this));
-	}
-
-	bool invoke(const CEGUI::EventArgs& e)
-	{
-		return (customEvent(e, element ,var));
-	}
-
+	MenuFunction(CEGUI::NamedElement *_element, const CEGUI::String &name, ccev eventFunction, GUICrate	&_var);
+	bool invoke(const CEGUI::EventArgs& e);
 	virtual ~MenuFunction() {};
 };
 

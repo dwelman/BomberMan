@@ -60,9 +60,10 @@ void gameLoop(SDL_Window *window)
     crate.mustQuit = &mustQuit;
 	crate.window = window;
     crate.engine = &rEngine;
+    crate.state = S_MENU;
     SetupKeybindings(crate.keybindings);
-	guiLastTimePulse = initGui(window, crate);
-	manager.GiveAudioManager(Audio);
+    guiLastTimePulse = initGui(window, crate);
+    crate.active = crate.main;
     do
     {
 		Clock::Instance().Tick();
