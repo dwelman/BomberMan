@@ -55,14 +55,13 @@ void PlaySFX(eSFX track);
 
 void    AudioManager::PlayMusic(eMusic track)
 {
-    //if( Mix_PausedMusic() == 1 )
-    //{
-    //    Mix_ResumeMusic();
-   // }
-    //else
-    //{
+    if(!Mix_PlayingMusic())
+    {
         Mix_PlayMusic( Music[track], -1 );
-   // }
+        
+    }
+    else if (Mix_PausedMusic() == 1)
+        Mix_ResumeMusic();
 }
 
 std::map<eSFX,Mix_Chunk*>  AudioManager::getSFX() const
@@ -100,7 +99,7 @@ void    AudioManager::SFXVolume(double vol)
 {
     if (vol > 0 && vol < 128)
     {
-        Mix_Volume(-1, vol);
+        Mix_Volume(-1, round(vol * (MasterVol/100)));
         SFXVol = vol;
     }
 }

@@ -306,14 +306,22 @@ void	renderGUIInjectEvents(GameManager &manager, SDL_Window *window, double guiL
 	captureInputForGameManager(manager, e, must_quit, crate.keybindings);
     crate.engine->computeMatricesFromInputs(window, e);
 	if (manager.GetGamePaused())
+	{
 		crate.paused->setProperty("Visible", "True");
+	}
 	else
 		crate.paused->setProperty("Visible", "False");
 
 	if (manager.GetGamePaused())
+	{
 		switchLayouts(crate.gameOverlay, crate.main);
+		crate.audio->PauseMusic(START);
+	}
 	else if (manager.GetGameStarted())
+	{
 		switchLayouts(crate.main, crate.gameOverlay);
+		crate.audio->PlayMusic(START);
+	}
 
 	crate.livesText->setProperty("Text", std::to_string(manager.GetLives()));
 	crate.bombsText->setProperty("Text", std::to_string(manager.GetBombs()));

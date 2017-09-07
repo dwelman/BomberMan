@@ -178,16 +178,6 @@ bool applyClick(const CEGUI::EventArgs& e, CEGUI::NamedElement *_element, GUICra
 
 		}
 		var.keybindings.keyBindChanges.clear();
-
-		CEGUI::Slider* slider = static_cast<CEGUI::Slider*>(var.settings->getChildElementRecursive("MusicVolSlider"));
-		g_cfg["MusicVolume"] = std::to_string(slider->getCurrentValue());
-		var.audio->MusicVolume(slider->getCurrentValue());
-		slider = static_cast<CEGUI::Slider*>(var.settings->getChildElementRecursive("SFXVolSlider"));
-		g_cfg["SFXVolume"] = std::to_string(slider->getCurrentValue());
-		var.audio->SFXVolume(slider->getCurrentValue());
-		slider = static_cast<CEGUI::Slider*>(var.settings->getChildElementRecursive("MasterVolSlider"));
-		g_cfg["MasterVolume"] = std::to_string(slider->getCurrentValue());
-		var.audio->MasterVolume(slider->getCurrentValue());
 	}
 	CEGUI::Slider* slider = static_cast<CEGUI::Slider*>(var.settings->getChildElementRecursive("MusicVolSlider"));
 	g_cfg["MusicVolume"] = std::to_string(slider->getCurrentValue());
