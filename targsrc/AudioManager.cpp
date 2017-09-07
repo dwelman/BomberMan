@@ -2,12 +2,16 @@
 
 AudioManager::AudioManager()
 {
-    Mix_Chunk *temp = Mix_LoadWAV( "resources/Sounds/high.wav" );
+    Mix_Chunk *temp = Mix_LoadWAV( "resources/Sounds/Explode.wav" );
     Mix_Music *muse = Mix_LoadMUS("resources/Sounds/Rob_Gasser_-_Ricochet.wav");
     std::queue<AudioEvent*> empty;
     std::swap( queue, empty );
     Music[START] = muse;
     SFX[EXPLODE] = temp;
+    temp = Mix_LoadWAV( "resources/Sounds/Pickup.wav" );
+    SFX[PICKUP] = temp;
+    temp = Mix_LoadWAV( "resources/Sounds/Crumble.wav" );
+    SFX[CRUMBLING] = temp;
 }
 
 AudioManager::AudioManager(AudioManager const & src)
@@ -17,10 +21,14 @@ AudioManager::AudioManager(AudioManager const & src)
 
 AudioManager::AudioManager(ConfigEditor &cfg)
 {
-    Mix_Chunk *temp = Mix_LoadWAV( "resources/Sounds/high.wav" );
+    Mix_Chunk *temp = Mix_LoadWAV( "resources/Sounds/Explode.wav" );
     Mix_Music *muse = Mix_LoadMUS("resources/Sounds/Rob_Gasser_-_Ricochet.wav");
     Music[START] = muse;
     SFX[EXPLODE] = temp;
+    temp = Mix_LoadWAV( "resources/Sounds/Pickup.wav" );
+    SFX[PICKUP] = temp;
+    temp = Mix_LoadWAV( "resources/Sounds/Crumble.wav" );
+    SFX[CRUMBLING] = temp;
     MasterVol = std::stod(cfg["MasterVolume"].to_str());
     SFXVol = std::stod(cfg["SFXVolume"].to_str());
     MusicVol = std::stod(cfg["MusicVolume"].to_str());

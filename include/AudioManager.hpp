@@ -13,7 +13,8 @@ enum eSFX
 	NOSFX = 0,
     EXPLODE,
     WALK,
-    CRUMBLING
+    CRUMBLING,
+    PICKUP
 };
 
 enum eMusic
