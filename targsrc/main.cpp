@@ -62,6 +62,7 @@ void gameLoop(SDL_Window *window)
     crate.engine = &rEngine;
     SetupKeybindings(crate.keybindings);
 	guiLastTimePulse = initGui(window, crate);
+	manager.GiveAudioManager(Audio);
     do
     {
 		Clock::Instance().Tick();

@@ -18,6 +18,7 @@
 #include "systems/MovementSystem.hpp"
 #include "systems/BombSystem.hpp"
 #include "systems/RenderSystem.hpp"
+#include "AudioManager.hpp"
 
 class RenderEngine;
 
@@ -47,6 +48,7 @@ private:
     int                                     m_enemiesToDestroy;
 	bool									m_exitOpen;
 	float									m_time;
+    AudioManager                            *m_audioManager;
 
 	void		handleCollisions(Position &p, Tag &t, std::size_t ID);
     void        handleMovement(Position &p, Movement &m);
@@ -74,4 +76,5 @@ public:
 	std::size_t	GetLevel() const;
 	int			GetEnemiesLeft() const;
 	float		GetGameTime() const;
+    void        GiveAudioManager(AudioManager *manager);
 };

@@ -18,6 +18,7 @@ GameManager::GameManager()
 	m_score = 0;
     m_paused = false;
     m_level = 1;
+    m_audioManager = nullptr;
 	startLevel(false);
 }
 
@@ -605,6 +606,10 @@ bool 	GameManager::Update()
 											m_explosionSize++;
 											m_toBeDeleted.push_back(ID);
 										}
+                                        if (m_audioManager)
+                                        {
+                                            m_audioManager->PlaySFX(PICKUP);
+                                        }
 									}
                                 }
                             }
@@ -648,6 +653,10 @@ bool 	GameManager::Update()
 											m_explosionSize++;
 											m_toBeDeleted.push_back(ID);
 										}
+                                        if (m_audioManager)
+                                        {
+                                            m_audioManager->PlaySFX(PICKUP);
+                                        }
                                     }
                                     if ((tag->GetTagMask() & (LEVEL_EXIT_OPEN_TAG)) == (LEVEL_EXIT_OPEN_TAG))
                                     {
@@ -679,7 +688,7 @@ bool 	GameManager::Update()
 									}
 
 									if ((tag->GetTagMask() & (POWERUP_TAG)) == (POWERUP_TAG))
-									{	
+									{
 										std::size_t powerupID = m_entities[ID].GetComponentOfType(POWERUP);
 										Powerup *powerup = dynamic_cast<Powerup *>(m_components[powerupID]);
 										if (powerup->GetPowerupType() == LIFE)
@@ -697,6 +706,10 @@ bool 	GameManager::Update()
 											m_explosionSize++;
 											m_toBeDeleted.push_back(ID);
 										}
+                                        if (m_audioManager)
+                                        {
+                                            m_audioManager->PlaySFX(PICKUP);
+                                        }
 									}
                                     if ((tag->GetTagMask() & (LEVEL_EXIT_OPEN_TAG)) == (LEVEL_EXIT_OPEN_TAG))
                                     {
@@ -745,6 +758,10 @@ bool 	GameManager::Update()
 											m_explosionSize++;
 											m_toBeDeleted.push_back(ID);
 										}
+                                        if (m_audioManager)
+                                        {
+                                            m_audioManager->PlaySFX(PICKUP);
+                                        }
 									}
                                     if ((tag->GetTagMask() & (LEVEL_EXIT_OPEN_TAG)) == (LEVEL_EXIT_OPEN_TAG))
                                     {
@@ -758,7 +775,15 @@ bool 	GameManager::Update()
                                 MovementSystem::SetMovement(*movement, *position, Vec3(0, -1, 0));
                             }
 						}
+                        if (!(movement->GetDirection() == Vec3(0, 0, 0)))
+                        {
+                            if (m_audioManager)
+                            {
+                                m_audioManager->PlaySFX(WALK);
+                            }
+                        }
 					}
+
 
 					//if bomb placed
 					if (m_action == P_PLACE_BOMB && canDoAction)
@@ -899,6 +924,10 @@ bool 	GameManager::Update()
 					BombSystem::ChangeBombTimeByDelta(*bomb, -(Clock::Instance().GetDeltaTime()));
 					if (bomb->GetBombTime() <= 0)
 					{
+                        if (m_audioManager)
+                        {
+                            m_audioManager->PlaySFX(EXPLODE);
+                        }
 						Explosion *explosion;
 						createEntityAtPosition("explosion", position->GetPosition());
 						explosion = dynamic_cast<Explosion *>(m_components[m_entities[m_currentEntityID - 1].GetComponentOfType(EXPLOSION)]);
@@ -953,8 +982,11 @@ bool 	GameManager::Update()
                             explosion->SetDuration(0);
 							m_toBeDeleted.push_back(m_gameMap[(int)position->GetPosition().GetY()][(int)position->GetPosition().GetX()]);
 							createEntityAtPosition("rubble_particle", position->GetPosition());
+                            if (m_audioManager)
+                            {
+                                m_audioManager->PlaySFX(CRUMBLING);
+                            }
 							m_score++;
-							//TODO: Tweak, needs balancing
 							if (rand() % 100 <= 20)
 							{
 								if (rand() % 100 <= 60)
@@ -1194,4 +1226,9 @@ int GameManager::GetEnemiesLeft() const
 float GameManager::GetGameTime() const
 {
 	return (m_time);
+}
+
+void GameManager::GiveAudioManager(AudioManager *manager)
+{
+    m_audioManager = manager;
 }
