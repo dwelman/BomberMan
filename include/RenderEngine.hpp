@@ -3,6 +3,7 @@
 #include "Mesh.hpp"
 #include "RenderObject.hpp"
 #include "GameObjectRenderInfo.hpp"
+#include "Clock.hpp"
 #include "main.hpp"
 #include "VBOIndexer.hpp"
 #include <glm/vec2.hpp>
@@ -97,6 +98,7 @@ class RenderEngine
 		glm::mat4 ViewMatrix;
 		glm::mat4 ProjectionMatrix;
 		glm::vec3 position;
+        glm::vec3 playerPosition;
 		std::vector<renderData> rdata;
         std::vector<Mesh> mesh;
 		const int MaxParticles = 10000;

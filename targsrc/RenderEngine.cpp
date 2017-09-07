@@ -39,8 +39,8 @@ RenderEngine::RenderEngine()
 	this->position = glm::vec3(-5.926516f, 51.767967f, 42.664486f);
 //	this->horizontalAngle = 3.14f;
 //	this->verticalAngle = 0.0f;
-    this->horizontalAngle = 14.125f;
-    this->verticalAngle = -1.065f;
+    this->horizontalAngle = 14.14f;
+    this->verticalAngle = -1.025f;
 	this->FoV = 45.0f;
 	this->speed = 0.01f; // 0.01 units / second
 	this->mouseSpeed = 0.005f;
@@ -95,7 +95,15 @@ glm::mat4 RenderEngine::getProjectionMatrix() {
 
 void RenderEngine::computeMatricesFromInputs(SDL_Window *window, SDL_Event &event)
 {
+    if (abs(this->playerPosition.x - this->position.z) < 18)
+    {
+        this->position.z += 5 * Clock::Instance().GetDeltaTime();
+    }
 
+    if (abs(this->playerPosition.x - this->position.z) > 40)
+    {
+        this->position.z -= 5 * Clock::Instance().GetDeltaTime();
+    }
     static double LastTime = SDL_GetTicks();
 /*	SDL_Event event;
 
@@ -120,6 +128,9 @@ void RenderEngine::computeMatricesFromInputs(SDL_Window *window, SDL_Event &even
     //this->verticalAngle += this->mouseSpeed * float(g_cfg["yres"].to_int() / 2 - ypos);
 //    usleep(50000);
 	//SDL_WarpMouseInWindow(window, g_cfg["xres"].to_int() / 2, g_cfg["yres"].to_int() / 2);
+
+    std::cout << "Horizontal angle: " << this->horizontalAngle << std::endl;
+    std::cout << "Vertical angle: " << this->verticalAngle << std::endl;
 
     // Direction : Spherical coordinates to Cartesian coordinates conversion
     glm::vec3 direction(
@@ -814,16 +825,16 @@ void RenderEngine::drawParticles(std::vector<GameObjectRenderInfo> parts)
 	glm::mat4 ViewProjectionMatrix = ProjectionMatrix * ViewMatrix;
 
 
-	int newparticles = (int)(deltaTime*7000.0);
-	if (newparticles > (int)(0.030f*7000.0))
-		newparticles = (int)(0.030f*7000.0);
+	int newparticles = (int)(deltaTime*8000.0);
+	if (newparticles > (int)(0.015f*8000.0))
+		newparticles = (int)(0.015f*8000.0);
 
 	for (int i = 0; i < newparticles; i++) {
 		int particleIndex = FindUnusedParticle();
-		ParticlesContainer[particleIndex].life = 1000.0f;
+		ParticlesContainer[particleIndex].life = 3.0f;
 		ParticlesContainer[particleIndex].pos = glm::vec3(parts[l].GetPosition().GetY() * 2, parts[l].GetPosition().GetZ() * 2, parts[l].GetPosition().GetX() * 2);
 
-		float spread = 0.4f;
+		float spread = 0.6f;
 		glm::vec3 maindir = glm::vec3(0.0f, 4.0f, 0.0f);
 
 		glm::vec3 randomdir = glm::vec3(
@@ -839,7 +850,7 @@ void RenderEngine::drawParticles(std::vector<GameObjectRenderInfo> parts)
 		ParticlesContainer[particleIndex].b = 20;
 		ParticlesContainer[particleIndex].a = (rand() % 255) / 3;
 
-		ParticlesContainer[particleIndex].size = 0.2f; //(rand() % 1000) / 2000.0f + 0.1f;
+		ParticlesContainer[particleIndex].size = 0.3f; //(rand() % 1000) / 2000.0f + 0.1f;
 
 	}
 
@@ -1246,6 +1257,9 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
             mesh[1].render();
+            this->playerPosition.x = gameObjects[i].GetPosition().GetX();
+            this->playerPosition.y = gameObjects[i].GetPosition().GetY();
+            this->playerPosition.z = gameObjects[i].GetPosition().GetZ();
 		}
         i++;
     }
@@ -1408,6 +1422,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 				}
 			}
 			i++;
+            std::cout << "draw: " << shouldDraw << std::endl;
 			//std::cout << "draw: " << drawPE << std::endl;
 		}
 
