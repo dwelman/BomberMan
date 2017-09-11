@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.5)
 set(PROJECT_NAME "Bomberman")
 project (${PROJECT_NAME})
 
-set(CMAKE_CXX_FLAGS "-std=c++11")
+set(CMAKE_CXX_FLAGS "-std=c++11 -Wno-nonnull -Wno-missing-declarations -Wno-null-conversion -Wno-absolute-value -Wno-mismatched-new-delete")
 
 set(CMAKE_BUILD_TYPE Debug)
 

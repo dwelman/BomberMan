@@ -129,9 +129,6 @@ void RenderEngine::computeMatricesFromInputs(SDL_Window *window, SDL_Event &even
 //    usleep(50000);
 	//SDL_WarpMouseInWindow(window, g_cfg["xres"].to_int() / 2, g_cfg["yres"].to_int() / 2);
 
-    std::cout << "Horizontal angle: " << this->horizontalAngle << std::endl;
-    std::cout << "Vertical angle: " << this->verticalAngle << std::endl;
-
     // Direction : Spherical coordinates to Cartesian coordinates conversion
     glm::vec3 direction(
             cos(this->verticalAngle) * sin(this->horizontalAngle),
@@ -978,6 +975,11 @@ void RenderEngine::drawParticles(std::vector<GameObjectRenderInfo> parts)
 	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
 	// Initialize with empty (NULL) buffer : it will be updated later, each frame.
 	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
+
+        for (int i = 0; i < MaxParticles; i++) {
+            ParticlesContainer[i].life = -1.0f;
+            ParticlesContainer[i].cameradistance = -1.0f;
+        }
 }
 }
 
@@ -1422,8 +1424,6 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 				}
 			}
 			i++;
-            std::cout << "draw: " << shouldDraw << std::endl;
-			//std::cout << "draw: " << drawPE << std::endl;
 		}
 
 		if (drawPE)
