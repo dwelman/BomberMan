@@ -96,7 +96,7 @@ void    AudioManager::PlaySFX(eSFX track)
 
 void    AudioManager::MusicVolume(double vol)
 {
-    if (vol >= 0 && vol <= 128)
+    if (vol > 0 && vol < 128)
     {
         Mix_VolumeMusic(round(vol * (MasterVol/100)));
         MusicVol = vol;
@@ -105,7 +105,7 @@ void    AudioManager::MusicVolume(double vol)
 
 void    AudioManager::SFXVolume(double vol)
 {
-    if (vol >= 0 && vol <= 128)
+    if (vol > 0 && vol < 128)
     {
         Mix_Volume(-1, round(vol * (MasterVol/100)));
         SFXVol = vol;

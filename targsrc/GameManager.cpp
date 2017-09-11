@@ -327,7 +327,7 @@ void GameManager::startLevel(bool save, unsigned int seed)
 		int y = (rand() % MAP_Y);
 		if (m_gameMap[y][x] == -1)
 		{
-			createEntityAtPosition("level_exit_closed", Vec3(y, x, 0));
+ 			createEntityAtPosition("level_exit_closed", Vec3(x, y, 0));
 			break;
 		}
 	}
