@@ -37,133 +37,21 @@ GameManager & GameManager::operator=(GameManager const & gm)
 	return (*this);
 }
 
-void	GameManager::handleCollisions(Position &p, Tag &t, std::size_t ID)
-{
-    //if ()
-    /*for (auto iter = m_entities.begin(); iter != m_entities.end(); iter++)
-    {
-        std::size_t i = iter->first;
-		if (i != ID)
-		{
-			COMPONENT_MASK_TYPE bitmask = m_entities[i].GetComponentFlags();
-			if ((bitmask & COLLISION_SYSTEM_FLAGS) == COLLISION_SYSTEM_FLAGS)
-			{
-				try
-				{
-					std::size_t collisionID = m_entities[i].GetComponentOfType(COLLISION);
-					std::size_t positionID = m_entities[i].GetComponentOfType(POSITION);
-					Collision *collision = dynamic_cast<Collision*>(m_components[collisionID]);
-					Position *position = dynamic_cast<Position*>(m_components[positionID]);
-					if (CollisionSystem::CheckCollision(p, c, *position, *collision) == true)
-					{
-						std::size_t tagID = m_entities[i].GetComponentOfType(TAG);
-						Tag *tag = dynamic_cast<Tag *>(m_components[tagID]);
-						if (TagSystem::CheckMaskForTag(t.GetTagMask(), DAMAGE_PLAYER_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), PLAYER_TAG)
-							&& !TagSystem::CheckMaskForTag(tag->GetTagMask(), INDESTRUCTIBLE_TAG))
-						{
-							//Player dies
-							m_lives--;
-							m_toBeDeleted.push_back(i);
-							//createEntityAtPosition("player", Vec3(0, 0, 0));
-						}
-						if (TagSystem::CheckMaskForTag(t.GetTagMask(), DAMAGE_WALL_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), WALL_TAG)
-							&& !TagSystem::CheckMaskForTag(tag->GetTagMask(), INDESTRUCTIBLE_TAG))
-						{
-							//Wall is destroyed
-							m_toBeDeleted.push_back(i);
-							//Explosion is destroyed as well
-							std::size_t explosionID = m_entities[ID].GetComponentOfType(EXPLOSION);
-							Explosion *explosion = dynamic_cast<Explosion*>(m_components[explosionID]);
-							explosion->SetDuration(0);
-							explosion->SetChildExplosions(0);
-
-							//A powerup may spawn
-							if (rand() % 100 <= 30)
-							{
-								if (rand() % 100 >= 66)
-								{
-									createEntityAtPosition("powerup_life", position->GetPosition());
-								}
-								else if (rand() >= 33)
-								{
-									createEntityAtPosition("powerup_bomb_amount", position->GetPosition());
-								}
-								else
-								{
-									createEntityAtPosition("powerup_bomb_strength", position->GetPosition());
-								}
-							}
-						}
-						if (TagSystem::CheckMaskForTag(t.GetTagMask(), DAMAGE_WALL_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), BOMB_TAG)
-							&& !TagSystem::CheckMaskForTag(tag->GetTagMask(), INDESTRUCTIBLE_TAG))
-						{
-							//Bomb is set off
-							std::size_t bombID = m_entities[i].GetComponentOfType(BOMB);
-							Bomb *bomb = dynamic_cast<Bomb*>(m_components[bombID]);
-							bomb->SetBombTime(0);
-						}
-						if (TagSystem::CheckMaskForTag(t.GetTagMask(), DAMAGE_ENEMY_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), ENEMY_TAG)
-							&& !TagSystem::CheckMaskForTag(tag->GetTagMask(), INDESTRUCTIBLE_TAG))
-						{
-							//Enemy is destroyed
-							m_toBeDeleted.push_back(i);
-						}
-
-						if (TagSystem::CheckMaskForTag(t.GetTagMask(), PLAYER_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), POWERUP_TAG))
-						{
-							//Player collects a powerup
-							std::size_t powerupID = m_entities[i].GetComponentOfType(POWERUP);
-							Powerup *powerup = dynamic_cast<Powerup *>(m_components[powerupID]);
-							if (powerup->GetPowerupType() == LIFE)
-							{
-								m_lives++;
-							}
-							else if (powerup->GetPowerupType() == BOMB_AMOUNT_UP)
-							{
-								m_playerBombAmount++;
-							}
-							else if (powerup->GetPowerupType() == BOMB_STRENGTH_UP)
-							{
-								m_explosionSize++;
-							}
-							m_toBeDeleted.push_back(i);
-						}
-
-						if (TagSystem::CheckMaskForTag(t.GetTagMask(), MOVING_ENTITY_TAG) && TagSystem::CheckMaskForTag(tag->GetTagMask(), WALL_TAG))
-						{
-                            std::size_t movementID = m_entities[ID].GetComponentOfType(MOVEMENT);
-                            Movement *movement = dynamic_cast<Movement*>(m_components[movementID]);
-                            std::size_t posID = m_entities[ID].GetComponentOfType(POSITION);
-                            Position *pos = dynamic_cast<Position*>(m_components[posID]);
-
-                            std::cout << "x: " << pos->GetPosition().GetX() << " y: " << pos->GetPosition().GetY() << " z: " << pos->GetPosition().GetZ() << std::endl;
-                            movement->SetDestination(movement->GetDestination() - (movement->GetDirection() * -2));
-                            movement->SetDirection(movement->GetDirection() * -1);
-						}
-					}
-				}
-				catch (std::exception &e)
-				{
-                    std::cout << e.what() << std::endl;
-				}
-			}
-		}
-	}*/
-}
-
-
 void GameManager::handleMovement(Position &p, Movement &m)
 {
-	Vec3 newPos = p.GetPosition();
-	float newX = newPos.GetX();
-	float newY = newPos.GetY();
-	float newZ = newPos.GetZ();
+	if (!(m.GetCanChangeDirection()))
+	{
+		Vec3 newPos = p.GetPosition();
+		float newX = newPos.GetX();
+		float newY = newPos.GetY();
+		float newZ = newPos.GetZ();
 
-	newX += m.GetDirection().GetX() * m.GetSpeed() * m_deltaTime;
-	newY += m.GetDirection().GetY() * m.GetSpeed() * m_deltaTime;
-	newZ += m.GetDirection().GetZ() * m.GetSpeed() * m_deltaTime;
-	p.SetPosition(Vec3(newX, newY, newZ));
-	MovementSystem::CheckSnapMovement(m, p);
+		newX += m.GetDirection().GetX() * m.GetSpeed() * m_deltaTime;
+		newY += m.GetDirection().GetY() * m.GetSpeed() * m_deltaTime;
+		newZ += m.GetDirection().GetZ() * m.GetSpeed() * m_deltaTime;
+		p.SetPosition(Vec3(newX, newY, newZ));
+		MovementSystem::CheckSnapMovement(m, p);
+	}
 }
 
 std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 const &pos)
@@ -437,7 +325,7 @@ void GameManager::startLevel(bool save, unsigned int seed)
 	{
  		int x = (rand() % MAP_X);
 		int y = (rand() % MAP_Y);
-		if (m_gameMap[y][x] != -2)
+		if (m_gameMap[y][x] == -1)
 		{
 			createEntityAtPosition("level_exit_closed", Vec3(y, x, 0));
 			break;
@@ -851,23 +739,27 @@ bool 	GameManager::Update()
                                 {
                                     movement->SetDirection(Vec3(0, 1, 0));
                                     movement->SetDestination(position->GetPosition() + movement->GetDirection());
+                                    movement->SetCanChangeDirection(false);
                                 }
                                 else if (rand() % 100 >= 50 && m_gameMap[y - 1][x] == -1)
                                 {
                                     movement->SetDirection(Vec3(0, -1, 0));
                                     movement->SetDestination(position->GetPosition() + movement->GetDirection());
+                                    movement->SetCanChangeDirection(false);
                                 }
                                 else if (rand() % 100 >= 75 && m_gameMap[y][x + 1] == -1)
                                 {
                                     movement->SetDirection(Vec3(1, 0, 0));
                                     movement->SetDestination(position->GetPosition() + movement->GetDirection());
+                                    movement->SetCanChangeDirection(false);
                                 }
                                 else if (m_gameMap[y][x - 1] == -1)
                                 {
                                     movement->SetDirection(Vec3(-1, 0, 0));
                                     movement->SetDestination(position->GetPosition() + movement->GetDirection());
+                                    movement->SetCanChangeDirection(false);
                                 }
-                                enemy->SetTimeUntilNextMove(0.5f);
+                                enemy->SetTimeUntilNextMove(0.2f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/0.3f)));
                             }
                             enemy->SetTimeUntilNextMove(enemy->GetTimeUntilNextMove() - Clock::Instance().GetDeltaTime());
 						}

@@ -54,6 +54,7 @@ void gameLoop(SDL_Window *window)
     std::vector<GameObjectRenderInfo>   gameObjects;
 
     manager.SetGameStarted(false);
+    manager.GiveAudioManager(Audio);
 	rEngine.initGlew();
 	crate.manager = &manager;
 	crate.audio = Audio;
