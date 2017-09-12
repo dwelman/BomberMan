@@ -153,21 +153,6 @@ Mesh::Mesh(const char *filename)
     for(int i = 0; i < scene->mNumMeshes; ++i) {
         meshEntries.push_back(new Mesh::MeshEntry(scene->mMeshes[i]));
     }
-    if (scene->mNumAnimations == 1)
-    {
-        std::cout << "Number of channels: " << scene->mAnimations[0]->mNumChannels << std::endl;
-        for (int i = 0; i < scene->mAnimations[0]->mNumChannels; i++)
-        {
-            std::cout << scene->mAnimations[0]->mChannels[i]->mNodeName.C_Str() << std::endl;
-            std::cout << scene->mAnimations[0]->mChannels[i]->mPositionKeys[0].mValue.x << std::endl;
-            std::cout << scene->mAnimations[0]->mChannels[i]->mPositionKeys[0].mValue.y << std::endl;
-            std::cout << scene->mAnimations[0]->mChannels[i]->mPositionKeys[0].mValue.z << std::endl;
-            std::cout << scene->mAnimations[0]->mDuration << std::endl;
-            std::cout << scene->mAnimations[0]->mChannels[i]->mPositionKeys[1].mValue.x << std::endl;
-            std::cout << scene->mAnimations[0]->mChannels[i]->mPositionKeys[1].mValue.y << std::endl;
-            std::cout << scene->mAnimations[0]->mChannels[i]->mPositionKeys[1].mValue.z << std::endl;
-        }
-    }
 }
 
 /**

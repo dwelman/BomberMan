@@ -649,6 +649,14 @@ void RenderEngine::initGlew()
 
     Mesh *dwarf = new Mesh("obj/dwarf.dae");
     mesh.push_back(*dwarf);
+    dwarf = new Mesh("obj/dwarf2.dae");
+    mesh.push_back(*dwarf);
+    dwarf = new Mesh("obj/dwarf3.dae");
+    mesh.push_back(*dwarf);
+    dwarf = new Mesh("obj/dwarf4.dae");
+    mesh.push_back(*dwarf);
+    dwarf = new Mesh("obj/dwarf5.dae");
+    mesh.push_back(*dwarf);
 
     Mesh *bomb = new Mesh("obj/bomb.obj");
     mesh.push_back(*bomb);
@@ -669,6 +677,14 @@ void RenderEngine::initGlew()
 	mesh.push_back(*doorClosed);
 
     Mesh *goblin = new Mesh("obj/goblin.dae");
+    mesh.push_back(*goblin);
+    goblin = new Mesh("obj/goblin2.dae");
+    mesh.push_back(*goblin);
+    goblin = new Mesh("obj/goblin3.dae");
+    mesh.push_back(*goblin);
+    goblin = new Mesh("obj/goblin4.dae");
+    mesh.push_back(*goblin);
+    goblin = new Mesh("obj/goblin5.dae");
     mesh.push_back(*goblin);
 
     //computeTangentBasis(rdata[1].objVertices, rdata[1].objUVS, rdata[1].objNormals, rdata[1].objTangents, rdata[1].objBitangents);
@@ -1157,7 +1173,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
 
-			mesh[2].render();
+			mesh[6].render();
 		}
 		i++;
 	}
@@ -1191,7 +1207,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
-			mesh[4].render();
+			mesh[8].render();
 		}
 		i++;
 	}
@@ -1225,7 +1241,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
-			mesh[3].render();
+			mesh[7].render();
 		}
 		i++;
 	}
@@ -1233,6 +1249,8 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 	i = 0;
 
     glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[5]);
+    static int dwarf = 0;
+    static float delta = 0;
 
     for (int l = 0; l < gameObjects.size(); l++)
     {
@@ -1262,7 +1280,21 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
-            mesh[1].render();
+
+            if (gameObjects[i].GetMoving())
+            {
+                delta += Clock::Instance().GetDeltaTime();
+                if (delta > 0.1) {
+                    if (dwarf == 5)
+                        dwarf = 1;
+                    else
+                        dwarf++;
+                    delta = 0;
+                }
+                mesh[dwarf].render();
+            }
+            else
+                mesh[1].render();
             this->playerPosition.x = gameObjects[i].GetPosition().GetX();
             this->playerPosition.y = gameObjects[i].GetPosition().GetY();
             this->playerPosition.z = gameObjects[i].GetPosition().GetZ();
@@ -1298,7 +1330,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
-			mesh[5].render();
+			mesh[9].render();
 		}
 		i++;
 	}
@@ -1331,7 +1363,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
-			mesh[6].render();
+			mesh[10].render();
 		}
 		i++;
 	}
@@ -1364,12 +1396,14 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 
 			glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
 			glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
-			mesh[7].render();
+			mesh[11].render();
 		}
 		i++;
 	}
 
 	i = 0;
+    static int goblin = 11;
+    static float deltaG = 0;
 
     glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[13]);
 
@@ -1398,7 +1432,21 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
-            mesh[8].render();
+
+            if (gameObjects[i].GetMoving())
+            {
+                deltaG += Clock::Instance().GetDeltaTime();
+                if (deltaG > 0.8) {
+                    if (goblin == 16)
+                        goblin = 12;
+                    else
+                        goblin++;
+                    deltaG = 0;
+                }
+                mesh[goblin].render();
+            }
+            else
+                mesh[12].render();
         }
         i++;
     }

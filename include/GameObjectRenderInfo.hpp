@@ -37,6 +37,7 @@ private:
     ObjectType  m_objectType;
     Vec3        m_position;
     Direction        m_direction;
+	bool		m_moving;
     GameObjectRenderInfo();
 public:
     GameObjectRenderInfo(ObjectType objectType, Vec3 position, Direction direction);
@@ -49,7 +50,9 @@ public:
     ObjectType  GetObjectType() const;
     Vec3        GetPosition() const;
     Direction   GetDirection() const;
+	bool 		GetMoving() const;
     void        SetObjectType(ObjectType type);
     void        SetPosition(Vec3 position);
     void        SetDirection(Direction direction);
+	void 		SetMoving(bool moving);
 };
