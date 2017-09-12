@@ -133,7 +133,7 @@ std::size_t GameManager::createEntityAtPosition(std::string entityType, Vec3 con
 		entity.RegisterComponent(m_currentComponentID, ENEMY);
 		m_components.emplace(std::make_pair(m_currentComponentID++, new Enemy(1)));
 		entity.RegisterComponent(m_currentComponentID, RENDER);
-		m_components.emplace(std::make_pair(m_currentComponentID++, new Render(BOMB_STRENGTH_POWERUP_OT, true)));
+		m_components.emplace(std::make_pair(m_currentComponentID++, new Render(ENEMY_1_OT, true)));
 	}
 	else if (entityType == "enemy_2")
 	{

@@ -629,6 +629,7 @@ void RenderEngine::initGlew()
 	tx = loadDDS("textures/Meat.dds", rdata[0].Textures[10]);
 	tx = loadDDS("textures/open_door_AO.dds", rdata[0].Textures[11]);
 	tx = loadDDS("textures/closed_door_AO.dds", rdata[0].Textures[12]);
+    tx = loadDDS("textures/GoblinAO.dds", rdata[0].Textures[13]);
     //tx = loadDDS("textures/DwarfAO.dds", rdata.rObjs[0].getTextureID());
 
     //std::vector<glm::vec3> objV, objN, objT, objBt;
@@ -666,6 +667,9 @@ void RenderEngine::initGlew()
 
 	Mesh *doorClosed = new Mesh("obj/closed_door.obj");
 	mesh.push_back(*doorClosed);
+
+    Mesh *goblin = new Mesh("obj/goblin.dae");
+    mesh.push_back(*goblin);
 
     //computeTangentBasis(rdata[1].objVertices, rdata[1].objUVS, rdata[1].objNormals, rdata[1].objTangents, rdata[1].objBitangents);
 
@@ -1366,6 +1370,40 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 	}
 
 	i = 0;
+
+    glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[13]);
+
+    for (int l = 0; l < gameObjects.size(); l++)
+    {
+        bool shouldDraw = false;
+
+        while (gameObjects[i].GetObjectType() != ENEMY_1_OT) {
+            l++;
+            i++;
+            if (i == gameObjects.size())
+                break;
+        }
+        if (i >= gameObjects.size()) {
+            shouldDraw = false;
+        } else
+            shouldDraw = true;
+
+        if (shouldDraw)
+        {
+            glm::mat4 ModelMatrix2 = glm::mat4(1.0);
+            ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) + 1, gameObjects[i].GetPosition().GetX() * 2));
+            ModelMatrix2 = glm::rotate(ModelMatrix2, gameObjects[i].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
+            ModelMatrix2 = glm::rotate(ModelMatrix2, 1.575f, glm::vec3(-1, 0, 0));
+            glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
+
+            glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
+            glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
+            mesh[8].render();
+        }
+        i++;
+    }
+
+    i = 0;
 
  //   #ifdef _WIN32
 	//    Sleep(15);
