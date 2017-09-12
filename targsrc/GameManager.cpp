@@ -980,6 +980,7 @@ void        GameManager::GetRenderData(std::vector<GameObjectRenderInfo> &g)
 	{
 		try
 		{
+            bool isMoving = false;
 			COMPONENT_MASK_TYPE mask = m_entities[i].GetComponentFlags();
 			if ((mask & RENDER_SYSTEM_FLAGS) == RENDER_SYSTEM_FLAGS)
 			{
@@ -993,6 +994,10 @@ void        GameManager::GetRenderData(std::vector<GameObjectRenderInfo> &g)
 				{
 					std::size_t movementID = m_entities[i].GetComponentOfType(MOVEMENT);
 					Movement *movement = dynamic_cast<Movement *>(m_components[movementID]);
+                    if (movement->GetCanChangeDirection() == false)
+                    {
+                        isMoving = true;
+                    }
 					if (movement->GetDirection().GetX() == 1)
 					{
 						dir = EAST;
@@ -1017,6 +1022,7 @@ void        GameManager::GetRenderData(std::vector<GameObjectRenderInfo> &g)
 				}
 
 				GameObjectRenderInfo newObj(render->GetObjectType(), position->GetPosition(), dir);
+                newObj.SetMoving(isMoving);
 				g.push_back(newObj);
 			}
 			for (std::size_t i = 0; i < m_toBeDeleted.size(); i++)
