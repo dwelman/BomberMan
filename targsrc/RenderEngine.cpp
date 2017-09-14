@@ -616,7 +616,7 @@ void RenderEngine::initGlew()
     glClearColor(0.1f, 0.0f, 0.0f, 0.0f);
     rdata[0].shaders = LoadShaders("shaders/vertex.glsl", "shaders/transparentFragment.glsl");
 	GLuint tx = loadBMP("textures/ore2.bmp", rdata[0].Textures[0]);
-	tx = loadDDS("textures/diffuse.DDS", rdata[0].Textures[1]);
+	tx = loadDDS("textures/back2.dds", rdata[0].Textures[1]);
     tx = loadBMP("textures/normal.bmp", rdata[0].Textures[2]);
 	tx = loadDDS("textures/specular.DDS", rdata[0].Textures[3]);
     tx = loadBMP("textures/ore.bmp", rdata[0].Textures[4]);
@@ -624,25 +624,12 @@ void RenderEngine::initGlew()
     //tx = loadBMP("textures/DwarfAO.bmp", rdata[0].Textures[5]);
     tx = loadDDS("textures/BombAO.dds", rdata[0].Textures[6]);
 	tx = loadDDS("textures/crate.dds", rdata[0].Textures[7]);
-	tx = loadDDS("textures/caveWall.dds", rdata[0].Textures[8]);
+	tx = loadDDS("textures/back.dds", rdata[0].Textures[8]);
 	tx = loadDDS("textures/barrel.dds", rdata[0].Textures[9]);
 	tx = loadDDS("textures/Meat.dds", rdata[0].Textures[10]);
 	tx = loadDDS("textures/open_door_AO.dds", rdata[0].Textures[11]);
 	tx = loadDDS("textures/closed_door_AO.dds", rdata[0].Textures[12]);
     tx = loadDDS("textures/GoblinAO.dds", rdata[0].Textures[13]);
-    //tx = loadDDS("textures/DwarfAO.dds", rdata.rObjs[0].getTextureID());
-
-    //std::vector<glm::vec3> objV, objN, objT, objBt;
-    //std::vector<glm::vec2> objUV;
-    //std::vector<glm::vec3> iV, iN, iT, iBt;
-    //std::vector<glm::vec2> iUV;
-	//std::vector<unsigned short> ic;
-    //objV = rdata.rObjs[0].getObjVertices(); objUV = rdata.rObjs[0].getObjUVS(); objN = rdata.rObjs[0].getObjNormals(); objT = rdata.rObjs[0].getObjTangents(); objBt = rdata.rObjs[0].getObjBitangents();
-    //iV = rdata.rObjs[0].getIndexedVertices(); iUV = rdata.rObjs[0].getIndexedUVS(); iN = rdata.rObjs[0].getIndexedNormals(); iT = rdata.rObjs[0].getIndexedTangents(); iBt = rdata.rObjs[0].getIndexedBitangents();
-	//ic = rdata.rObjs[0].getIndices();
-    //rdata[0].objRes = loadOBJ("obj/cube.obj", rdata[0].objVertices, rdata[0].objUVS, rdata[0].objNormals);
-    //rdata[1].objRes = loadOBJ("obj/dwarf.obj", rdata[1].objVertices, rdata[1].objUVS, rdata[1].objNormals);
-    //rdata[2].objRes = loadOBJ("obj/bomb.obj", rdata[2].objVertices, rdata[2].objUVS, rdata[2].objNormals);
 
     Mesh *cube = new Mesh("obj/cube.obj");
     mesh.push_back(*cube);
@@ -821,14 +808,6 @@ void RenderEngine::initGlew()
     //glShadeModel(GL_SMOOTH);
 }
 
-//void drawCubes(std::vector<std::vector<int>> *blocks)
-//{
-//	for (int i = 0; i < blocks->size(); i++)
-//	{
-//
-//	}
-//}
-
 void RenderEngine::drawParticles(std::vector<GameObjectRenderInfo> parts)
 {
 	for (size_t l = 0; l < parts.size(); l++)
@@ -1005,6 +984,7 @@ void RenderEngine::drawParticles(std::vector<GameObjectRenderInfo> parts)
 
 int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObjectRenderInfo> gameObjects)
 {
+    glEnable(GL_MULTISAMPLE);
     glUseProgram(rdata[0].shaders);
     glm::mat4 ProjectionMatrix = this->getProjectionMatrix();
     glm::mat4 ViewMatrix = this->getViewMatrix();
@@ -1021,6 +1001,61 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
     glEnable(GL_CULL_FACE);
 
 	static int i = 0;
+
+    glActiveTexture(GL_TEXTURE0 + 1);
+    glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[8]);
+    glDisable(GL_CULL_FACE);
+
+    glm::mat4 ModelMatrixB = glm::mat4(1.0);
+    ModelMatrixB = glm::rotate(ModelMatrixB, 2 * 1.575f, glm::vec3(0, 0, 1));
+    ModelMatrixB = glm::translate(ModelMatrixB, glm::vec3((MAP_X / 4) + 5, (-MAP_X / 2) + 8, MAP_X - 1));
+    ModelMatrixB = glm::scale(ModelMatrixB, glm::vec3(MAP_X, MAP_X / 2, MAP_X));
+    glm::mat4 MVP3 = ProjectionMatrix * ViewMatrix * ModelMatrixB;
+
+    glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP3[0][0]);
+    glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrixB[0][0]);
+    mesh[0].render();
+
+    glEnable(GL_CULL_FACE);
+
+    glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[4]);
+
+    glDisable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    for (int l = 0; l < gameObjects.size(); l++)
+    {
+        bool shouldDraw = false;
+
+        while (gameObjects[i].GetObjectType() != 0) {
+            l++;
+            i++;
+            if (i == gameObjects.size())
+                break;
+        }
+        if (i >= gameObjects.size()) {
+            shouldDraw = false;
+        }
+        else
+            shouldDraw = true;
+
+        if (shouldDraw)
+        {
+            glm::mat4 ModelMatrix3 = glm::mat4(1.0);
+            ModelMatrix3 = glm::translate(ModelMatrix3, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, gameObjects[i].GetPosition().GetZ() * 2, gameObjects[i].GetPosition().GetX() * 2));
+            ModelMatrix3 = glm::rotate(ModelMatrix3, gameObjects[i].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
+            glm::mat4 MVP3 = ProjectionMatrix * ViewMatrix * ModelMatrix3;
+
+            glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP3[0][0]);
+            glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix3[0][0]);
+            mesh[0].render();
+        }
+        i++;
+    }
+
+    i = 0;
+
+    glDisable(GL_BLEND);
+    glEnable(GL_CULL_FACE);
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[1]);
@@ -1065,74 +1100,43 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 		i++;
 	}
 
+    glm::mat4 ModelmatrixB = glm::mat4(1.0);
+    ModelmatrixB = glm::translate(ModelmatrixB, glm::vec3(20.0f, 0.0f, 20.0f));
+    ModelmatrixB = glm::scale(ModelmatrixB, glm::vec3(20.0f, 1.0f, 20.0f));
+    glm::mat4 MVPB = ProjectionMatrix * ViewMatrix * ModelmatrixB;
+
+    glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVPB[0][0]);
+    glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelmatrixB[0][0]);
+    mesh[0].render();
+
+    ModelmatrixB = glm::mat4(1.0);
+    ModelmatrixB = glm::translate(ModelmatrixB, glm::vec3(20.0f, 0.0f, 60.0f));
+    ModelmatrixB = glm::scale(ModelmatrixB, glm::vec3(20.0f, 1.0f, 20.0f));
+    MVPB = ProjectionMatrix * ViewMatrix * ModelmatrixB;
+
+    glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVPB[0][0]);
+    glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelmatrixB[0][0]);
+    mesh[0].render();
+
+    ModelmatrixB = glm::mat4(1.0);
+    ModelmatrixB = glm::translate(ModelmatrixB, glm::vec3(20.0f, 0.0f, 100.0f));
+    ModelmatrixB = glm::scale(ModelmatrixB, glm::vec3(20.0f, 1.0f, 20.0f));
+    MVPB = ProjectionMatrix * ViewMatrix * ModelmatrixB;
+
+    glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVPB[0][0]);
+    glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelmatrixB[0][0]);
+    mesh[0].render();
+
 	i = 0;
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, 0);
-    //glActiveTexture(GL_TEXTURE2);
-    //glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE3);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     glActiveTexture(GL_TEXTURE1);
-
-
-
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[8]);
-	glDisable(GL_CULL_FACE);
-	glEnable(GL_MULTISAMPLE);
-
-	glm::mat4 ModelMatrixB = glm::mat4(1.0);
-	ModelMatrixB = glm::rotate(ModelMatrixB, 2 * 1.575f, glm::vec3(0, 0, 1));
-	ModelMatrixB = glm::translate(ModelMatrixB, glm::vec3((MAP_X / 4) + 5, -MAP_X / 2, MAP_X - 1));
-	ModelMatrixB = glm::scale(ModelMatrixB, glm::vec3(MAP_X, MAP_X / 2, MAP_X));
-	glm::mat4 MVP3 = ProjectionMatrix * ViewMatrix * ModelMatrixB;
-
-	glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP3[0][0]);
-	glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrixB[0][0]);
-	mesh[0].render();
-
-	glEnable(GL_CULL_FACE);
-
-    glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[4]);
-
-	glDisable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-    for (int l = 0; l < gameObjects.size(); l++)
-    {
-        bool shouldDraw = false;
-
-        while (gameObjects[i].GetObjectType() != 0) {
-            l++;
-            i++;
-            if (i == gameObjects.size())
-                break;
-        }
-        if (i >= gameObjects.size()) {
-            shouldDraw = false;
-        }
-        else
-            shouldDraw = true;
-
-        if (shouldDraw)
-        {
-            glm::mat4 ModelMatrix3 = glm::mat4(1.0);
-            ModelMatrix3 = glm::translate(ModelMatrix3, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, gameObjects[i].GetPosition().GetZ() * 2, gameObjects[i].GetPosition().GetX() * 2));
-            ModelMatrix3 = glm::rotate(ModelMatrix3, gameObjects[i].GetDirection() * 1.575f, glm::vec3(0, 1, 0));
-            glm::mat4 MVP3 = ProjectionMatrix * ViewMatrix * ModelMatrix3;
-
-            glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP3[0][0]);
-            glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix3[0][0]);
-            mesh[0].render();
-        }
-        i++;
-    }
-
-    i = 0;
-
-    glDisable(GL_BLEND);
-    glEnable(GL_CULL_FACE);
 
 	glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[6]);
 
@@ -1249,7 +1253,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 	i = 0;
 
     glBindTexture(GL_TEXTURE_2D, rdata[0].Textures[5]);
-    static int dwarf = 0;
+    static int dwarf = 1;
     static float delta = 0;
 
     for (int l = 0; l < gameObjects.size(); l++)
@@ -1284,7 +1288,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
             if (gameObjects[i].GetMoving())
             {
                 delta += Clock::Instance().GetDeltaTime();
-                if (delta > 0.1) {
+                if (delta > 0.08) {
                     if (dwarf == 5)
                         dwarf = 1;
                     else
@@ -1358,7 +1362,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 		if (shouldDraw)
 		{
 			glm::mat4 ModelMatrix2 = glm::mat4(1.0);
-			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) + 1, gameObjects[i].GetPosition().GetX() * 2));
+			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) + 1.5, gameObjects[i].GetPosition().GetX() * 2));
 			glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
 
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
@@ -1391,7 +1395,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 		if (shouldDraw)
 		{
 			glm::mat4 ModelMatrix2 = glm::mat4(1.0);
-			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) + 1, gameObjects[i].GetPosition().GetX() * 2));
+			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) + 1.5, gameObjects[i].GetPosition().GetX() * 2));
 			glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
 
 			glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
@@ -1435,18 +1439,21 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 
             if (gameObjects[i].GetMoving())
             {
-                deltaG += Clock::Instance().GetDeltaTime();
-                if (deltaG > 0.8) {
+                //deltaG += Clock::Ins tance().GetDeltaTime();
+                //if (deltaG > 0.08) {
                     if (goblin == 16)
                         goblin = 12;
                     else
                         goblin++;
-                    deltaG = 0;
-                }
+                //    deltaG = 0;
+                //}
                 mesh[goblin].render();
             }
             else
-                mesh[12].render();
+            {
+                goblin = 12;
+                mesh[goblin].render();
+            }
         }
         i++;
     }

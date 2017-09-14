@@ -25,6 +25,7 @@ GameObjectRenderInfo &GameObjectRenderInfo::operator=(GameObjectRenderInfo const
     m_objectType = g.m_objectType;
     m_position = g.m_position;
     m_direction = g.m_direction;
+    m_moving = g.m_moving;
     return (*this);
 }
 
