@@ -105,29 +105,10 @@ void RenderEngine::computeMatricesFromInputs(SDL_Window *window, SDL_Event &even
         this->position.z -= 5 * Clock::Instance().GetDeltaTime();
     }
     static double LastTime = SDL_GetTicks();
-/*	SDL_Event event;
 
-	while (SDL_PollEvent(&event)) {
-		switch (event.type) {
-		case SDL_KEYDOWN:
-			switch (event.key.keysym.sym) {
-			default:
-				break;
-			}
-			break;
-		}
-	}
-*/
     // Compute time difference between current and last frame
     double currentTime = SDL_GetTicks();
     float DeltaTime = float(currentTime - LastTime);
-
-    //int xpos, ypos;
-	//SDL_GetMouseState(&xpos, &ypos);
-    //this->horizontalAngle += this->mouseSpeed * float(g_cfg["xres"].to_int() / 2 - xpos);
-    //this->verticalAngle += this->mouseSpeed * float(g_cfg["yres"].to_int() / 2 - ypos);
-//    usleep(50000);
-	//SDL_WarpMouseInWindow(window, g_cfg["xres"].to_int() / 2, g_cfg["yres"].to_int() / 2);
 
     // Direction : Spherical coordinates to Cartesian coordinates conversion
     glm::vec3 direction(
@@ -145,28 +126,6 @@ void RenderEngine::computeMatricesFromInputs(SDL_Window *window, SDL_Event &even
 
     // Up vector
     glm::vec3 up = glm::cross(right, direction);
-
-    const Uint8 *state = SDL_GetKeyboardState(NULL);
-    if (state[SDL_SCANCODE_W])
-    {
-        this->position += direction * DeltaTime * this->speed;
-    }
-    if (state[SDL_SCANCODE_S])
-    {
-        this->position -= direction * DeltaTime * this->speed;
-    }
-    if (state[SDL_SCANCODE_D])
-    {
-        this->position += right * DeltaTime * this->speed;
-    }
-    if (state[SDL_SCANCODE_A])
-    {
-        this->position -= right * DeltaTime * this->speed;
-    }
-    if (state[SDL_SCANCODE_ESCAPE])
-    {
-		exit(0);
-    }
 
     // Projection matrix : 45� Field of View, 16:9 ratio, display range : 0.1 unit <-> 100 units
     this->ProjectionMatrix = glm::perspective(this->FoV, 16.0f / 9.0f, 0.1f, 100.0f);
@@ -421,151 +380,6 @@ GLuint RenderEngine::loadDDS(const char * imagepath, GLuint texture)
 	return 0;//textureID;
 }
 
-bool RenderEngine::loadOBJ(const char * path, std::vector<glm::vec3> & out_vertices, std::vector<glm::vec2> & out_uvs, std::vector<glm::vec3> & out_normals)
-{
-	std::cout << "Loading OBJ file " << path << "..." << std::endl;
-
-    std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
-    std::vector<glm::vec3> temp_vertices;
-    std::vector<glm::vec2> temp_uvs;
-    std::vector<glm::vec3> temp_normals;
-
-
-    FILE * file = fopen(path, "r");
-    if (file == NULL) {
-		std::cerr << "Unable to open OBJ file!" << std::endl;
-        getchar();
-        return false;
-    }
-
-    while (1) {
-
-        char lineHeader[128];
-        int res = fscanf(file, "%s", lineHeader);
-		if (res == EOF)
-			break;
-        if (strcmp(lineHeader, "v") == 0) {
-            glm::vec3 vertex;
-            fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
-            temp_vertices.push_back(vertex);
-        }
-        else if (strcmp(lineHeader, "vt") == 0) {
-            glm::vec2 uv;
-            fscanf(file, "%f %f\n", &uv.x, &uv.y);
-            uv.y = -uv.y; //Will come in handy if we use DDS textures
-            temp_uvs.push_back(uv);
-        }
-        else if (strcmp(lineHeader, "vn") == 0) {
-            glm::vec3 normal;
-            fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z);
-            temp_normals.push_back(normal);
-        }
-        else if (strcmp(lineHeader, "f") == 0) {
-            std::string vertex1, vertex2, vertex3;
-            unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
-            int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2]);
-            if (matches != 9) {
-				std::cerr << "File can't be read by this stupid parser yet :-(  Try exporting with other options for now" << std::endl;
-                return false;
-            }
-            vertexIndices.push_back(vertexIndex[0]);
-            vertexIndices.push_back(vertexIndex[1]);
-            vertexIndices.push_back(vertexIndex[2]);
-            uvIndices.push_back(uvIndex[0]);
-            uvIndices.push_back(uvIndex[1]);
-            uvIndices.push_back(uvIndex[2]);
-            normalIndices.push_back(normalIndex[0]);
-            normalIndices.push_back(normalIndex[1]);
-            normalIndices.push_back(normalIndex[2]);
-        }
-        else {
-            char stupidBuffer[1000];
-            fgets(stupidBuffer, 1000, file);
-        }
-
-    }
-
-    for (unsigned int i = 0; i<vertexIndices.size(); i++)
-	{
-        unsigned int vertexIndex = vertexIndices[i];
-        unsigned int uvIndex = uvIndices[i];
-        unsigned int normalIndex = normalIndices[i];
-
-        glm::vec3 vertex = temp_vertices[vertexIndex - 1];
-        glm::vec2 uv = temp_uvs[uvIndex - 1];
-        glm::vec3 normal = temp_normals[normalIndex - 1];
-
-        out_vertices.push_back(vertex);
-        out_uvs.push_back(uv);
-        out_normals.push_back(normal);
-    }
-    return true;
-}
-
-void RenderEngine::computeTangentBasis(
-	// inputs
-	std::vector<glm::vec3> & vertices,
-	std::vector<glm::vec2> & uvs,
-	std::vector<glm::vec3> & normals,
-	// outputs
-	std::vector<glm::vec3> & tangents,
-	std::vector<glm::vec3> & bitangents
-)
-{
-	for (unsigned int i = 0; i<vertices.size(); i += 3) {
-
-		// Shortcuts for vertices
-		glm::vec3 & v0 = vertices[i + 0];
-		glm::vec3 & v1 = vertices[i + 1];
-		glm::vec3 & v2 = vertices[i + 2];
-
-		// Shortcuts for UVs
-		glm::vec2 & uv0 = uvs[i + 0];
-		glm::vec2 & uv1 = uvs[i + 1];
-		glm::vec2 & uv2 = uvs[i + 2];
-
-		// Edges of the triangle : postion delta
-		glm::vec3 deltaPos1 = v1 - v0;
-		glm::vec3 deltaPos2 = v2 - v0;
-
-		// UV delta
-		glm::vec2 deltaUV1 = uv1 - uv0;
-		glm::vec2 deltaUV2 = uv2 - uv0;
-
-		float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
-		glm::vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y)*r;
-		glm::vec3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x)*r;
-
-		// Set the same tangent for all three vertices of the triangle.
-		// They will be merged later, in vboindexer.cpp
-		tangents.push_back(tangent);
-		tangents.push_back(tangent);
-		tangents.push_back(tangent);
-
-		// Same thing for binormals
-		bitangents.push_back(bitangent);
-		bitangents.push_back(bitangent);
-		bitangents.push_back(bitangent);
-
-	}
-
-	for (unsigned int i = 0; i<vertices.size(); i += 1)
-	{
-		glm::vec3 & n = normals[i];
-		glm::vec3 & t = tangents[i];
-		glm::vec3 & b = bitangents[i];
-
-		// Gram-Schmidt orthogonalize
-		t = glm::normalize(t - n * glm::dot(n, t));
-
-		// Calculate handedness
-		if (glm::dot(glm::cross(n, t), b) < 0.0f) {
-			t = t * -1.0f;
-		}
-
-	}
-}
-
 int RenderEngine::FindUnusedParticle()
 {
 
@@ -709,7 +523,6 @@ void RenderEngine::initGlew()
 	tx = loadDDS("textures/fire.dds", rdata[0].Textures[12]);
 
 	// The VBO containing the 4 vertices of the particles.
-	// Thanks to instancing, they will be shared by all particles.
 
 	glGenBuffers(1, &billboard_vertex_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
@@ -729,257 +542,183 @@ void RenderEngine::initGlew()
 	// Initialize with empty (NULL) buffer : it will be updated later, each frame.
 	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
 
-    //GLuint vb, uvB, nB, tB, btB;
-    //vb = rdata.rObjs[0].getVertexBuffer(); uvB = rdata.rObjs[0].getUVBuffer(); nB = rdata.rObjs[0].getNormalBuffer(); tB = rdata.rObjs[0].getTangentBuffer(); btB = rdata.rObjs[0].getBitangentBuffer();
-
-//    for (int i = 0; i < rdata.size(); i++)
-//    {
-//        computeTangentBasis(rdata[i].objVertices, rdata[i].objUVS, rdata[i].objNormals, rdata[i].objTangents, rdata[i].objBitangents);
-//
-//        indexVBO_TBN(rdata[i].objVertices, rdata[i].objUVS, rdata[i].objNormals, rdata[i].objTangents, rdata[i].objBitangents,
-//                     rdata[i].Indices, rdata[i].indexed_vertices, rdata[i].indexed_uvs, rdata[i].indexed_normals, rdata[i].indexed_tangents, rdata[i].indexed_bitangents);
-//
-//        glGenBuffers(1, &rdata[i].VertexBuffer);
-//        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].VertexBuffer);
-//        glBufferData(GL_ARRAY_BUFFER, rdata[i].indexed_vertices.size() * sizeof(glm::vec3),
-//                     &rdata[i].indexed_vertices[0], GL_STATIC_DRAW);
-//
-//        glGenBuffers(1, &rdata[i].UVBuffer);
-//        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].UVBuffer);
-//        glBufferData(GL_ARRAY_BUFFER, rdata[i].indexed_uvs.size() * sizeof(glm::vec2), &rdata[i].indexed_uvs[0],
-//                     GL_STATIC_DRAW);
-//
-//        glGenBuffers(1, &rdata[i].NormalBuffer);
-//        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].NormalBuffer);
-//        glBufferData(GL_ARRAY_BUFFER, rdata[i].indexed_normals.size() * sizeof(glm::vec3), &rdata[i].indexed_normals[0],
-//                     GL_STATIC_DRAW);
-//
-//        glGenBuffers(1, &rdata[i].TangentBuffer);
-//        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].TangentBuffer);
-//        glBufferData(GL_ARRAY_BUFFER, rdata[i].indexed_tangents.size() * sizeof(glm::vec3),
-//                     &rdata[i].indexed_tangents[0], GL_STATIC_DRAW);
-//
-//        glGenBuffers(1, &rdata[i].BitangentBuffer);
-//        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].BitangentBuffer);
-//        glBufferData(GL_ARRAY_BUFFER, rdata[i].indexed_bitangents.size() * sizeof(glm::vec3),
-//                     &rdata[i].indexed_bitangents[0], GL_STATIC_DRAW);
-//
-//        glGenBuffers(1, &rdata[i].ElementBuffer);
-//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rdata[i].ElementBuffer);
-//        glBufferData(GL_ELEMENT_ARRAY_BUFFER, rdata[i].Indices.size() * sizeof(unsigned short), &rdata[i].Indices[0],
-//                     GL_STATIC_DRAW);
-//    }
-//    for (int i = 1; i < rdata.size(); i++)
-//    {
-//        indexVBO_TBN(rdata[i].objVertices, rdata[i].objUVS, rdata[i].objNormals, rdata[i].objTangents, rdata[i].objBitangents,
-//                     rdata[i].Indices, rdata[i].indexed_vertices, rdata[i].indexed_uvs, rdata[i].indexed_normals, rdata[i].indexed_tangents, rdata[i].indexed_bitangents);
-//
-//        glGenBuffers(1, &rdata[i].VertexBuffer);
-//        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].VertexBuffer);
-//        glBufferData(GL_ARRAY_BUFFER, rdata[i].objVertices.size() * sizeof(glm::vec3), &rdata[i].objVertices[0], GL_STATIC_DRAW);
-//
-//        glGenBuffers(1, &rdata[1].UVBuffer);
-//        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].UVBuffer);
-//        glBufferData(GL_ARRAY_BUFFER, rdata[i].objUVS.size() * sizeof(glm::vec2), &rdata[i].objUVS[0], GL_STATIC_DRAW);
-//
-//        glGenBuffers(1, &rdata[1].NormalBuffer);
-//        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].NormalBuffer);
-//        glBufferData(GL_ARRAY_BUFFER, rdata[i].objNormals.size() * sizeof(glm::vec3), &rdata[i].objNormals[0], GL_STATIC_DRAW);
-//
-//        glGenBuffers(1, &rdata[1].TangentBuffer);
-//        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].TangentBuffer);
-//        glBufferData(GL_ARRAY_BUFFER, rdata[i].objTangents.size() * sizeof(glm::vec3), &rdata[i].objTangents[0], GL_STATIC_DRAW);
-//
-//        glGenBuffers(1, &rdata[1].BitangentBuffer);
-//        glBindBuffer(GL_ARRAY_BUFFER, rdata[i].BitangentBuffer);
-//        glBufferData(GL_ARRAY_BUFFER, rdata[i].objBitangents.size() * sizeof(glm::vec3), &rdata[i].objBitangents[0], GL_STATIC_DRAW);
-//    }
-
-    //rdata.rObjs[0].setObjVertices(objV); rdata.rObjs[0].setObjUVS(objUV); rdata.rObjs[0].setObjNormals(objN); rdata.rObjs[0].setObjTangents(objT); rdata.rObjs[0].setObjBitangents(objBt);
-    //rdata.rObjs[0].setIndexedVertices(iV); rdata.rObjs[0].setIndexedUVS(iUV); rdata.rObjs[0].setIndexedNormals(iN); rdata.rObjs[0].setIndexedTangents(iT); rdata.rObjs[0].setIndexedBitangents(iBt);
-    //rdata.rObjs[0].setVertexBuffer(vb); rdata.rObjs[0].setUVBuffer(uvB); rdata.rObjs[0].setNormalBuffer(nB); rdata.rObjs[0].setTangentBuffer(tB); rdata.rObjs[0].setBitangentBuffer(btB);
-	//rdata.rObjs[0].setIndices(ic);
-
 	lastTime = SDL_GetTicks() / 50;
 	glShadeModel(GL_SMOOTH);
-	//glDepthFunc(GL_LEQUAL);
+	glDepthFunc(GL_LESS);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glShadeModel(GL_SMOOTH);
 }
 
 void RenderEngine::drawParticles(std::vector<GameObjectRenderInfo> parts)
 {
 	for (size_t l = 0; l < parts.size(); l++)
 	{
-	double currentTime = SDL_GetTicks();
-	deltaTime = float(currentTime - lastTime);
-	lastTime = currentTime;
+	    double currentTime = SDL_GetTicks();
+	    deltaTime = float(currentTime - lastTime);
+	    lastTime = currentTime;
 
-	glm::vec3 CameraPosition(glm::inverse(ViewMatrix)[3]);
+	    glm::vec3 CameraPosition(glm::inverse(ViewMatrix)[3]);
 
-	glm::mat4 ViewProjectionMatrix = ProjectionMatrix * ViewMatrix;
-
-
-	int newparticles = (int)(deltaTime*8000.0);
-	if (newparticles > (int)(0.015f*8000.0))
-		newparticles = (int)(0.015f*8000.0);
-
-	for (int i = 0; i < newparticles; i++) {
-		int particleIndex = FindUnusedParticle();
-		ParticlesContainer[particleIndex].life = 3.0f;
-		ParticlesContainer[particleIndex].pos = glm::vec3(parts[l].GetPosition().GetY() * 2, parts[l].GetPosition().GetZ() * 2, parts[l].GetPosition().GetX() * 2);
-
-		float spread = 0.6f;
-		glm::vec3 maindir = glm::vec3(0.0f, 4.0f, 0.0f);
-
-		glm::vec3 randomdir = glm::vec3(
-			(rand() % 2000 - 1000.0f) / 1000.0f,
-			(rand() % 2000 - 1000.0f) / 1000.0f,
-			(rand() % 2000 - 1000.0f) / 1000.0f
-		);
-
-		ParticlesContainer[particleIndex].speed = maindir + randomdir*spread;
-
-		ParticlesContainer[particleIndex].r = 255;
-		ParticlesContainer[particleIndex].g = 180;
-		ParticlesContainer[particleIndex].b = 20;
-		ParticlesContainer[particleIndex].a = (rand() % 255) / 3;
-
-		ParticlesContainer[particleIndex].size = 0.3f; //(rand() % 1000) / 2000.0f + 0.1f;
-
-	}
+	    glm::mat4 ViewProjectionMatrix = ProjectionMatrix * ViewMatrix;
 
 
+	    int newparticles = (int)(deltaTime*8000.0);
+	    if (newparticles > (int)(0.015f*8000.0))
+		    newparticles = (int)(0.015f*8000.0);
 
-	// Simulate all particles
-	int ParticlesCount = 0;
-	for (int i = 0; i < MaxParticles; i++) {
+	    for (int i = 0; i < newparticles; i++)
+        {
+		    int particleIndex = FindUnusedParticle();
+		    ParticlesContainer[particleIndex].life = 3.0f;
+		    ParticlesContainer[particleIndex].pos = glm::vec3(parts[l].GetPosition().GetY() * 2, parts[l].GetPosition().GetZ() * 2, parts[l].GetPosition().GetX() * 2);
 
-		Particle& p = ParticlesContainer[i]; // shortcut
+		    float spread = 0.6f;
+		    glm::vec3 maindir = glm::vec3(0.0f, 4.0f, 0.0f);
 
-		if (p.life > 0.0f) {
+		    glm::vec3 randomdir = glm::vec3(
+			    (rand() % 2000 - 1000.0f) / 1000.0f,
+			    (rand() % 2000 - 1000.0f) / 1000.0f,
+			    (rand() % 2000 - 1000.0f) / 1000.0f
+		    );
 
-			// Decrease life
-			p.life -= deltaTime;
-			if (p.life > 0.0f) {
+		    ParticlesContainer[particleIndex].speed = maindir + randomdir*spread;
 
-				// Simulate simple physics : gravity only, no collisions
-				p.speed += glm::vec3(0.0f, -2.81f, 0.0f) * (float)deltaTime * 0.5f;
-				p.pos += p.speed * (float)deltaTime;
-				p.cameradistance = glm::length2(p.pos - CameraPosition);
-				//ParticlesContainer[i].pos += glm::vec3(0.0f,10.0f, 0.0f) * (float)delta;
+		    ParticlesContainer[particleIndex].r = 255;
+		    ParticlesContainer[particleIndex].g = 180;
+		    ParticlesContainer[particleIndex].b = 20;
+		    ParticlesContainer[particleIndex].a = (rand() % 255) / 3;
 
-				// Fill the GPU buffer
-				g_particule_position_size_data[4 * ParticlesCount + 0] = p.pos.x;
-				g_particule_position_size_data[4 * ParticlesCount + 1] = p.pos.y;
-				g_particule_position_size_data[4 * ParticlesCount + 2] = p.pos.z;
+		    ParticlesContainer[particleIndex].size = /*0.3f;*/ (rand() % 1000) / 2000.0f + 0.1f;
 
-				g_particule_position_size_data[4 * ParticlesCount + 3] = p.size;
+	    }
 
-				g_particule_color_data[4 * ParticlesCount + 0] = p.r;
-				g_particule_color_data[4 * ParticlesCount + 1] = p.g;
-				g_particule_color_data[4 * ParticlesCount + 2] = p.b;
-				g_particule_color_data[4 * ParticlesCount + 3] = p.a;
+	    // Simulate all particles
+	    int ParticlesCount = 0;
+	    for (int i = 0; i < MaxParticles; i++)
+        {
+		    Particle& p = ParticlesContainer[i]; // shortcut
 
-			}
-			else {
-				// Particles that just died will be put at the end of the buffer in SortParticles();
-				p.cameradistance = -1.0f;
-			}
+		    if (p.life > 0.0f)
+            {
+			    // Decrease life
+			    p.life -= deltaTime;
+			    if (p.life > 0.0f)
+                {
+				    // Simulate simple physics : gravity only, no collisions
+				    p.speed += glm::vec3(0.0f, -2.81f, 0.0f) * (float)deltaTime * 0.5f;
+				    p.pos += p.speed * (float)deltaTime;
+				    p.cameradistance = glm::length2(p.pos - CameraPosition);
+				    //ParticlesContainer[i].pos += glm::vec3(0.0f,10.0f, 0.0f) * (float)delta;
 
-			ParticlesCount++;
+				    // Fill the GPU buffer
+				    g_particule_position_size_data[4 * ParticlesCount + 0] = p.pos.x;
+				    g_particule_position_size_data[4 * ParticlesCount + 1] = p.pos.y;
+				    g_particule_position_size_data[4 * ParticlesCount + 2] = p.pos.z;
 
-		}
-	}
+				    g_particule_position_size_data[4 * ParticlesCount + 3] = p.size;
 
-	SortParticles();
+				    g_particule_color_data[4 * ParticlesCount + 0] = p.r;
+				    g_particule_color_data[4 * ParticlesCount + 1] = p.g;
+				    g_particule_color_data[4 * ParticlesCount + 2] = p.b;
+				    g_particule_color_data[4 * ParticlesCount + 3] = p.a;
+			    }
+			    else
+                {
+				    // Particles that just died will be put at the end of the buffer in SortParticles();
+				    p.cameradistance = -1.0f;
+			    }
+			    ParticlesCount++;
+		    }
+	    }
 
-	glBindVertexArray(VertexArrayID);
+	    SortParticles();
 
-	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
-	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf
-	glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLfloat) * 4, g_particule_position_size_data);
+	    glBindVertexArray(VertexArrayID);
 
-	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
-	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLubyte) * 4, g_particule_color_data);
+	    glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+	    glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf
+	    glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLfloat) * 4, g_particule_position_size_data);
 
-	glProgramUniform1i(rdata[1].shaders, TextureID, 0);
+	    glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
+	    glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
+	    glBufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLubyte) * 4, g_particule_color_data);
 
-	glProgramUniform3f(rdata[1].shaders, CameraRight_worldspace_ID, ViewMatrix[0][0], ViewMatrix[1][0], ViewMatrix[2][0]);
-	glProgramUniform3f(rdata[1].shaders, CameraUp_worldspace_ID, ViewMatrix[0][1], ViewMatrix[1][1], ViewMatrix[2][1]);
+	    glProgramUniform1i(rdata[1].shaders, TextureID, 0);
 
-	glProgramUniformMatrix4fv(rdata[1].shaders, ViewProjMatrixID, 1, GL_FALSE, &ViewProjectionMatrix[0][0]);
+	    glProgramUniform3f(rdata[1].shaders, CameraRight_worldspace_ID, ViewMatrix[0][0], ViewMatrix[1][0], ViewMatrix[2][0]);
+	    glProgramUniform3f(rdata[1].shaders, CameraUp_worldspace_ID, ViewMatrix[0][1], ViewMatrix[1][1], ViewMatrix[2][1]);
 
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
-	glVertexAttribPointer(
-		0,
-		3,
-		GL_FLOAT,
-		GL_FALSE,
-		0,
-		(void*)0
-	);
+	    glProgramUniformMatrix4fv(rdata[1].shaders, ViewProjMatrixID, 1, GL_FALSE, &ViewProjectionMatrix[0][0]);
 
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
-	glVertexAttribPointer(
-		1,
-		4,
-		GL_FLOAT,
-		GL_FALSE,
-		0,
-		(void*)0
-	);
+	    glEnableVertexAttribArray(0);
+	    glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
+	    glVertexAttribPointer(
+		    0,
+		    3,
+		    GL_FLOAT,
+		    GL_FALSE,
+		    0,
+		    (void*)0
+	    );
 
-	glEnableVertexAttribArray(2);
-	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
-	glVertexAttribPointer(
-		2,
-		4,
-		GL_UNSIGNED_BYTE,
-		GL_TRUE,                          // unsigned char[4] will be accessible with a vec4 (floats) in the shader
-		0,
-		(void*)0
-	);
+	    glEnableVertexAttribArray(1);
+	    glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+	    glVertexAttribPointer(
+		    1,
+		    4,
+		    GL_FLOAT,
+		    GL_FALSE,
+		    0,
+		    (void*)0
+	    );
 
-	glVertexAttribDivisor(0, 0); // particles vertices : always reuse the same 4 vertices -> 0
-	glVertexAttribDivisor(1, 1); // positions : one per quad (its center)                 -> 1
-	glVertexAttribDivisor(2, 1); // color : one per quad                                  -> 1
+	    glEnableVertexAttribArray(2);
+	    glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
+	    glVertexAttribPointer(
+		    2,
+		    4,
+		    GL_UNSIGNED_BYTE,
+		    GL_TRUE,                          // unsigned char[4] will be accessible with a vec4 (floats) in the shader
+		    0,
+		    (void*)0
+	    );
 
-	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, ParticlesCount);
+	    glVertexAttribDivisor(0, 0); // particles vertices : always reuse the same 4 vertices -> 0
+	    glVertexAttribDivisor(1, 1); // positions : one per quad (its center)                 -> 1
+	    glVertexAttribDivisor(2, 1); // color : one per quad                                  -> 1
+
+	    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, ParticlesCount);
 
 
-	delete[] g_particule_position_size_data;
-	delete[] g_particule_color_data;
-	g_particule_position_size_data = new GLfloat[MaxParticles * 4];
-	g_particule_color_data = new GLubyte[MaxParticles * 4];
+	    delete[] g_particule_position_size_data;
+	    delete[] g_particule_color_data;
+	    g_particule_position_size_data = new GLfloat[MaxParticles * 4];
+	    g_particule_color_data = new GLubyte[MaxParticles * 4];
 
-	glGenBuffers(1, &billboard_vertex_buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+	    glGenBuffers(1, &billboard_vertex_buffer);
+	    glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
+	    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
-	// The VBO containing the positions and sizes of the particles
+	    // The VBO containing the positions and sizes of the particles
 
-	glGenBuffers(1, &particles_position_buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
-	// Initialize with empty (NULL) buffer : it will be updated later, each frame.
-	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
+	    glGenBuffers(1, &particles_position_buffer);
+	    glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+	    // Initialize with empty (NULL) buffer : it will be updated later, each frame.
+	    glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
 
-	// The VBO containing the colors of the particles
+	    // The VBO containing the colors of the particles
 
-	glGenBuffers(1, &particles_color_buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
-	// Initialize with empty (NULL) buffer : it will be updated later, each frame.
-	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
+	    glGenBuffers(1, &particles_color_buffer);
+	    glBindBuffer(GL_ARRAY_BUFFER, particles_color_buffer);
+	    // Initialize with empty (NULL) buffer : it will be updated later, each frame.
+	    glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
 
-        for (int i = 0; i < MaxParticles; i++) {
+        for (int i = 0; i < MaxParticles; i++)
+        {
             ParticlesContainer[i].life = -1.0f;
             ParticlesContainer[i].cameradistance = -1.0f;
         }
-}
+    }
 }
 
 int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObjectRenderInfo> gameObjects)
@@ -1279,7 +1018,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
             ModelMatrix2 = glm::rotate(ModelMatrix2, 1.575f, glm::vec3(-1, 0, 0));
 			glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
 
-			glm::vec3 lightPos = glm::vec3(gameObjects[i].GetPosition().GetY() * 2, gameObjects[i].GetPosition().GetZ() + 6.0f, /*z*/gameObjects[i].GetPosition().GetX() * 2);
+			glm::vec3 lightPos = glm::vec3(gameObjects[i].GetPosition().GetY() * 2, gameObjects[i].GetPosition().GetZ() + 5.0f, /*z*/gameObjects[i].GetPosition().GetX() * 2);
 			glUniform3f(rdata[0].LightID, lightPos.x, lightPos.y, lightPos.z);
 
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
@@ -1329,7 +1068,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 		if (shouldDraw)
 		{
 			glm::mat4 ModelMatrix2 = glm::mat4(1.0);
-			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) + 1, gameObjects[i].GetPosition().GetX() * 2));
+			ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(gameObjects[i].GetPosition().GetY() * 2, (gameObjects[i].GetPosition().GetZ() * 2) + 2, gameObjects[i].GetPosition().GetX() * 2));
 			glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
 
             glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
@@ -1460,21 +1199,7 @@ int RenderEngine::Draw(SDL_Window *window, bool gameStarted, std::vector<GameObj
 
     i = 0;
 
- //   #ifdef _WIN32
-	//    Sleep(15);
- //   #else
- //       usleep(15000);
- //   #endif
-    glLoadIdentity();
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-//        glUseProgram(rdata[1].shaders);
-//        glm::mat4 ModelMatrix2 = glm::mat4(1.0);
-//        ModelMatrix2 = glm::translate(ModelMatrix2, glm::vec3(2, 2, 2));
-//        glm::mat4 MVP2 = ProjectionMatrix * ViewMatrix * ModelMatrix2;
-//
-//        glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].MatrixID, 1, GL_FALSE, &MVP2[0][0]);
-//        glProgramUniformMatrix4fv(rdata[0].shaders, rdata[0].ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
+    //glLoadIdentity();
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

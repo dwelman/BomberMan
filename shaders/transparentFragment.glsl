@@ -26,7 +26,7 @@ void main(){
 	// Light emission properties
 	// You probably want to put them as uniforms
 	vec3 LightColor = vec3(0.8,0.5,0.3);
-	float LightPower = 20.0;
+	float LightPower = 30.0;
 	
 	// Material properties
 	vec3 MaterialDiffuseColor = texture( DiffuseTextureSampler, UV ).rgb;
@@ -42,7 +42,7 @@ void main(){
 	// Normal of the computed fragment, in camera space
 	vec3 n = TextureNormal_tangentspace;
 	// Direction of the light (from the fragment to the light)
-	vec3 l = normalize(LightDirection_cameraspace);
+	vec3 l = normalize(LightDirection_cameraspace) * vec3(0, 1.575, 1.575);
 	// Cosine of the angle between the normal and the light direction, 
 	// clamped above 0
 	//  - light is at the vertical of the triangle -> 1
